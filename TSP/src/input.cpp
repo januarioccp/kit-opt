@@ -15,10 +15,11 @@ ostream & operator << (ostream &out, const Input &in){
     out << "dimension: " << in.dimension << endl;
     for (size_t i = 1; i <= in.dimension; i++) {
         for (size_t j = 1; j <= in.dimension; j++) {
-            out << in.matrizAdj[i][j] << " ";
+            out << in.matrizAdj[i][j] << "\t";
         }
         out << endl;
     }
+    return out;
 }
 
 Input::Input( int argc, char** argv)

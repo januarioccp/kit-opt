@@ -1,5 +1,4 @@
 GILS-RVND-TSP/.DS_Store
 *.o
-./*.o
-GILS-RVND-TSP/leitor-instancias/obj/*.o
-./GILS-RVND-TSP/leitor-instancias/obj/main.o ./GILS-RVND-TSP/leitor-instancias/obj/readData.o
+TSP/obj/*.o
+TSP/.vscode

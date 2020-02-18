@@ -4,8 +4,9 @@
 
 class Construction{
     public:
-        Construction( Solution* s, const double alpha );
+        Construction( Solution* s );
         void calculaCustoInsercao(Solution* s);
+        void constructiveProcedure(Solution* s, const double alpha);
 
     struct InsertionInfo {
         int noInserido; // no k a ser inserido

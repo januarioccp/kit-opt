@@ -9,21 +9,21 @@
 #include <algorithm> 
 using namespace std;
 
-Construction::Construction( Solution* s, double alpha )
+Construction::Construction( Solution* s)
 {
     int j;
     int tamanhoSubtourInicial = 3;
 
     CL.clear();
-    for(int i =0; i < s->in->dimension; i++)
+    for(int i =1; i <= s->in->dimension; i++)
         CL.push_back(i);
 
     j = rand() % CL.size() ;
 
     s->reset();
     //Insert first location twice in the solution
-    s->location.push_back(j);
-    s->location.push_back(j);
+    s->location.push_back(CL[j]);
+    s->location.push_back(CL[j]);
 
     // Remove the first location from the CL
     CL.erase(CL.begin() + j);
@@ -36,6 +36,21 @@ Construction::Construction( Solution* s, double alpha )
 
     s->computeCostValue();
 
+}
+
+void Construction::constructiveProcedure(Solution* s, const double alpha){
+    
+    int position, value;
+    calculaCustoInsercao(s);
+    while ( CL.size() > 0)
+    {
+        position = rand()%(int(floor(custoInsercao.size()*alpha))+1);
+        s->location.insert(s->location.begin() + custoInsercao[position].arestaRemovida +1, custoInsercao[position].noInserido); 
+        s->costValue+=custoInsercao[position].custo;
+        remove(CL.begin(), CL.end(), custoInsercao[position].noInserido);
+        CL.resize(CL.size()-1);
+        calculaCustoInsercao(s);
+    }
 }
 
 void Construction::calculaCustoInsercao(Solution* s){
@@ -73,4 +88,5 @@ ostream & operator << (ostream &out, const Construction &c){
         green<< setw(14) << c.custoInsercao[i].arestaRemovida<< deff <<" | " << 
         blue<< setw(5) << c.custoInsercao[i].custo<< deff << endl;
     }
+    return out;
 }
