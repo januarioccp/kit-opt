@@ -15,8 +15,6 @@ Neighborhood::Neighborhood( Input* input)
 }
 
 void Neighborhood::firstSwap(Solution* s){
-    int cost1;
-    int cost2;
     bool stuck = false;
     int delta = 0;
     while(!stuck){
@@ -24,45 +22,54 @@ void Neighborhood::firstSwap(Solution* s){
         for(int i=0; i < s->location.size()-1; i++)
             for(int j=i+1; j < s->location.size()-1; j++){
                 delta = swapDeltaEvaluate(s,i,j);
-                if(delta < 0 && j>i+1 && i > 0){
-                    cout<<i<<" "<<j<<endl;
-                    cout<<s->location[i]<<" "<<s->location[j]<<endl;
-                    cout<<*s<<endl;
+                if(delta < 0){
                     swapMove(s,i,j,delta);
-                    cout<<*s<<endl;
-                    cost1 = s->costValue;
                     s->computeCostValue();
-                    cost2 = s->costValue;
-                    cout<<*s<<endl;
-                    if(cost1 != cost2){
-                        cout<<i<<" "<<j<<endl;
-                        cout<<s->location[i]<<" "<<s->location[j]<<endl;
-                        exit(0);
-                    }
                     stuck = false;
                 }
             }
     }
-    exit(0);
 }
 
 int Neighborhood::swapDeltaEvaluate(Solution* s,int i,int j){
-    // cij−1 + cij+1 + cji−1 + cji+1 − cii−1 − cii+1 − cjj−1 − cjj+1 
+    
+    if(i > j)
+        swap(i,j);
+
     int delta = 0;
     int last = s->location.size()-2;
     if( i == 0){
-        delta  =    in->matrizAdj[s->location[i]][s->location[j-1]] +
-                    in->matrizAdj[s->location[i]][s->location[j+1]] +
-                    in->matrizAdj[s->location[j]][s->location[last]] +
-                    in->matrizAdj[s->location[j]][s->location[i+1]] -
-                    in->matrizAdj[s->location[i]][s->location[last]] -
-                    in->matrizAdj[s->location[i]][s->location[i+1]] -
-                    in->matrizAdj[s->location[j]][s->location[j-1]] -
-                    in->matrizAdj[s->location[j]][s->location[j+1]];
-        
+        if(j==1){ //It doesn't work for non simmetric instances
+            return
+            in->matrizAdj[s->location[last]][s->location[j]] +
+            in->matrizAdj[s->location[i]][s->location[j+1]] -
+            in->matrizAdj[s->location[last]][s->location[i]] -
+            in->matrizAdj[s->location[j]][s->location[j+1]];
+        } if(j==last){
+            return in->matrizAdj[s->location[last]][s->location[i+1]] +
+            in->matrizAdj[s->location[last-1]][s->location[i]] -
+            in->matrizAdj[s->location[j]][s->location[j-1]] -
+            in->matrizAdj[s->location[i]][s->location[i+1]];
+        } else{
+            return in->matrizAdj[s->location[last]][s->location[j]]
+               + in->matrizAdj[s->location[j]][s->location[i+1]]
+               + in->matrizAdj[s->location[j-1]][s->location[i]]
+               + in->matrizAdj[s->location[i]][s->location[j+1]]
+               - in->matrizAdj[s->location[last]][s->location[i]]
+               - in->matrizAdj[s->location[i]][s->location[i+1]]
+               - in->matrizAdj[s->location[j-1]][s->location[j]]
+               - in->matrizAdj[s->location[j]][s->location[j+1]];
+        }
     }
-    if(i+1==j){
-        delta  =    in->matrizAdj[s->location[i]][s->location[j-1]] +
+    else if(i+1==j){ //It doesn't work for non simmetric instances
+        return
+        in->matrizAdj[s->location[j]][s->location[i-1]] +
+        in->matrizAdj[s->location[i]][s->location[j+1]] -
+        in->matrizAdj[s->location[i]][s->location[i-1]] -
+        in->matrizAdj[s->location[j]][s->location[j+1]];
+    }
+    else {// Exactly like in "O kit"
+        return in->matrizAdj[s->location[i]][s->location[j-1]] +
                     in->matrizAdj[s->location[i]][s->location[j+1]] +
                     in->matrizAdj[s->location[j]][s->location[i-1]] +
                     in->matrizAdj[s->location[j]][s->location[i+1]] -
@@ -71,17 +78,8 @@ int Neighborhood::swapDeltaEvaluate(Solution* s,int i,int j){
                     in->matrizAdj[s->location[j]][s->location[j-1]] -
                     in->matrizAdj[s->location[j]][s->location[j+1]];
     }
-    else
-        delta  =    in->matrizAdj[s->location[i]][s->location[j-1]] +
-                    in->matrizAdj[s->location[i]][s->location[j+1]] +
-                    in->matrizAdj[s->location[j]][s->location[i-1]] +
-                    in->matrizAdj[s->location[j]][s->location[i+1]] -
-                    in->matrizAdj[s->location[i]][s->location[i-1]] -
-                    in->matrizAdj[s->location[i]][s->location[i+1]] -
-                    in->matrizAdj[s->location[j]][s->location[j-1]] -
-                    in->matrizAdj[s->location[j]][s->location[j+1]];
     
-    return delta;
+    //return delta;
 }
 
 void Neighborhood::swapMove(Solution* s,int a,int b,int delta){

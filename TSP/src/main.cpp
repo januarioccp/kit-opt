@@ -7,8 +7,8 @@
 using namespace std;
 
 int main(int argc, char** argv) {
-    //srand(time(0));
-    srand(0);
+    srand(time(0));
+    //srand(0);
     double alpha = 0.1;
     Input in(argc, argv);
     Solution sol(&in);
@@ -16,6 +16,8 @@ int main(int argc, char** argv) {
     c.constructiveProcedure(&sol,0.1);
     Neighborhood n(&in);
     sol.computeCostValue();
+    cout<<sol<<endl;
+    n.firstSwap(&sol);
     cout<<sol<<endl;
     n.firstSwap(&sol);
     cout<<sol<<endl;

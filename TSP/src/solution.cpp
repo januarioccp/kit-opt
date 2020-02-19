@@ -25,18 +25,24 @@ ostream & operator << (ostream &out, const Solution &s)
 
     Color::Modifier red(Color::FG_RED);
     Color::Modifier deff(Color::FG_DEFAULT);
-
+    int myCost = 0;
     if(s.location.size() <= s.in->dimension)
         out << red << "Warning! Incomplete solution!!!" << deff<< endl;
 
     out << "Dimension: "<<s.in->dimension << endl;
     out << "Cost value: "<<s.costValue << endl;
-    cout<< "s = {";
+    out<< "s = {";
     for(int i=0; i < s.location.size(); i++)
         if( i < s.location.size() - 1)
             out << setw(3) << s.location[i] << ",";
         else
             out << setw(3) << s.location[i];
-    cout << "}" << endl;
+    out << "}" << endl;
+
+    for(int i=0; i < s.location.size()-1; i++)
+        myCost+=s.in->matrizAdj[s.location[i]][s.location[i+1]];
+
+    if(myCost != s.costValue)
+        out << red << "Something wrong...the cost should be: " <<myCost<<deff<<endl;
     return out;
 }
