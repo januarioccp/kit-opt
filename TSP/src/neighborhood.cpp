@@ -15,6 +15,8 @@ Neighborhood::Neighborhood( Input* input)
 }
 
 void Neighborhood::firstSwap(Solution* s){
+    int cost1;
+    int cost2;
     bool stuck = false;
     int delta = 0;
     while(!stuck){
@@ -22,15 +24,21 @@ void Neighborhood::firstSwap(Solution* s){
         for(int i=0; i < s->location.size()-1; i++)
             for(int j=i+1; j < s->location.size()-1; j++){
                 delta = swapDeltaEvaluate(s,i,j);
-                if(delta < 0 && j>i+1){
+                if(delta < 0 && j>i+1 && i > 0){
                     cout<<i<<" "<<j<<endl;
                     cout<<s->location[i]<<" "<<s->location[j]<<endl;
                     cout<<*s<<endl;
                     swapMove(s,i,j,delta);
                     cout<<*s<<endl;
+                    cost1 = s->costValue;
                     s->computeCostValue();
+                    cost2 = s->costValue;
                     cout<<*s<<endl;
-                    //exit(0);
+                    if(cost1 != cost2){
+                        cout<<i<<" "<<j<<endl;
+                        cout<<s->location[i]<<" "<<s->location[j]<<endl;
+                        exit(0);
+                    }
                     stuck = false;
                 }
             }
@@ -52,6 +60,16 @@ int Neighborhood::swapDeltaEvaluate(Solution* s,int i,int j){
                     in->matrizAdj[s->location[j]][s->location[j-1]] -
                     in->matrizAdj[s->location[j]][s->location[j+1]];
         
+    }
+    if(i+1==j){
+        delta  =    in->matrizAdj[s->location[i]][s->location[j-1]] +
+                    in->matrizAdj[s->location[i]][s->location[j+1]] +
+                    in->matrizAdj[s->location[j]][s->location[i-1]] +
+                    in->matrizAdj[s->location[j]][s->location[i+1]] -
+                    in->matrizAdj[s->location[i]][s->location[i-1]] -
+                    in->matrizAdj[s->location[i]][s->location[i+1]] -
+                    in->matrizAdj[s->location[j]][s->location[j-1]] -
+                    in->matrizAdj[s->location[j]][s->location[j+1]];
     }
     else
         delta  =    in->matrizAdj[s->location[i]][s->location[j-1]] +

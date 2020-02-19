@@ -2,3 +2,4 @@ GILS-RVND-TSP/.DS_Store
 *.o
 TSP/obj/*.o
 TSP/.vscode
+obj/neighborhood.d
