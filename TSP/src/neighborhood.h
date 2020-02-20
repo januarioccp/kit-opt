@@ -11,14 +11,22 @@ class Neighborhood{
         */
         void bestSwap(Solution* s);
         void firstSwap(Solution* s);
-        int swapDeltaEvaluate(Solution* s,int i,int j);
+        int swapDeltaEvaluation(Solution* s,int i,int j);
         void swapMove(Solution* s,int i,int j, int delta);
+
+        /**
+         * 2-opt
+        */
+        void firstTwoOpt(Solution* s);
+        void bestTwoOpt(Solution* s);
+        int twoOptDeltaEvaluation(Solution* s,int arci,int arcj);
+        void twoOptMove(Solution* s, int arci,int arcj, int delta);
 
         /**
          * reInsertion
         */
         void reInsertion(Solution* s);
-        void twoOpt(Solution* s);
+        
 
     //private:
     Input* in;

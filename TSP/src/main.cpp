@@ -13,13 +13,20 @@ int main(int argc, char** argv) {
     Input in(argc, argv);
     Solution sol(&in);
     Construction c(&sol);
-    c.constructiveProcedure(&sol,0.1);
+    c.constructiveProcedure(&sol,0.05);
     Neighborhood n(&in);
     sol.computeCostValue();
+
+    int f;
     cout<<sol<<endl;
-    n.firstSwap(&sol);
-    cout<<sol<<endl;
-    n.firstSwap(&sol);
-    cout<<sol<<endl;
+    do{
+        f = sol.costValue;
+        n.firstSwap(&sol);
+        n.firstTwoOpt(&sol);
+        n.bestSwap(&sol);
+        n.bestTwoOpt(&sol);
+        cout<<sol<<endl;
+    }while(f > sol.costValue);
+    
     return 0;
 }
