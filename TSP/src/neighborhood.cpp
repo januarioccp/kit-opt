@@ -1,3 +1,4 @@
+#include <climits>
 #include "neighborhood.h"
 #include "solution.h"
 #include "colormod.h"
