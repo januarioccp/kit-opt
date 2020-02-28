@@ -15,10 +15,9 @@ class Solution{
         void reset();
 
     //private:
-        int costValue;
+        double costValue;
         vector<int> location;
         Input* in;
-
 
     friend ostream & operator << (ostream &out, const Solution &c);
 

@@ -1,36 +1,44 @@
 #ifndef NEIGHBORHOOD_H_INCLUDED
 #define NEIGHBORHOOD_H_INCLUDED
 #include "solution.h"
+#include "colormod.h"
 
 class Neighborhood{
     public:
         Neighborhood(Input *input);
-
+        vector<string> NeighborhoodList(){return NL;};
+        void improove(Solution* s,string choosenNeighborhood);
         /**
          * SWAP
         */
         void bestSwap(Solution* s);
         void firstSwap(Solution* s);
-        int swapDeltaEvaluation(Solution* s,int i,int j);
-        void swapMove(Solution* s,int i,int j, int delta);
+        double swapDeltaEvaluation(Solution* s,int i,int j);
+        void swapMove(Solution* s,int i,int j, double delta);
 
         /**
          * 2-opt
         */
         void firstTwoOpt(Solution* s);
         void bestTwoOpt(Solution* s);
-        int twoOptDeltaEvaluation(Solution* s,int arci,int arcj);
-        void twoOptMove(Solution* s, int arci,int arcj, int delta);
+        double twoOptDeltaEvaluation(Solution* s,int arci,int arcj);
+        void twoOptMove(Solution* s, int arci,int arcj, double delta);
 
         /**
          * reInsertion
         */
-        void reInsertion(Solution* s);
+        void firstReInsertion(Solution* s, int size = 1);
+        void bestReInsertion(Solution* s, int size = 1 );
+        double reInsertionDeltaEvaluation(Solution* s, int arc, int size, int shift);
+        void reInsertionMove(Solution* s, int arc, int size, int shift, double delta);
         
 
     //private:
     Input* in;
+    vector<string> NL;
+    // vector<int> reInsertionAuxVector;
     friend ostream & operator << (ostream &out, const Neighborhood &c);
+
 };
 
-#endif //CONSTRUCTION_H_INCLUDED
+#endif //NEIGHBORHOOD_H_INCLUDED

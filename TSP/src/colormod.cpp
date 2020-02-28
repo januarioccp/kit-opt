@@ -1,5 +1,4 @@
 #include "colormod.h"
-
 Color::Modifier one(Color::FG_RED);
 Color::Modifier two(Color::FG_GREEN);
 Color::Modifier three(Color::FG_YELLOW);
@@ -14,3 +13,4 @@ Color::Modifier blue(Color::FG_BLUE);
 Color::Modifier defb(Color::BG_DEFAULT);
 Color::Modifier green(Color::FG_GREEN);
 Color::Modifier magenta(Color::FG_MAGENTA);
+

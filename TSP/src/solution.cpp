@@ -15,7 +15,7 @@ void Solution::reset(){
 }
 
 void Solution::computeCostValue(){
-    costValue = 0;
+    costValue = 0.0;
     for(int i=0; i < location.size()-1; i++)
         costValue += in->matrizAdj[location[i]][location[i+1]];
 }
@@ -25,18 +25,32 @@ ostream & operator << (ostream &out, const Solution &s)
 
     Color::Modifier red(Color::FG_RED);
     Color::Modifier deff(Color::FG_DEFAULT);
-    int myCost = 0;
+    double myCost = 0;
     if(s.location.size() <= s.in->dimension)
         out << red << "Warning! Incomplete solution!!!" << deff<< endl;
 
     out << "Dimension: "<<s.in->dimension << endl;
-    out << "Cost value: "<<s.costValue << endl;
+    out << "Cost value: "<<setprecision (1)<<fixed<<s.costValue << endl;
+    out<< "i = [";
+    for(int i=0; i < s.location.size(); i++)
+        out << setw(3) << i << " ";
+    out<< "]"<<endl;
     out<< "s = {";
     for(int i=0; i < s.location.size(); i++)
-        if( i < s.location.size() - 1)
-            out << setw(3) << s.location[i] << ",";
-        else
-            out << setw(3) << s.location[i];
+        if( i < s.location.size() - 1){
+            if(s.location[i] <= 7)
+                    out << "\033[" << 30+s.location[i] << "m";
+            if(8 <= s.location[i] && s.location[i] <= 14)
+                    out << "\033[" << 83+s.location[i] << "m";
+            out << setw(3) << s.location[i] <<deff<< ",";
+        }
+        else{
+            if(s.location[i] <= 7)
+                    out << "\033[" << 30+s.location[i] << "m";
+            if(8 <= s.location[i] && s.location[i] <= 14)
+                    out << "\033[" << 83+s.location[i] << "m";
+            out << setw(3) << s.location[i]  <<deff;
+        }
     out << "}" << endl;
 
     for(int i=0; i < s.location.size()-1; i++)

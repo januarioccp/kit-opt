@@ -1,6 +1,7 @@
 #ifndef COLORMOD_H_INCLUDED
 #define COLORMOD_H_INCLUDED
 #include <ostream>
+
 namespace Color {
     enum Code {
         FG_RED      = 31,
