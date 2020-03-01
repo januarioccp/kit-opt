@@ -19,8 +19,8 @@ int main(int argc, char** argv) {
     LocalSearch ls(&in);
     
     // GILSRVND parameters
-    int Imax = 10;
-    int Iils = min(100,in.dimension);
+    int Imax = 50;
+    int Iils = (in.dimension >= 150) ? in.dimension/2 : in.dimension;
     vector<double> R;
     R.push_back(0.00);
     for(int i=1; i <= 25; i++)
