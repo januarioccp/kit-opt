@@ -28,7 +28,7 @@ int main(int argc, char** argv) {
     // GILSRVND parameters
 
     
-    for(int i=1; i <=5; i++ ){
+    for(int i=1; i <=10; i++ ){
         seed++;
         srand(seed);
         clock_t beginC = clock();
