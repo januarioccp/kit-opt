@@ -17,7 +17,7 @@ Neighborhood::Neighborhood( Input* input)
 {
     this->in = input;
     NL.push_back("bestSwap");
-    //NL.push_back("firstSwap");
+    // NL.push_back("firstSwap");
     //NL.push_back("firstTwoOpt");
     NL.push_back("bestTwoOpt");
     //NL.push_back("firstReInsertion-1");
