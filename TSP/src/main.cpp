@@ -38,9 +38,5 @@ int main(int argc, char** argv) {
         printf("%.*s", strlen(argv[1])-14, argv[1] + 10);
         cout<<","<<elapsed_secs<<","<<sol.costValue<<","<<seed<<endl;
     }
-    
-
-    
-
     return 0;
 }

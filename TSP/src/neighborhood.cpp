@@ -78,7 +78,7 @@ void Neighborhood::bestSwap(Solution* s){
     int j_best;
     double delta_best;
 
-    while(!stuck){
+    //while(!stuck){
         stuck = true;
         delta_best = INT_MAX;
         for(int i=0; i < s->location.size()-1; i++)
@@ -94,7 +94,7 @@ void Neighborhood::bestSwap(Solution* s){
             swapMove(s,i_best,j_best,delta_best);
             stuck = false;
         }
-    }
+    //}
 }
 
 double Neighborhood::swapDeltaEvaluation(Solution* s,int i,int j){
@@ -189,7 +189,7 @@ void Neighborhood::bestTwoOpt(Solution* s){
     double delta_best;
 
     int last = s->location.size()-1;
-    while(!stuck){
+    //while(!stuck){
         stuck = true;
         delta_best = INT_MAX;
         for(int i=0; i < last; i++)
@@ -207,7 +207,7 @@ void Neighborhood::bestTwoOpt(Solution* s){
             twoOptMove(s,i_best,j_best,delta_best);
             stuck = false;
         }
-    }
+    //}
 }
 
 double Neighborhood::twoOptDeltaEvaluation(Solution* s,int i,int j){
@@ -254,7 +254,7 @@ void Neighborhood::bestReInsertion(Solution* s, int size){
     double delta_best;
     int last = s->location.size()-1;
 
-    while(!stuck){
+    //while(!stuck){
         stuck = true;
         delta_best = INT_MAX;
         for(int origin=0; origin < last; origin++){
@@ -271,7 +271,7 @@ void Neighborhood::bestReInsertion(Solution* s, int size){
             reInsertionMove(s,origin_best,destination_best,size,delta_best);
             stuck = false;
         }
-    }
+    //}
 }
 
 double Neighborhood::reInsertionDeltaEvaluation(Solution* s,int origin, int destination, int size){
