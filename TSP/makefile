@@ -1,6 +1,6 @@
 CXX      := -g++
 CXXFLAGS := -std=c++14
-LDFLAGS  := -L/usr/lib -lstdc++ -lm
+LDFLAGS  := #include CPLEX flags here!!!
 BUILD    := ./build
 OBJ_DIR  := $(BUILD)/objects
 TARGET   := tsp
