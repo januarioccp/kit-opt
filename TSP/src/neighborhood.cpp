@@ -26,7 +26,7 @@ Neighborhood::Neighborhood( Input* input)
     NL.push_back("bestReInsertion-2");
     //NL.push_back("firstReInsertion-3");
     NL.push_back("bestReInsertion-3");
-    NL.push_back("bestReInsertion-4");
+    // NL.push_back("bestReInsertion-4");
 }
 
 void Neighborhood::improove(Solution* s,string choosenNeighborhood){
