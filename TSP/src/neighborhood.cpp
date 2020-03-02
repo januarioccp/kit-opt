@@ -17,15 +17,16 @@ Neighborhood::Neighborhood( Input* input)
 {
     this->in = input;
     NL.push_back("bestSwap");
-    NL.push_back("firstSwap");
-    NL.push_back("firstTwoOpt");
+    //NL.push_back("firstSwap");
+    //NL.push_back("firstTwoOpt");
     NL.push_back("bestTwoOpt");
-    NL.push_back("firstReInsertion-1");
+    //NL.push_back("firstReInsertion-1");
     NL.push_back("bestReInsertion-1");
-    NL.push_back("firstReInsertion-2");
+    //NL.push_back("firstReInsertion-2");
     NL.push_back("bestReInsertion-2");
-    NL.push_back("firstReInsertion-3");
+    //NL.push_back("firstReInsertion-3");
     NL.push_back("bestReInsertion-3");
+    NL.push_back("bestReInsertion-4");
 }
 
 void Neighborhood::improove(Solution* s,string choosenNeighborhood){
@@ -49,6 +50,8 @@ void Neighborhood::improove(Solution* s,string choosenNeighborhood){
         bestReInsertion(s,2);
     else if(choosenNeighborhood == "bestReInsertion-3")
         bestReInsertion(s,3);
+    else if(choosenNeighborhood == "bestReInsertion-4")
+        bestReInsertion(s,4);
 }
 
 void Neighborhood::firstSwap(Solution* s){
