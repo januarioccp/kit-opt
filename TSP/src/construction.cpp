@@ -15,7 +15,7 @@ Construction::Construction( Solution* s)
     int tamanhoSubtourInicial = 3;
 
     CL.clear();
-    for(int i =1; i <= s->in->dimension; i++)
+    for(unsigned i =1; i <= s->in->dimensionGet(); i++)
         CL.push_back(i);
 
     j = rand() % CL.size() ;
@@ -34,40 +34,86 @@ Construction::Construction( Solution* s)
         CL.erase(CL.begin() + j);
     }
 
-    s->computeCostValue();
+    s->computeCostValueTSP();
 
 }
 
 void Construction::constructiveProcedure(Solution* s, const double alpha){
     
-    int position, value;
-    calculaCustoInsercao(s);
-    while ( CL.size() > 0)
-    {
-        position = rand()%(int(floor(custoInsercao.size()*alpha))+1);
-        s->location.insert(s->location.begin() + custoInsercao[position].arestaRemovida +1, custoInsercao[position].noInserido); 
-        s->costValue+=custoInsercao[position].custo;
-        remove(CL.begin(), CL.end(), custoInsercao[position].noInserido);
-        CL.resize(CL.size()-1);
+    if(s->in->problemGet() == 0)
+    {// IF it is the Traveling Salesman Problem
+        int position;
         calculaCustoInsercao(s);
+        while ( CL.size() > 0)
+        {
+            position = rand()%(int(floor(custoInsercao.size()*alpha))+1);
+            s->location.insert(s->location.begin() + custoInsercao[position].arestaRemovida +1, custoInsercao[position].noInserido); 
+            s->costValueTSP+=custoInsercao[position].custo;
+            remove(CL.begin(), CL.end(), custoInsercao[position].noInserido);
+            CL.resize(CL.size()-1);
+            calculaCustoInsercao(s);
+        }
+    }else
+    { // if it is the Minimum Latency Problem
+        constructiveProcedureMLP(s,alpha);
     }
+    
+}
+
+void Construction::constructiveProcedureMLP(Solution* s, const double alpha){
+    
+    // Local variables
+    int position;
+
+    // Algorithm 2
+    // Line 2 - $s \cup {0}$
+    s->reset();
+    s->location.push_back(1);
+
+    // Line 3,4 - Initialize Candidate list CL
+    CL.resize(0);
+    for(int i=2; i <= s->in->dimensionGet(); i++)
+        CL.push_back(i);
+    
+    // Line 5,6 
+    while ( CL.size() > 0){
+        // Sort CL in ascending order according to their distance with respect to r
+        calculaCustoInsercaoMLP(s);
+        position = rand()%(int(floor(custoInsercao.size()*alpha))+1);
+        s->location.push_back(custoInsercao[position].noInserido);
+        remove(CL.begin(), CL.end(), custoInsercao[position].noInserido);
+        CL.resize(CL.size()-1);    
+    }
+    s->location.push_back(s->location[0]);
 }
 
 void Construction::calculaCustoInsercao(Solution* s){
 
     custoInsercao.resize((s->location.size() - 1) * CL.size());
 
-    for(int i = 0, j = 1, l = 0; i < s->location.size() - 1; i++, j++) {
+    for(unsigned i = 0, j = 1, l = 0; i < s->location.size() - 1; i++, j++) {
         for (auto k : CL ) {
             custoInsercao[l].custo = 
-                                    s->in->matrizAdj[s->location[i]][k] + 
-                                    s->in->matrizAdj[s->location[j]][k] -
-                                    s->in->matrizAdj[s->location[i]][s->location[j]]; 
+                                    s->in->distanceGet(s->location[i],k) + 
+                                    s->in->distanceGet(s->location[j],k) -
+                                    s->in->distanceGet(s->location[i],s->location[j]); 
             custoInsercao[l].noInserido = k;
             custoInsercao[l].arestaRemovida = i ; 
             l++;
         } 
     }
+    sort(custoInsercao.begin(), custoInsercao.end(), compareByCost);
+}
+
+void Construction::calculaCustoInsercaoMLP(Solution* s){
+
+    custoInsercao.resize(CL.size());
+    
+    for (unsigned i=0; i <CL.size(); i++ ) {
+        custoInsercao[i].custo = s->in->distanceGet(s->location[s->location.size()-1],CL[i]); 
+        custoInsercao[i].noInserido = CL[i];
+    }
+    
     sort(custoInsercao.begin(), custoInsercao.end(), compareByCost);
 }
 

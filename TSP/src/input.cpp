@@ -11,11 +11,28 @@ double CalcDistAtt ( double *X, double *Y, int I, int J );
 void CalcLatLong ( double *X, double *Y, int n, double *latit, double* longit );
 double CalcDistGeo ( double *latit, double *longit, int I, int J );
 
-ostream & operator << (ostream &out, const Input &in){
-    out << "dimension: " << in.dimension << endl;
-    for (size_t i = 1; i <= in.dimension; i++) {
-        for (size_t j = 1; j <= in.dimension; j++) {
-            out << in.matrizAdj[i][j] << "\t";
+unsigned Input::dimensionGet(){
+    return dimension_;
+}
+
+void Input::dimensionSet(unsigned d){
+    dimension_ = d;
+}
+
+double Input::distanceGet(unsigned i, unsigned j) const{
+    return distance_[i][j];
+}
+
+void Input::distanceSet(unsigned i, unsigned j, double value){
+    distance_[i][j] = value;
+}
+
+
+ostream & operator << (ostream &out, Input &in){
+    out << "dimension: " << in.dimensionGet() << endl;
+    for (size_t i = 1; i <= in.dimensionGet(); i++) {
+        for (size_t j = 1; j <= in.dimensionGet(); j++) {
+            out << in.distanceGet(i,j) << "\t";
         }
         out << endl;
     }
@@ -202,7 +219,7 @@ Input::Input( int argc, char** argv)
 
             // Preencher Matriz Distancia
             for ( int j = 1; j < N; j++ ) {
-                for ( int i = j+1; i < N+1; j++ ) {
+                for ( int i = j+1; i < N+1; i++ ) {
                     in >> dist[i][j];
                     dist[j][i] = dist[i][j];
                 }
@@ -237,7 +254,7 @@ Input::Input( int argc, char** argv)
 
             // Preencher Matriz Distancia
             for ( int j = 1; j < N+1; j++ ) {
-                for ( int i = j; i < N+1; j++ ) {
+                for ( int i = j; i < N+1; i++ ) {
                     in >> dist[i][j];
                     dist[j][i] = dist[i][j];
                 }
@@ -359,8 +376,8 @@ Input::Input( int argc, char** argv)
     else if ( ewt == "SPECIAL" ) {
         cout << "SPECIAL - Nao suportado!" << endl; }
 
-    dimension = N;
-    matrizAdj = dist;
+    dimension_ = N;
+    distance_ = dist;
 }
 
 double CalcDistEuc ( double *X, double *Y, int I, int J )

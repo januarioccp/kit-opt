@@ -12,8 +12,6 @@
 #include <utility>
 using namespace std;
 
-#define DEBUG
-
 Perturbation::Perturbation( Input* input)
 {
     this->in = input;
@@ -47,7 +45,12 @@ Solution Perturbation::bridgePerturbation(const Solution* s, int bridge){
         }
     }
     localSolution->location[s->location.size()-1] = localSolution->location[0];
-    localSolution->computeCostValue();
+
+    // TODO implement efficient update
+    if(in->problemGet() == 0)
+        localSolution->computeCostValueTSP();
+    else
+        localSolution->computeCostValueMLP();
 
     return (*localSolution);
 }
@@ -56,25 +59,24 @@ Solution Perturbation::bridgePerturbation(const Solution* s, int bridge){
 vector<pair<int,int> > Perturbation::makeBridges(const Solution* s, int bridges){
 
     int minimum = 2;
-    int maximum = max(minimum, int(s->location.size()-1)/10);
+    // int maximum = max(minimum, int(s->location.size()-1)/10);
     vector< pair<int,int> > section;
     bool selected;
-    int myPosition;
     for(int i=0; i < bridges; i++){
         pair<int,int> myPosition(0,0);
         do{
             selected = true;
             myPosition.second = rand()%(s->location.size()-1);
-            for(int j=0; j < section.size() && selected; j++)
+            for(unsigned j=0; j < section.size() && selected; j++)
             {
                 if(myPosition == section[j])
                     selected = false;
                 //Guarantee minimum size for all subsequences
                 if(abs(myPosition.second - section[j].second) < 2)
                     selected = false;
-                if(section[j].second == 0 && myPosition.second >= s->location.size() - minimum)
+                if(section[j].second == 0 && myPosition.second >= int(s->location.size()) - minimum)
                     selected = false;
-                if(myPosition.second == 0 && section[j].second >= s->location.size() - minimum)
+                if(myPosition.second == 0 && section[j].second >= int(s->location.size()) - minimum)
                     selected = false;
             }
         }while(!selected);

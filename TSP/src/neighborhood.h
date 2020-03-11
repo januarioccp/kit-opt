@@ -38,6 +38,7 @@ class Neighborhood{
     vector<string> NL;
     // vector<int> reInsertionAuxVector;
     friend ostream & operator << (ostream &out, const Neighborhood &c);
+    vector< pair<int,int> > sigma;
 
 };
 

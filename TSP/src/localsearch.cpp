@@ -14,8 +14,6 @@
 #include <algorithm> 
 using namespace std;
 
-#define DEBUG
-
 LocalSearch::LocalSearch( Input* input)
 {
     this->in = input;
@@ -58,7 +56,10 @@ Solution LocalSearch::GILSRVND(int Imax, int Iils, vector<double> R){
 }
 
 double LocalSearch::f(Solution* s){
-    return s->costValue;
+    if(in->problemGet() == 0)
+        return s->costValueTSP;
+    else
+        return s->costValueMLP;
 }
 
 double LocalSearch::randomValue(vector<double> R){
