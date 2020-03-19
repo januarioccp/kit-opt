@@ -18,7 +18,7 @@ int main(int argc, char** argv) {
     srand(seed);
 
     Input in(argc, argv);
-    in.problemSet(0);
+    in.problemSet(1);
     Solution sol(&in);
     LocalSearch ls(&in);
     

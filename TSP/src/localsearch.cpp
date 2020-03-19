@@ -29,6 +29,8 @@ LocalSearch::LocalSearch( Input* input)
 
 void LocalSearch::reset(){
     s_star->reset();
+    s_line->reset();
+    s->reset();
 }
 
 // GILS-RVND from EJOR2012-Marcos

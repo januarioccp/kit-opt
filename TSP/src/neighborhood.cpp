@@ -16,14 +16,14 @@ Neighborhood::Neighborhood( Input* input){
     NL.push_back("bestSwap");
     // NL.push_back("firstSwap");
     //NL.push_back("firstTwoOpt");
-     NL.push_back("bestTwoOpt");
+    // NL.push_back("bestTwoOpt");
     //NL.push_back("firstReInsertion-1");
-     NL.push_back("bestReInsertion-1");
+    // NL.push_back("bestReInsertion-1");
     //NL.push_back("firstReInsertion-2");
-     NL.push_back("bestReInsertion-2");
+    // NL.push_back("bestReInsertion-2");
     //NL.push_back("firstReInsertion-3");
-     NL.push_back("bestReInsertion-3");
-     NL.push_back("bestReInsertion-4");
+    // NL.push_back("bestReInsertion-3");
+    // NL.push_back("bestReInsertion-4");
 
     // So far 4 subsequences is enough
     sigma.resize(5);
