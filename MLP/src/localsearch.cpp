@@ -29,7 +29,6 @@ LocalSearch::LocalSearch( Input* input)
 void LocalSearch::reset(){
     s_star->reset();
     s_line->reset();
-    s->reset();
 }
 
 // GILS-RVND from EJOR2012-Marcos
@@ -41,8 +40,6 @@ Solution LocalSearch::GILSRVND(int Imax, int Iils, vector<double> R){
     for(int i = 1; i <= Imax; i++){
         alpha = randomValue(R);        
         c->constructiveProcedure(s,alpha);
-        cout<<*s<<endl;
-        exit(0);
         (*s_line) = (*s);
         iterILS = 0;
         while(iterILS < Iils){

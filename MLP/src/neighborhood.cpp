@@ -182,12 +182,12 @@ double Neighborhood::swapDeltaEvaluation(Solution* s,int i,int j){
                 s->t_(sigma[0].second,sigma[1].first) + 
                 s->T(sigma[1].first,sigma[1].second);
             
-            c = s->C(sigma[0].first,sigma[0].second) + 
+            c = s->C_recursive(sigma[0].first,sigma[0].second) + 
                 s->W(sigma[1].first,sigma[1].second) * ( 
                     s->T(sigma[0].first,sigma[0].second) +
                     s->t_(sigma[0].second,sigma[1].first)
                 ) + 
-                s->C(sigma[1].first,sigma[1].second);
+                s->C_recursive(sigma[1].first,sigma[1].second);
 
             w = s->W(sigma[0].first,sigma[0].second) + 
                 s->W(sigma[1].first,sigma[1].second);
@@ -196,7 +196,7 @@ double Neighborhood::swapDeltaEvaluation(Solution* s,int i,int j){
                 c = c + 
                     s->W(sigma[sub+1].first,sigma[sub+1].second) * 
                         ( t + s->t_(sigma[sub].second,sigma[sub+1].first) ) + 
-                    s->C(sigma[sub+1].first,sigma[sub+1].second);
+                    s->C_recursive(sigma[sub+1].first,sigma[sub+1].second);
 
                 t = t + 
                 s->t_(sigma[sub].second,sigma[sub+1].first) + 
@@ -229,12 +229,12 @@ double Neighborhood::swapDeltaEvaluation(Solution* s,int i,int j){
                 s->t_(sigma[0].second,sigma[1].first) + 
                 s->T(sigma[1].first,sigma[1].second);
             
-            c = s->C(sigma[0].first,sigma[0].second) + 
+            c = s->C_recursive(sigma[0].first,sigma[0].second) + 
                 s->W(sigma[1].first,sigma[1].second) * ( 
                     s->T(sigma[0].first,sigma[0].second) +
                     s->t_(sigma[0].second,sigma[1].first)
                 ) + 
-                s->C(sigma[1].first,sigma[1].second);
+                s->C_recursive(sigma[1].first,sigma[1].second);
 
             w = s->W(sigma[0].first,sigma[0].second) + 
                 s->W(sigma[1].first,sigma[1].second);
@@ -243,7 +243,7 @@ double Neighborhood::swapDeltaEvaluation(Solution* s,int i,int j){
                 c = c + 
                     s->W(sigma[sub+1].first,sigma[sub+1].second) * 
                         ( t + s->t_(sigma[sub].second,sigma[sub+1].first) ) + 
-                    s->C(sigma[sub+1].first,sigma[sub+1].second);
+                    s->C_recursive(sigma[sub+1].first,sigma[sub+1].second);
 
                 t = t + 
                 s->t_(sigma[sub].second,sigma[sub+1].first) + 

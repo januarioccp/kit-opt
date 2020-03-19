@@ -3,7 +3,7 @@ CXXFLAGS := -std=c++14
 LDFLAGS  := #include CPLEX flags here!!!
 BUILD    := ./build
 OBJ_DIR  := $(BUILD)/objects
-TARGET   := tsp
+TARGET   := mlp
 INCLUDE  := -Iinclude/
 SRC      := $(wildcard src/*.cpp)
 
