@@ -20,11 +20,11 @@ void Input::dimensionSet(unsigned d){
 }
 
 double Input::distanceGet(unsigned i, unsigned j) const{
-    return distance_[i][j];
+    return dist[i][j];
 }
 
 void Input::distanceSet(unsigned i, unsigned j, double value){
-    distance_[i][j] = value;
+    dist[i][j] = value;
 }
 
 
@@ -37,6 +37,12 @@ ostream & operator << (ostream &out, Input &in){
         out << endl;
     }
     return out;
+}
+
+Input::~Input(){
+    for ( int i = 0; i < dimension_+1; i++ )
+        delete [] dist[i];
+    delete [] dist;
 }
 
 Input::Input( int argc, char** argv)
@@ -89,7 +95,7 @@ Input::Input( int argc, char** argv)
     double *y = new double [N+1];
 
     // Alocar matriz 2D
-    double **dist = new double*[N+1];
+    dist = new double*[N+1];
 
     for ( int i = 0; i < N+1; i++ ) {
         dist [i] = new double [N+1];
@@ -377,7 +383,6 @@ Input::Input( int argc, char** argv)
         cout << "SPECIAL - Nao suportado!" << endl; }
 
     dimension_ = N;
-    distance_ = dist;
 }
 
 double CalcDistEuc ( double *X, double *Y, int I, int J )
