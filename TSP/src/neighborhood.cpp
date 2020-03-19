@@ -17,14 +17,14 @@ Neighborhood::Neighborhood( Input* input){
     NL.push_back("bestSwap");
     // NL.push_back("firstSwap");
     //NL.push_back("firstTwoOpt");
-    // NL.push_back("bestTwoOpt");
+    NL.push_back("bestTwoOpt");
     //NL.push_back("firstReInsertion-1");
-    // NL.push_back("bestReInsertion-1");
+    NL.push_back("bestReInsertion-1");
     //NL.push_back("firstReInsertion-2");
-    // NL.push_back("bestReInsertion-2");
+    NL.push_back("bestReInsertion-2");
     //NL.push_back("firstReInsertion-3");
-    // NL.push_back("bestReInsertion-3");
-    // NL.push_back("bestReInsertion-4");
+    NL.push_back("bestReInsertion-3");
+    NL.push_back("bestReInsertion-4");
 
     // So far 4 subsequences is enough
     sigma.resize(5);
@@ -103,9 +103,6 @@ void Neighborhood::bestSwap(Solution* s){
 }
 
 double Neighborhood::swapDeltaEvaluation(Solution* s,int i,int j){
-
-    if(s->in->problemGet()==0)
-    { // TSP
             
         int last = s->location.size()-2;
 
@@ -153,108 +150,7 @@ double Neighborhood::swapDeltaEvaluation(Solution* s,int i,int j){
                         in->distanceGet(s->location[j],s->location[j+1]);
         }
         
-    }
-    else
-    {// MLP
-        int t;
-            int c;
-            int w;
-
-        if( i == 0 )
-            return INT_MAX;
-
-        if(i+1 == j)
-        {//consecutives = 3 operations
-
-            sigma[0].first = 0;
-            sigma[0].second = i-1;
-
-            sigma[1].first = j;
-            sigma[1].second = j;
-
-            sigma[2].first = i;
-            sigma[2].second = i;
-
-            sigma[3].first = j+1;
-            sigma[3].second = in->dimensionGet();
-
-            t = s->T(sigma[0].first,sigma[0].second) + 
-                s->t_(sigma[0].second,sigma[1].first) + 
-                s->T(sigma[1].first,sigma[1].second);
-            
-            c = s->C(sigma[0].first,sigma[0].second) + 
-                s->W(sigma[1].first,sigma[1].second) * ( 
-                    s->T(sigma[0].first,sigma[0].second) +
-                    s->t_(sigma[0].second,sigma[1].first)
-                ) + 
-                s->C(sigma[1].first,sigma[1].second);
-
-            w = s->W(sigma[0].first,sigma[0].second) + 
-                s->W(sigma[1].first,sigma[1].second);
-
-            for(int sub=1; sub < 3; sub++){
-                c = c + 
-                    s->W(sigma[sub+1].first,sigma[sub+1].second) * 
-                        ( t + s->t_(sigma[sub].second,sigma[sub+1].first) ) + 
-                    s->C(sigma[sub+1].first,sigma[sub+1].second);
-
-                t = t + 
-                s->t_(sigma[sub].second,sigma[sub+1].first) + 
-                s->T(sigma[sub+1].first,sigma[sub+1].second);
-                
-                w = w + s->W(sigma[1].first,sigma[1].second);             
-            }
-
-            return c - s->costValueMLP;
-
-        }
-        else
-        { // nonconsecutives = 4 operations
-            sigma[0].first = 0;
-            sigma[0].second = i-1;
-
-            sigma[1].first = j;
-            sigma[1].second = j;
-
-            sigma[2].first = i+1;
-            sigma[2].second = j-1;
-
-            sigma[3].first = i;
-            sigma[3].second = i;
-
-            sigma[4].first = j+1;
-            sigma[4].second = in->dimensionGet();
-
-            t = s->T(sigma[0].first,sigma[0].second) + 
-                s->t_(sigma[0].second,sigma[1].first) + 
-                s->T(sigma[1].first,sigma[1].second);
-            
-            c = s->C(sigma[0].first,sigma[0].second) + 
-                s->W(sigma[1].first,sigma[1].second) * ( 
-                    s->T(sigma[0].first,sigma[0].second) +
-                    s->t_(sigma[0].second,sigma[1].first)
-                ) + 
-                s->C(sigma[1].first,sigma[1].second);
-
-            w = s->W(sigma[0].first,sigma[0].second) + 
-                s->W(sigma[1].first,sigma[1].second);
-
-            for(int sub=1; sub < 4; sub++){
-                c = c + 
-                    s->W(sigma[sub+1].first,sigma[sub+1].second) * 
-                        ( t + s->t_(sigma[sub].second,sigma[sub+1].first) ) + 
-                    s->C(sigma[sub+1].first,sigma[sub+1].second);
-
-                t = t + 
-                s->t_(sigma[sub].second,sigma[sub+1].first) + 
-                s->T(sigma[sub+1].first,sigma[sub+1].second);
-                
-                w = w + s->W(sigma[1].first,sigma[1].second);             
-            }
-
-            return c - s->costValueMLP;
-        }
-    }
+    
 }
 
 void Neighborhood::swapMove(Solution* s,int a,int b,double delta){
@@ -262,19 +158,18 @@ void Neighborhood::swapMove(Solution* s,int a,int b,double delta){
         swap(a,b);
 
     swap(s->location[a],s->location[b]);
+    if(a==0)
+            s->location[s->location.size()-1] = s->location[a];
 
     if(s->in->problemGet()==0){
         s->costValueTSP+=delta;
-        if(a==0)
-            s->location[s->location.size()-1] = s->location[a];
     }
     else{
 
         s->costValueMLP+=delta;
         int v1,v2;
         v1 = s->costValueMLP;
-        // TODO Remove it from here!
-        s->computeCostValueMLP();
+        s->updateStructures(a);
         v2 = s->costValueMLP;
         if(v1!=v2){
             cout<<__FILE__<<__LINE__<<endl;
@@ -342,23 +237,13 @@ double Neighborhood::twoOptDeltaEvaluation(Solution* s,int i,int j){
     int subSequenceDelay;
     int subSequenceDuration;
     int totalCost;
-    int delta;
-
-    if(s->in->problemGet()==0)
-    { // TSP
+    
         return
             in->distanceGet(s->location[i],s->location[j]) +
             in->distanceGet(s->location[i+1],s->location[j+1]) -
             in->distanceGet(s->location[i],s->location[i+1]) -
             in->distanceGet(s->location[j],s->location[j+1]);
-    }
-    else
-    { // MLP
-
-        cout<<__FILE__<<__LINE__<<endl;
-        exit(0);
-        return s->costValueMLP - totalCost;
-    }
+    
     
 }
 
