@@ -24,12 +24,18 @@ LocalSearch::LocalSearch( Input* input)
     c = new Construction(s);
     p = new Perturbation(in);
     n = new Neighborhood(in);
+    
+}
+
+void LocalSearch::reset(){
+    s_star->reset();
 }
 
 // GILS-RVND from EJOR2012-Marcos
 Solution LocalSearch::GILSRVND(int Imax, int Iils, vector<double> R){
     Color::Modifier red(Color::FG_RED);
     Color::Modifier deff(Color::FG_DEFAULT);
+    reset();
 
     for(int i = 1; i <= Imax; i++){
         alpha = randomValue(R);        
@@ -42,14 +48,12 @@ Solution LocalSearch::GILSRVND(int Imax, int Iils, vector<double> R){
                 (*s_line) = (*s);
                 iterILS = 0;
             }//end_if
-            if(rand()%2)
-                (*s) = p->bridgePerturbation(s_line,4);
-            else
-                (*s) = p->bridgePerturbation(s_line,5);
+            (*s) = p->bridgePerturbation(s_line,4);
             iterILS = iterILS + 1;
         }//end_while
         if(f(s_line) < f(s_star)){
             (*s_star) = (*s_line);
+            //cout<<(*s_star)<<endl;
         }
     }
     return (*s_star);

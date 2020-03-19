@@ -26,8 +26,8 @@ double Solution::t_(unsigned i, unsigned j){
 }
 
 void Solution::reset(){
-    costValueTSP = 0;
-    costValueMLP = 0;
+    costValueTSP = INT_MAX;
+    costValueMLP = INT_MAX;
     for (auto &i : duration)
         fill(i.begin(), i.end(), -1);
     for (auto &i : cost)

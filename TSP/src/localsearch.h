@@ -17,6 +17,7 @@ class LocalSearch{
         string randomNeighborhood();
         void deleteNeighborhood(string choosenNeighborhood);
         double f(Solution* s);
+        void reset();
     private:
         vector<string> NL;
         int iterILS;
