@@ -26,6 +26,18 @@ LocalSearch::LocalSearch( Input* input)
     n = new Neighborhood(in);
 }
 
+LocalSearch::~LocalSearch()
+{
+    
+    delete s;
+    delete s_star;
+    delete s_line;
+    delete s_rvnd;
+    delete c;
+    delete p;
+    delete n;
+}
+
 void LocalSearch::reset(){
     s_star->reset();
     s_line->reset();

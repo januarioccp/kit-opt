@@ -11,6 +11,7 @@
 class LocalSearch{
     public:
         LocalSearch(Input *input);
+        ~LocalSearch();
         Solution GILSRVND(int Imax, int Iils, vector<double> R);
         void RVND(Solution* s);
         double randomValue(vector<double> R);
