@@ -383,6 +383,9 @@ Input::Input( int argc, char** argv)
         cout << "SPECIAL - Nao suportado!" << endl; }
 
     dimension_ = N;
+
+    delete x;
+    delete y;
 }
 
 double CalcDistEuc ( double *X, double *Y, int I, int J )
