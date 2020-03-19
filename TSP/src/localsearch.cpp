@@ -24,7 +24,6 @@ LocalSearch::LocalSearch( Input* input)
     c = new Construction(s);
     p = new Perturbation(in);
     n = new Neighborhood(in);
-    
 }
 
 void LocalSearch::reset(){

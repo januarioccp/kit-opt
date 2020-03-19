@@ -13,6 +13,7 @@ using namespace std;
 
 Neighborhood::Neighborhood( Input* input){
     this->in = input;
+    
     NL.push_back("bestSwap");
     // NL.push_back("firstSwap");
     //NL.push_back("firstTwoOpt");
@@ -85,7 +86,9 @@ void Neighborhood::bestSwap(Solution* s){
         delta_best = INT_MAX;
         for(unsigned i=0; i < s->location.size()-1; i++)
             for(unsigned j=i+1; j < s->location.size()-1; j++){
+                // clock_t beginC = clock();
                 delta = swapDeltaEvaluation(s,i,j);
+                // st->insert(beginC,clock(),0);
                 if(delta < 0 && delta < delta_best){
                     delta_best = delta;
                     i_best = i;
@@ -252,8 +255,6 @@ double Neighborhood::swapDeltaEvaluation(Solution* s,int i,int j){
             return c - s->costValueMLP;
         }
     }
-
-    
 }
 
 void Neighborhood::swapMove(Solution* s,int a,int b,double delta){

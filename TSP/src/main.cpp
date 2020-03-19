@@ -4,6 +4,7 @@
 #include "neighborhood.h"
 #include "perturbation.h"
 #include "localsearch.h"
+#include "statistics.h"
 #include <cstring>
 #include <fstream>
 #include <iostream>
@@ -18,6 +19,7 @@ int main(int argc, char** argv) {
     srand(seed);
 
     Input in(argc, argv);
+    //Statistics st(1);
     in.problemSet(1);
     Solution sol(&in);
     LocalSearch ls(&in);
@@ -74,7 +76,7 @@ int main(int argc, char** argv) {
         }
 
         cout<<","<<seed<<endl;
-        
+        // cout<<st<<endl;
     }
 
     return 0;

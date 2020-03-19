@@ -2,9 +2,11 @@
 #define NEIGHBORHOOD_H_INCLUDED
 #include "solution.h"
 #include "colormod.h"
+#include "statistics.h"
 
 class Neighborhood{
     public:
+        // Neighborhood(Input *input, Statistics *st);
         Neighborhood(Input *input);
         vector<string> NeighborhoodList(){return NL;};
         void improove(Solution* s,string choosenNeighborhood);
@@ -35,6 +37,7 @@ class Neighborhood{
 
     //private:
     Input* in;
+    // Statistics* st;
     vector<string> NL;
     // vector<int> reInsertionAuxVector;
     friend ostream & operator << (ostream &out, const Neighborhood &c);
