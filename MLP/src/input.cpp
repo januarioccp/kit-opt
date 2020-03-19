@@ -384,8 +384,8 @@ Input::Input( int argc, char** argv)
 
     dimension_ = N;
 
-    delete x;
-    delete y;
+    delete [] x;
+    delete [] y;
 }
 
 double CalcDistEuc ( double *X, double *Y, int I, int J )
