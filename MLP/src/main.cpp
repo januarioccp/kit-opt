@@ -4,7 +4,6 @@
 #include "neighborhood.h"
 #include "perturbation.h"
 #include "localsearch.h"
-#include "statistics.h"
 #include <cstring>
 #include <fstream>
 #include <iostream>

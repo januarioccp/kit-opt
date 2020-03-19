@@ -5,13 +5,11 @@
 #include "construction.h"
 #include "perturbation.h"
 #include "neighborhood.h"
-#include "statistics.h"
 #include <vector>
 #include <string>
 
 class LocalSearch{
     public:
-        LocalSearch(Input *input, Statistics *st);
         LocalSearch(Input *input);
         Solution GILSRVND(int Imax, int Iils, vector<double> R);
         void RVND(Solution* s);
@@ -32,8 +30,6 @@ class LocalSearch{
         Perturbation* p;
         Neighborhood* n;
         Input* in;
-        Statistics *st;
-        
 };
 
 #endif //LOCALSEARCH_H_INCLUDED
