@@ -19,34 +19,9 @@ int main(int argc, char** argv) {
     srand(seed);
 
     Input in(argc, argv);
-    //Statistics st(1);
     in.problemSet(1);
     Solution sol(&in);
     LocalSearch ls(&in);
-    
-	// double **cost = new double*[in.dimensionGet()];
-	// for (unsigned i = 0; i < in.dimensionGet(); i++){
-	// 	cost[i] = new double[in.dimensionGet()];
-	// 	for (unsigned j = 0; j < in.dimensionGet(); j++){
-	// 		cost[i][j] = in.distanceGet(i,j);
-	// 	}
-	// }
-
-    // hungarian_problem_t p;
-	// int mode = HUNGARIAN_MODE_MINIMIZE_COST;
-	// hungarian_init(&p, cost, in.dimensionGet(), in.dimensionGet(), mode); // Carregando o problema
-
-	// double obj_value = hungarian_solve(&p);
-
-	// // cout << "Obj. value: " << obj_value << endl;
-	// // cout << "Assignment" << endl;
-	// // hungarian_print_assignment(&p);
-
-	// hungarian_free(&p);
-
-	// for (unsigned i = 0; i < in.dimensionGet(); i++) 
-    //     delete [] cost[i];
-	// delete [] cost;
 
     // GILSRVND parameters
     int Imax = 50;
@@ -57,8 +32,7 @@ int main(int argc, char** argv) {
         R.push_back(R[i-1]+0.01);
     // GILSRVND parameters
 
-    
-    for(int i=1; i <=10; i++ ){
+    for(int i=1; i <=1; i++ ){
         seed++;
         srand(seed);
         clock_t beginC = clock();
