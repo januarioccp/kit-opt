@@ -14,7 +14,6 @@ class Solution{
         Solution(Input *in);
         void computeCostValueTSP();
         void computeCostValueMLP();
-        void updateStructures(int index);
         void reset();
         int W(int begin, int end);
         int T(int begin, int end);

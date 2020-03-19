@@ -74,7 +74,6 @@ int main(int argc, char** argv) {
         }
 
         cout<<","<<seed<<endl;
-        // cout<<st<<endl;
     }
 
     return 0;

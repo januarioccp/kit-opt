@@ -83,15 +83,6 @@ int Solution::C_recursive(int begin, int end){
     return answer;
 }
 
-
-void Solution::updateStructures(int index){
-    for (int i = 0; i < duration.size(); i++)
-        for (int j = index; j < duration.size(); j++)
-            duration[i][j] = cost[i][j] = -1;
-
-    costValueMLP = C_recursive(0,this->in->dimensionGet());
-}
-
 void Solution::computeCostValueMLP(){
 
     for (auto &i : duration)
@@ -121,7 +112,6 @@ ostream & operator << (ostream &out, const Solution &s)
 
     out << "Dimension: "<<s.in->dimensionGet() << endl;
     out << "Distance: "<<setprecision (1)<<fixed<<s.costValueTSP << endl;
-    out << "Latency: "<<setprecision (1)<<fixed<<s.costValueMLP << endl;
     out<< "i = [";
     for(unsigned i=0; i < s.location.size(); i++)
         out << setw(3) << i << " ";
