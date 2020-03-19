@@ -1,6 +1,7 @@
 #include "solution.h"
 #include "colormod.h"
 #include <cmath>
+#include <climits>
 using namespace std;
 
 Solution::Solution(Input *input){
