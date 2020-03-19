@@ -18,6 +18,11 @@ Perturbation::Perturbation( Input* input)
     localSolution = new Solution(in);
 }
 
+Perturbation::~Perturbation()
+{
+    delete localSolution;
+}
+
 Solution Perturbation::bridgePerturbation(const Solution* s, int bridge){
 
     vector< pair<int,int> > section(makeBridges(s,bridge));

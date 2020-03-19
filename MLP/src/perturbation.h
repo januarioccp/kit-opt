@@ -6,6 +6,7 @@
 class Perturbation{
     public:
         Perturbation(Input *input);
+        ~Perturbation();
 
         /**
          * Double Bridge
