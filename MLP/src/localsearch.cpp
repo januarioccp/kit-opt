@@ -42,6 +42,7 @@ Solution LocalSearch::GILSRVND(int Imax, int Iils, vector<double> R){
         c->constructiveProcedure(s,alpha);
         (*s_line) = (*s);
         iterILS = 0;
+        return (*s);
         while(iterILS < Iils){
             RVND(s);
             if(f(s) < f(s_line)){

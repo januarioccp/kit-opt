@@ -12,7 +12,6 @@ class Solution{
     // Create get/set functions
     public:
         Solution(Input *in);
-        void computeCostValueTSP();
         void computeCostValueMLP();
         void updateStructures(int index);
         void reset();

@@ -11,11 +11,9 @@
 #include <ctime>
 using namespace std;
 
-#include "hungarian.h"
-
 int main(int argc, char** argv) {
     int seed = time(0);
-    // seed = 1582915991; 
+    //seed = 1584647643; 
     srand(seed);
 
     Input in(argc, argv);
@@ -23,14 +21,14 @@ int main(int argc, char** argv) {
     Solution sol(&in);
     LocalSearch ls(&in);
 
-    // GILSRVND parameters
+    // BEGIN GILSRVND parameters
     int Imax = 50;
     int Iils = (in.dimensionGet() >= 150) ? in.dimensionGet()/2 : in.dimensionGet();
     vector<double> R;
     R.push_back(0.00);
     for(int i=1; i <= 25; i++)
         R.push_back(R[i-1]+0.01);
-    // GILSRVND parameters
+    // END GILSRVND parameters
 
     for(int i=1; i <=1; i++ ){
         seed++;
@@ -41,16 +39,8 @@ int main(int argc, char** argv) {
         double elapsed_secs = double(endC - beginC) / CLOCKS_PER_SEC;
         printf("%.*s", int(strlen(argv[1]))-14, argv[1] + 10);
         cout<<","<<elapsed_secs<<",";
-
-        if(in.problemGet() == 0)
-            cout<<sol.costValueTSP;
-        else{
-            sol.computeCostValueMLP();
-            cout<<sol.costValueMLP;
-        }
-
+        cout<<sol.costValueMLP;
         cout<<","<<seed<<endl;
-        // cout<<st<<endl;
     }
 
     return 0;

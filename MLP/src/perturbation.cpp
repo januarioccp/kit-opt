@@ -46,11 +46,9 @@ Solution Perturbation::bridgePerturbation(const Solution* s, int bridge){
     }
     localSolution->location[s->location.size()-1] = localSolution->location[0];
 
-    // TODO implement efficient update
-    if(in->problemGet() == 0)
-        localSolution->computeCostValueTSP();
-    else
-        localSolution->computeCostValueMLP();
+    
+    // TODO remove it from here!
+    localSolution->computeCostValueMLP();
 
     return (*localSolution);
 }

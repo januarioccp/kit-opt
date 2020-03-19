@@ -34,33 +34,9 @@ Construction::Construction( Solution* s)
         CL.erase(CL.begin() + j);
     }
 
-    s->computeCostValueTSP();
-
 }
 
 void Construction::constructiveProcedure(Solution* s, const double alpha){
-    
-    if(s->in->problemGet() == 0)
-    {// IF it is the Traveling Salesman Problem
-        int position;
-        calculaCustoInsercao(s);
-        while ( CL.size() > 0)
-        {
-            position = rand()%(int(floor(custoInsercao.size()*alpha))+1);
-            s->location.insert(s->location.begin() + custoInsercao[position].arestaRemovida +1, custoInsercao[position].noInserido); 
-            s->costValueTSP+=custoInsercao[position].custo;
-            remove(CL.begin(), CL.end(), custoInsercao[position].noInserido);
-            CL.resize(CL.size()-1);
-            calculaCustoInsercao(s);
-        }
-    }else
-    { // if it is the Minimum Latency Problem
-        constructiveProcedureMLP(s,alpha);
-    }
-    
-}
-
-void Construction::constructiveProcedureMLP(Solution* s, const double alpha){
     
     // Local variables
     int position;
@@ -87,6 +63,7 @@ void Construction::constructiveProcedureMLP(Solution* s, const double alpha){
     s->location.push_back(s->location[0]);
     s->computeCostValueMLP();
 }
+
 
 void Construction::calculaCustoInsercao(Solution* s){
 

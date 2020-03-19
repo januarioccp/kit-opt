@@ -17,7 +17,6 @@ Solution::Solution(Input *input){
     duration.resize(in->dimensionGet()+1, vector<int>(in->dimensionGet()+1));
     cost.resize(in->dimensionGet()+1, vector<int>(in->dimensionGet()+1));
 
-    computeCostValueTSP();
     computeCostValueMLP();
 
 }
@@ -103,12 +102,6 @@ void Solution::computeCostValueMLP(){
     costValueMLP = C_recursive(0,this->in->dimensionGet());
 }
 
-void Solution::computeCostValueTSP(){
-    costValueTSP = 0.0;
-    for(unsigned i=0; i < location.size()-1; i++)
-        costValueTSP += in->distanceGet(location[i],location[i+1]);
-}
-
 ostream & operator << (ostream &out, const Solution &s)
 {
     Color::Modifier red(Color::FG_RED);
@@ -120,7 +113,6 @@ ostream & operator << (ostream &out, const Solution &s)
         out << red << "Negative distance!!!" << deff<< endl;
 
     out << "Dimension: "<<s.in->dimensionGet() << endl;
-    out << "Distance: "<<setprecision (1)<<fixed<<s.costValueTSP << endl;
     out << "Latency: "<<setprecision (1)<<fixed<<s.costValueMLP << endl;
     out<< "i = [";
     for(unsigned i=0; i < s.location.size(); i++)
