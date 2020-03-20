@@ -1,6 +1,7 @@
 #ifndef CONSTRUCTION_H_INCLUDED
 #define CONSTRUCTION_H_INCLUDED
 #include "solution.h"
+#define BT_BUF_SIZE 100
 
 class 
 Construction{

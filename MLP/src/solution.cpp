@@ -7,7 +7,7 @@ using namespace std;
 Solution::Solution(Input *input){
 
     this->in = input;
-
+    contador = 0;
     // Create a generic basic solution
     for(unsigned i=1; i <= this->in->dimensionGet(); i++)
         location.push_back(i);
@@ -17,8 +17,6 @@ Solution::Solution(Input *input){
     duration.resize(in->dimensionGet()+1, vector<int>(in->dimensionGet()+1));
     cost.resize(in->dimensionGet()+1, vector<int>(in->dimensionGet()+1));
 
-    computeCostValueMLP();
-
 }
 
 double Solution::t_(unsigned i, unsigned j){
@@ -26,12 +24,22 @@ double Solution::t_(unsigned i, unsigned j){
 }
 
 void Solution::reset(){
-    costValueTSP = INT_MAX;
     costValueMLP = INT_MAX;
-    for (auto &i : duration)
-        fill(i.begin(), i.end(), -1);
-    for (auto &i : cost)
-        fill(i.begin(), i.end(), -1);
+    
+    for(int i=0; i < duration.size(); i++)
+        for(int j=i; j < duration[i].size(); j++)
+            if(i!=j)
+                duration[i][j] = -1;
+            else
+                duration[i][j] = 0;
+        
+    for(int i=0; i < cost.size(); i++)
+        for(int j=i; j < cost[i].size(); j++)
+            if(i!=j)
+                cost[i][j] = -1;
+            else
+                cost[i][j] = 0;
+    
     location.resize(0);
 }
 
@@ -45,7 +53,7 @@ int Solution::W(int begin, int end){
     return end-begin+1;
 }
 
-int Solution::T(int begin, int end){
+int Solution::T_recursive(int begin, int end){
     if(duration[begin][end]!= -1)
         return duration[begin][end];
     int answer = 0;
@@ -53,16 +61,18 @@ int Solution::T(int begin, int end){
         answer = 0;
     }
     else{
-        int middle = floor((begin+end)/2);
-        answer = T(begin,middle) + in->distanceGet(location[middle],location[middle+1]) + T(middle+1,end);
+        // int middle = floor((begin+end)/2);
+        // answer = T(begin,middle) + in->distanceGet(location[middle],location[middle+1]) + T(middle+1,end);
+        answer = T_recursive(begin,end-1) + in->distanceGet(location[end-1],location[end]) + T_recursive(end,end);
     }
     duration[begin][end] = answer;
+    
     return answer;
 }
 
-// int Solution::C(int begin, int end){
-//     return cost[begin][end];
-// }
+int Solution::C(int begin, int end){
+     return cost[begin][end];
+}
 
 int Solution::C_recursive(int begin, int end){
     if(cost[begin][end]!= -1)
@@ -74,7 +84,7 @@ int Solution::C_recursive(int begin, int end){
     else{
         answer = C_recursive(begin,end-1) + 
             W(end,end) *(
-                T(begin,end-1) +
+                T_recursive(begin,end-1) +
                 in->distanceGet(location[end-1],location[end])) 
                 + C_recursive(end,end);
     }
@@ -82,24 +92,50 @@ int Solution::C_recursive(int begin, int end){
     return answer;
 }
 
-
-void Solution::updateStructures(int index){
-    for (int i = 0; i < duration.size(); i++)
-        for (int j = index; j < duration.size(); j++)
-            duration[i][j] = cost[i][j] = -1;
-
-    costValueMLP = C_recursive(0,this->in->dimensionGet());
-}
-
 void Solution::computeCostValueMLP(){
 
-    for (auto &i : duration)
-        fill(i.begin(), i.end(), -1);
+    for(int i=0; i < duration.size(); i++)
+        for(int j=i; j < duration[i].size(); j++)
+            if(i!=j)
+                duration[i][j] =  duration[i][j-1] + in->distanceGet(location[j-1],location[j]);
+            else
+                duration[j][j] = 0;
 
-    for (auto &i : cost)
-        fill(i.begin(), i.end(), -1);
+    for(int i=0; i < cost.size(); i++)
+        for(int j=i; j < cost[i].size(); j++)
+            if(i!=j)
+                cost[i][j] = cost[i][j-1] + duration[i][j];
+            else
+                cost[i][j] = 0;
 
-    costValueMLP = C_recursive(0,this->in->dimensionGet());
+    costValueMLP = C(0,this->in->dimensionGet());
+}
+
+void Solution::copy(const Solution *s){
+    this->location = s->location;
+    this->costValueMLP = s->costValueMLP;
+}
+
+void Solution::printCost(){
+    cout<<endl;
+    for(int i=0; i < cost.size(); i++){
+        for(int j=0; j < cost[i].size(); j++)
+        {
+            cout<<setw(6)<<cost[i][j];
+        }
+        cout<<endl;
+    }
+}
+
+void Solution::printDuration(){
+    cout<<endl;
+    for(int i=0; i < duration.size(); i++){
+        for(int j=0; j < duration[i].size(); j++)
+        {
+            cout<<setw(5)<<duration[i][j];
+        }
+        cout<<endl;
+    }
 }
 
 ostream & operator << (ostream &out, const Solution &s)
@@ -109,8 +145,6 @@ ostream & operator << (ostream &out, const Solution &s)
     double myCost = 0;
     if(s.location.size() <= s.in->dimensionGet())
         out << red << "Warning! Incomplete solution!!!" << deff<< endl;
-    if(s.costValueTSP < 0)
-        out << red << "Negative distance!!!" << deff<< endl;
 
     out << "Dimension: "<<s.in->dimensionGet() << endl;
     out << "Latency: "<<setprecision (1)<<fixed<<s.costValueMLP << endl;
@@ -136,10 +170,5 @@ ostream & operator << (ostream &out, const Solution &s)
         }
     out << "}" << endl;
 
-    for(unsigned i=0; i < s.location.size()-1; i++)
-        myCost+=s.in->distanceGet(s.location[i],s.location[i+1]);
-
-    if(myCost != s.costValueTSP)
-        out << red << "Something wrong...the cost should be: " <<myCost<<deff<<endl;
     return out;
 }

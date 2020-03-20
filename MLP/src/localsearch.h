@@ -20,6 +20,7 @@ class LocalSearch{
         double f(Solution* s);
         void reset();
     private:
+        vector<double> tempo;
         vector<string> NL;
         int iterILS;
         double alpha;

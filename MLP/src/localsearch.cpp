@@ -24,11 +24,11 @@ LocalSearch::LocalSearch( Input* input)
     c = new Construction(s);
     p = new Perturbation(in);
     n = new Neighborhood(in);
+    tempo.resize(10);
 }
 
 LocalSearch::~LocalSearch()
 {
-    
     delete s;
     delete s_star;
     delete s_line;
@@ -52,30 +52,25 @@ Solution LocalSearch::GILSRVND(int Imax, int Iils, vector<double> R){
     for(int i = 1; i <= Imax; i++){
         alpha = randomValue(R);        
         c->constructiveProcedure(s,alpha);
-        (*s_line) = (*s);
+        s_line->copy(s);
         iterILS = 0;
-        return (*s);
         while(iterILS < Iils){
             RVND(s);
             if(f(s) < f(s_line)){
-                (*s_line) = (*s);
+                s_line->copy(s);
                 iterILS = 0;
             }//end_if
-            (*s) = p->bridgePerturbation(s_line,4);
+            //(*s) = p->bridgePerturbation(s_line,4);
             iterILS = iterILS + 1;
         }//end_while
         if(f(s_line) < f(s_star)){
-            (*s_star) = (*s_line);
-            //cout<<(*s_star)<<endl;
+            s_star->copy(s_line);
         }
     }
     return (*s_star);
 }
 
 double LocalSearch::f(Solution* s){
-    if(in->problemGet() == 0)
-        return s->costValueTSP;
-    else
         return s->costValueMLP;
 }
 
