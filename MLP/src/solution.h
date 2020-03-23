@@ -22,6 +22,8 @@ class Solution{
         int T_recursive(int begin, int end);
         int C_recursive(int begin, int end);
 
+        void update(int a, int b);
+
     //private:
         vector< vector<int> > duration; //T(sigma)
         vector< vector<int> > cost; //C(sigma)

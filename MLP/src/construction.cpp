@@ -49,7 +49,7 @@ void Construction::constructiveProcedure(Solution* s, const double alpha){
 
     // Line 3,4 - Initialize Candidate list CL
     CL.resize(0);
-    for(int i=2; i <= s->in->dimensionGet(); i++)
+    for(unsigned i=2; i <= s->in->dimensionGet(); i++)
         CL.push_back(i);
     
     // Line 5,6 

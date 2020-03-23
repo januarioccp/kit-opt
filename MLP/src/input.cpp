@@ -40,7 +40,7 @@ ostream & operator << (ostream &out, Input &in){
 }
 
 Input::~Input(){
-    for ( int i = 0; i < dimension_+1; i++ )
+    for ( unsigned i = 0; i < dimension_+1; i++ )
         delete [] dist[i];
     delete [] dist;
 }

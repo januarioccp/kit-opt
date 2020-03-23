@@ -74,21 +74,16 @@ void Neighborhood::firstSwap(Solution* s){
 }
 
 void Neighborhood::bestSwap(Solution* s){
-    bool stuck = false;
     double delta = 0;
 
     int i_best;
     int j_best;
     double delta_best;
 
-    //while(!stuck){
-        stuck = true;
         delta_best = INT_MAX;
         for(unsigned i=1; i < s->location.size()-1; i++)
             for(unsigned j=i+1; j < s->location.size()-1; j++){
-                // clock_t beginC = clock();
                 delta = swapDeltaEvaluation(s,i,j);
-                // st->insert(beginC,clock(),0);
                 if(delta < 0 && delta < delta_best){
                     delta_best = delta;
                     i_best = i;
@@ -97,9 +92,7 @@ void Neighborhood::bestSwap(Solution* s){
             }
         if(delta_best < 0){
             swapMove(s,i_best,j_best,delta_best);
-            stuck = false;
         }
-    //}
 }
 
 double Neighborhood::swapDeltaEvaluation(Solution* s,int i,int j){
@@ -113,7 +106,6 @@ double Neighborhood::swapDeltaEvaluation(Solution* s,int i,int j){
 
         if(i+1 == j)
         {//consecutives = 3 operations
-
             sigma[0].first = 0;
             sigma[0].second = i-1;
 
@@ -157,7 +149,8 @@ double Neighborhood::swapDeltaEvaluation(Solution* s,int i,int j){
 
         }
         else
-        { // nonconsecutives = 4 operations
+        { 
+            // nonconsecutives = 4 operations
             sigma[0].first = 0;
             sigma[0].second = i-1;
 
@@ -205,20 +198,19 @@ double Neighborhood::swapDeltaEvaluation(Solution* s,int i,int j){
 }
 
 void Neighborhood::swapMove(Solution* s,int a,int b,double delta){
+    // cout<<*in<<endl;
+    // cout<<*s<<endl;
     if(a > b)
         swap(a,b);
-
     swap(s->location[a],s->location[b]);
     if(a==0)
-            s->location[s->location.size()-1] = s->location[a];
-
-    
-
+        s->location[s->location.size()-1] = s->location[a];
         s->costValueMLP+=delta;
-        int v1,v2;
-        v1 = s->costValueMLP;
-        s->computeCostValueMLP();
+        int v1,v2,v3;
+        v1 = s->costValueMLP;        
+        s->update(a,b);
         v2 = s->costValueMLP;
+        
         if(v1!=v2){
             cout<<__FILE__<<__LINE__<<endl;
             exit(0);
@@ -279,11 +271,8 @@ double Neighborhood::twoOptDeltaEvaluation(Solution* s,int i,int j){
     if(i > j)
         swap(i,j);
 
-    int subSequenceCost;
-    int subSequenceDelay;
-    int subSequenceDuration;
     int totalCost;
-    int delta;
+    
 
     if(s->in->problemGet()==0)
     { // TSP

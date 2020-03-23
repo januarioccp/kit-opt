@@ -13,8 +13,9 @@ using namespace std;
 
 int main(int argc, char** argv) {
     int seed = time(0);
-    seed = 1584717271; 
+    //seed = 1584975972; 
     srand(seed);
+    // cout<<seed<<endl;
 
     Input in(argc, argv);
     in.problemSet(1);
@@ -24,8 +25,8 @@ int main(int argc, char** argv) {
     LocalSearch ls(&in);
 
     // BEGIN GILSRVND parameters
-    int Imax = 50;
-    int Iils = (in.dimensionGet() >= 150) ? in.dimensionGet()/2 : in.dimensionGet();
+    int Imax = 10;
+    int Iils = min(in.dimensionGet(),unsigned(100));
     vector<double> R;
     R.push_back(0.00);
     for(int i=1; i <= 25; i++)

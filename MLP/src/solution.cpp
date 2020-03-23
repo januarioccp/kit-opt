@@ -26,15 +26,15 @@ double Solution::t_(unsigned i, unsigned j){
 void Solution::reset(){
     costValueMLP = INT_MAX;
     
-    for(int i=0; i < duration.size(); i++)
-        for(int j=i; j < duration[i].size(); j++)
+    for(unsigned i=0; i < duration.size(); i++)
+        for(unsigned j=i; j < duration[i].size(); j++)
             if(i!=j)
                 duration[i][j] = -1;
             else
                 duration[i][j] = 0;
         
-    for(int i=0; i < cost.size(); i++)
-        for(int j=i; j < cost[i].size(); j++)
+    for(unsigned i=0; i < cost.size(); i++)
+        for(unsigned j=i; j < cost[i].size(); j++)
             if(i!=j)
                 cost[i][j] = -1;
             else
@@ -94,19 +94,54 @@ int Solution::C_recursive(int begin, int end){
 
 void Solution::computeCostValueMLP(){
 
-    for(int i=0; i < duration.size(); i++)
-        for(int j=i; j < duration[i].size(); j++)
+    for(unsigned i=0; i < duration.size(); i++)
+        for(unsigned j=i; j < duration[i].size(); j++)
             if(i!=j)
                 duration[i][j] =  duration[i][j-1] + in->distanceGet(location[j-1],location[j]);
             else
                 duration[j][j] = 0;
 
-    for(int i=0; i < cost.size(); i++)
-        for(int j=i; j < cost[i].size(); j++)
+    for(unsigned i=0; i < cost.size(); i++)
+        for(unsigned j=i; j < cost[i].size(); j++)
             if(i!=j)
                 cost[i][j] = cost[i][j-1] + duration[i][j];
             else
                 cost[i][j] = 0;
+
+    costValueMLP = C(0,this->in->dimensionGet());
+}
+
+void Solution::update(int a, int b){
+    if(a>b)
+        swap(a,b);
+
+        for(unsigned i=0; i <= a; i++)
+            for(unsigned j=a; j < duration[i].size(); j++)
+                if(i!=j)
+                    duration[i][j] =  duration[i][j-1] + in->distanceGet(location[j-1],location[j]);
+                else
+                    duration[j][j] = 0;
+
+        for(unsigned i=a+1; i <= b; i++)
+            for(unsigned j=b; j < duration[i].size(); j++)
+                if(i!=j)
+                    duration[i][j] =  duration[i][j-1] + in->distanceGet(location[j-1],location[j]);
+                else
+                    duration[j][j] = 0;
+
+        for(unsigned i=0; i <= a; i++)
+            for(unsigned j=a; j < cost[i].size(); j++)
+                if(i!=j)
+                    cost[i][j] = cost[i][j-1] + duration[i][j];
+                else
+                    cost[i][j] = 0;
+
+        for(unsigned i=a+1; i <= b; i++)
+            for(unsigned j=b; j < cost[i].size(); j++)
+                if(i!=j)
+                    cost[i][j] = cost[i][j-1] + duration[i][j];
+                else
+                    cost[i][j] = 0;
 
     costValueMLP = C(0,this->in->dimensionGet());
 }
@@ -118,8 +153,8 @@ void Solution::copy(const Solution *s){
 
 void Solution::printCost(){
     cout<<endl;
-    for(int i=0; i < cost.size(); i++){
-        for(int j=0; j < cost[i].size(); j++)
+    for(unsigned i=0; i < cost.size(); i++){
+        for(unsigned j=0; j < cost[i].size(); j++)
         {
             cout<<setw(6)<<cost[i][j];
         }
@@ -129,8 +164,8 @@ void Solution::printCost(){
 
 void Solution::printDuration(){
     cout<<endl;
-    for(int i=0; i < duration.size(); i++){
-        for(int j=0; j < duration[i].size(); j++)
+    for(unsigned i=0; i < duration.size(); i++){
+        for(unsigned j=0; j < duration[i].size(); j++)
         {
             cout<<setw(5)<<duration[i][j];
         }
@@ -142,7 +177,7 @@ ostream & operator << (ostream &out, const Solution &s)
 {
     Color::Modifier red(Color::FG_RED);
     Color::Modifier deff(Color::FG_DEFAULT);
-    double myCost = 0;
+    
     if(s.location.size() <= s.in->dimensionGet())
         out << red << "Warning! Incomplete solution!!!" << deff<< endl;
 
