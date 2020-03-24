@@ -13,7 +13,7 @@ using namespace std;
 
 int main(int argc, char** argv) {
     int seed = time(0);
-    seed = 1585012643; 
+    //seed = 1585012643; 
     srand(seed);
     cout<<seed<<endl;
 
@@ -47,6 +47,8 @@ int main(int argc, char** argv) {
         cout<<sol.costValueMLP;
         cout<<","<<seed<<endl;
     }
+
+    // cout<<sol<<endl;
 
     return 0;
 }

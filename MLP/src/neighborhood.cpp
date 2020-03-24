@@ -192,12 +192,14 @@ double Neighborhood::swapDeltaEvaluation(Solution* s,int i,int j){
 
 void Neighborhood::swapMove(Solution* s,int a,int b,double delta){
     // cout<<*in<<endl;
-    // cout<<*s<<endl;
+    
     if(a > b)
         swap(a,b);
     swap(s->location[a],s->location[b]);
-    if(a==0)
+    if(a==0 || s->location[0]!=1){
+        cout<<__FILE__<<", line "<<__LINE__<<endl;
         s->location[s->location.size()-1] = s->location[a];
+    }
         
     s->costValueMLP+=delta;
     
@@ -208,7 +210,7 @@ void Neighborhood::swapMove(Solution* s,int a,int b,double delta){
     v2 = s->costValueMLP;
         
     if(v1!=v2){
-        cout<<__FILE__<<__LINE__<<endl;
+        cout<<__FILE__<<", line "<<__LINE__<<endl;
         exit(0);
     }
     
@@ -305,8 +307,13 @@ double Neighborhood::twoOptDeltaEvaluation(Solution* s,int i,int j){
 void Neighborhood::twoOptMove(Solution* s,int i,int j, double delta){
     if(i > j)
         swap(i,j);
+
     reverse(s->location.begin()+i+1,s->location.begin()+j+1);
         s->costValueMLP+=delta;
+
+    if(s->location[0]!=1){
+        cout<<__FILE__<<", line"<<__LINE__<<endl;
+    }
 
     int v1,v2;
     v1 = s->costValueMLP;        
