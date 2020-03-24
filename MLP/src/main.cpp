@@ -44,7 +44,7 @@ int main(int argc, char** argv) {
         double elapsed_secs = double(endC - beginC) / CLOCKS_PER_SEC;
         printf("%.*s", int(strlen(argv[1]))-14, argv[1] + 10);
         cout<<","<<elapsed_secs<<",";
-        cout<<sol.costValueMLP;
+        cout<<fixed<<sol.costValueMLP;
         cout<<","<<seed<<endl;
     }
 
