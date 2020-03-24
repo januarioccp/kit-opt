@@ -61,7 +61,7 @@ Solution LocalSearch::GILSRVND(int Imax, int Iils, vector<double> R){
                 iterILS = 0;
             }//end_if
             s->copy(s_line);
-            p->bridgePerturbation(s,4);
+            p->bridgePerturbation(s);
             iterILS = iterILS + 1;
         }//end_while
         if(f(s_line) < f(s_star)){

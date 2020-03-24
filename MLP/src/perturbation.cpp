@@ -23,7 +23,7 @@ Perturbation::~Perturbation()
     delete localSolution;
 }
 
-void Perturbation::bridgePerturbation(Solution* s, int bridge){
+void Perturbation::bridgePerturbation(Solution* s){
 
     int arc[4];
     int tamanho = s->location.size()-1;

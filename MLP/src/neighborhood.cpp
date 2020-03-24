@@ -16,13 +16,10 @@ Neighborhood::Neighborhood( Input* input){
     
     NL.push_back("bestSwap");
     NL.push_back("bestTwoOpt");
-    //NL.push_back("firstReInsertion-1");
-    // NL.push_back("bestReInsertion-1");
-    //NL.push_back("firstReInsertion-2");
-    // NL.push_back("bestReInsertion-2");
-    //NL.push_back("firstReInsertion-3");
-    // NL.push_back("bestReInsertion-3");
-    // NL.push_back("bestReInsertion-4");
+    NL.push_back("bestReInsertion-1");
+    NL.push_back("bestReInsertion-2");
+    NL.push_back("bestReInsertion-3");
+    NL.push_back("bestReInsertion-4");
 
     // So far 4 subsequences is enough
     sigma.resize(in->dimensionGet());
@@ -33,22 +30,14 @@ void Neighborhood::improove(Solution* s,string choosenNeighborhood){
         bestSwap(s);
     else if(choosenNeighborhood == "bestTwoOpt")
         bestTwoOpt(s);
-    else if(choosenNeighborhood == "firstReInsertion-1")
-        firstReInsertion(s,1);
-    else if(choosenNeighborhood == "firstReInsertion-2")
-        firstReInsertion(s,2);
-    else if(choosenNeighborhood == "firstReInsertion-3")
-        firstReInsertion(s,3);
     else if(choosenNeighborhood == "bestReInsertion-1")
         bestReInsertion(s,1);
     else if(choosenNeighborhood == "bestReInsertion-2")
         bestReInsertion(s,2);
     else if(choosenNeighborhood == "bestReInsertion-3")
         bestReInsertion(s,3);
-    else if(choosenNeighborhood == "bestReInsertion-4")
-        bestReInsertion(s,4);
-    else if(choosenNeighborhood == "firstReInsertion-4")
-        firstReInsertion(s,4);
+    // else if(choosenNeighborhood == "bestReInsertion-4")
+    //     bestReInsertion(s,4);
 }
 
 void Neighborhood::firstSwap(Solution* s){
@@ -354,77 +343,106 @@ void Neighborhood::bestReInsertion(Solution* s, int size){
     double delta_best;
     int last = s->location.size()-1;
 
-    //while(!stuck){
-        stuck = true;
         delta_best = INT_MAX;
-        for(int origin=0; origin < last; origin++){
-            for(int destination=0; destination < last; destination++){
-                delta = reInsertionDeltaEvaluation(s,origin,destination,size);
-                if(delta < 0 && delta < delta_best){
-                    delta_best = delta;
-                    origin_best = origin;
-                    destination_best = destination;
+        for(int origin=1; origin < s->location.size()-size; origin++){
+            for(int destination=1; destination < s->location.size()-size; destination++){
+                if(origin!=destination && abs(origin-destination) > size){
+                    // cout<<origin<<" "<<destination<<" "<<size<<endl;
+                    delta = reInsertionDeltaEvaluation(s,origin,destination,size);
+                    if(delta < 0 && delta < delta_best){
+                        delta_best = delta;
+                        origin_best = origin;
+                        destination_best = destination;
+                    }
                 }
             }
         }
         if(delta_best < 0){
             reInsertionMove(s,origin_best,destination_best,size,delta_best);
-            stuck = false;
         }
-    //}
 }
 
 double Neighborhood::reInsertionDeltaEvaluation(Solution* s,int origin, int destination, int size){
-    Color::Modifier red(Color::FG_RED);
-    Color::Modifier deff(Color::FG_DEFAULT);
-    double delta = 0;
+    
     int last = s->location.size()-1;
-    if(origin + size <= destination && (destination+1)%last!=origin){
-            if(origin == 0)
-                delta-= in->distanceGet(s->location[last-1],s->location[origin]);
-            else
-                delta-= in->distanceGet(s->location[origin-1],s->location[origin]);
 
-            delta-= in->distanceGet(s->location[origin+size-1],s->location[origin+size]);
-            delta-= in->distanceGet(s->location[destination],s->location[destination+1]);
+    int t = 0;
+    int c = 0;
+    int w = 0;
 
-            if(origin == 0)
-                delta+= in->distanceGet(s->location[last-1],s->location[origin+size]);
-            else
-                delta+= in->distanceGet(s->location[origin-1],s->location[origin+size]);
-            delta+= in->distanceGet(s->location[origin],s->location[destination]);
-            delta+= in->distanceGet(s->location[destination+1],s->location[origin+size-1]);
+    if(origin < destination){
+        sigma[0].first = 0;
+        sigma[0].second = origin-1;
 
-            return delta;      
+        sigma[1].first = origin+size;
+        sigma[1].second = destination+size-1;
+
+        sigma[2].first = origin;
+        sigma[2].second = origin+size-1;
+
+        sigma[3].first = destination+size;
+        sigma[3].second = in->dimensionGet();
+
+        t = s->T_recursive(sigma[0].first,sigma[0].second) + 
+            s->t_(sigma[0].second,sigma[1].first) + 
+            s->T_recursive(sigma[1].first,sigma[1].second);
+                
+                c = s->C_recursive(sigma[0].first,sigma[0].second) + 
+                    s->W(sigma[1].first,sigma[1].second) * ( 
+                        s->T_recursive(sigma[0].first,sigma[0].second) +
+                        s->t_(sigma[0].second,sigma[1].first)
+                    ) + 
+                    s->C_recursive(sigma[1].first,sigma[1].second);
+
+                w = s->W(sigma[0].first,sigma[0].second) + 
+                    s->W(sigma[1].first,sigma[1].second);
+
+        for(int sub=1; sub < 3; sub++){
+            c = c + 
+            s->W(sigma[sub+1].first,sigma[sub+1].second) * 
+            ( t + s->t_(sigma[sub].second,sigma[sub+1].first) ) + 
+            s->C_recursive(sigma[sub+1].first,sigma[sub+1].second);
+            
+            t = t + 
+            s->t_(sigma[sub].second,sigma[sub+1].first) + 
+            s->T_recursive(sigma[sub+1].first,sigma[sub+1].second);
+                    
+            w = w + s->W(sigma[1].first,sigma[1].second);             
+        }
+
+        return c - s->costValueMLP;
     }
-    return INT_MAX;
+    else
+    {
+        return INT_MAX;
+    }
+    
+    
 }
 
 void Neighborhood::reInsertionMove(Solution* s, int origin,int destination, int size, double delta){
-    s->costValueMLP+=delta;
-    int new_origin;
-    int new_destination;
-    int last = s->location.size()-1;
-    if(origin < destination){        
-            rotate(s->location.begin()+origin,s->location.begin()+origin+size,s->location.begin()+destination+1);
-    }
-    else if(origin > destination){
-        if(origin+size < int(s->location.size())){
-            rotate(s->location.begin()+destination,s->location.begin()+origin,s->location.begin()+origin+size);
-        }else{
-            new_origin = (last + (origin-size)%last)%(last);
-            new_destination = (last + (destination-size)%last)%(last);
-            rotate(s->location.begin(),s->location.begin()+size,s->location.end()-1);            
-            if(new_origin > new_destination){
-                rotate(s->location.begin()+new_destination,s->location.begin()+new_origin,s->location.begin()+new_origin+size);
-            } else if(new_origin < new_destination){
-                rotate(s->location.begin()+new_origin,s->location.begin()+new_origin+size,s->location.begin()+new_destination+1);            
-            }
-        }
 
+    // cout<<origin<<"-"<<destination<<"-"<<size<<endl;
+    // cout<<*s<<endl;
+    int v1,v2;
+    s->costValueMLP+=delta;
+    v1 = s->costValueMLP;
+    if(origin < destination){        
+            rotate(s->location.begin()+origin,s->location.begin()+origin+size,s->location.begin()+destination+size);
     } else {
         cout<<__FILE__<<__LINE__<<endl;
         cout<<"Origin and destination are the same!"<<endl;
     }
-    s->location[last] =s->location[0];        
+    s->location[s->location.size()-1] =s->location[0];    
+    // cout<<*s<<endl;
+    
+    s->update2opt(origin,destination+size);
+    v2 = s->costValueMLP;
+
+    //s->computeCostValueMLP();
+    if(v1!=v2){
+        cout<<__FILE__<<__LINE__<<endl;
+        cout<<*s<<endl;
+        exit(0);
+    }    
 }
