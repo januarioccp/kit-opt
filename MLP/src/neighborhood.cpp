@@ -347,7 +347,6 @@ void Neighborhood::bestReInsertion(Solution* s, int size){
         for(int origin=1; origin < s->location.size()-size; origin++){
             for(int destination=1; destination < s->location.size()-size; destination++){
                 if(origin!=destination && abs(origin-destination) > size){
-                    // cout<<origin<<" "<<destination<<" "<<size<<endl;
                     delta = reInsertionDeltaEvaluation(s,origin,destination,size);
                     if(delta < 0 && delta < delta_best){
                         delta_best = delta;
@@ -414,35 +413,60 @@ double Neighborhood::reInsertionDeltaEvaluation(Solution* s,int origin, int dest
     }
     else
     {
-        return INT_MAX;
+        sigma[0].first = 0;
+        sigma[0].second = destination-1;
+
+        sigma[1].first = origin;
+        sigma[1].second = origin+size-1;
+        
+        sigma[2].first = destination;
+        sigma[2].second = origin-1;
+
+        sigma[3].first = origin+size;
+        sigma[3].second = in->dimensionGet();
+
+        t = s->T_recursive(sigma[0].first,sigma[0].second) + 
+            s->t_(sigma[0].second,sigma[1].first) + 
+            s->T_recursive(sigma[1].first,sigma[1].second);
+                
+                c = s->C_recursive(sigma[0].first,sigma[0].second) + 
+                    s->W(sigma[1].first,sigma[1].second) * ( 
+                        s->T_recursive(sigma[0].first,sigma[0].second) +
+                        s->t_(sigma[0].second,sigma[1].first)
+                    ) + 
+                    s->C_recursive(sigma[1].first,sigma[1].second);
+
+                w = s->W(sigma[0].first,sigma[0].second) + 
+                    s->W(sigma[1].first,sigma[1].second);
+
+        for(int sub=1; sub < 3; sub++){
+            c = c + 
+            s->W(sigma[sub+1].first,sigma[sub+1].second) * 
+            ( t + s->t_(sigma[sub].second,sigma[sub+1].first) ) + 
+            s->C_recursive(sigma[sub+1].first,sigma[sub+1].second);
+            
+            t = t + 
+            s->t_(sigma[sub].second,sigma[sub+1].first) + 
+            s->T_recursive(sigma[sub+1].first,sigma[sub+1].second);
+                    
+            w = w + s->W(sigma[1].first,sigma[1].second);             
+        }
+
+        return c - s->costValueMLP;
     }
     
     
 }
 
 void Neighborhood::reInsertionMove(Solution* s, int origin,int destination, int size, double delta){
-
-    // cout<<origin<<"-"<<destination<<"-"<<size<<endl;
-    // cout<<*s<<endl;
-    int v1,v2;
+    
+    int last = s->location.size();
     s->costValueMLP+=delta;
-    v1 = s->costValueMLP;
     if(origin < destination){        
             rotate(s->location.begin()+origin,s->location.begin()+origin+size,s->location.begin()+destination+size);
+            s->update2opt(origin,destination+size);
     } else {
-        cout<<__FILE__<<__LINE__<<endl;
-        cout<<"Origin and destination are the same!"<<endl;
+        rotate(s->location.begin()+destination,s->location.begin()+s->location.size()-(last-origin),s->location.end()-(last-origin)+size);
+        s->update2opt(destination,origin+size);
     }
-    s->location[s->location.size()-1] =s->location[0];    
-    // cout<<*s<<endl;
-    
-    s->update2opt(origin,destination+size);
-    v2 = s->costValueMLP;
-
-    //s->computeCostValueMLP();
-    if(v1!=v2){
-        cout<<__FILE__<<__LINE__<<endl;
-        cout<<*s<<endl;
-        exit(0);
-    }    
 }
