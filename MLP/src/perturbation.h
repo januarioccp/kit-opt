@@ -11,7 +11,7 @@ class Perturbation{
         /**
          * Double Bridge
         */
-        Solution bridgePerturbation(const Solution* s, int maxBridges);
+        void bridgePerturbation(Solution* s, int maxBridges);
         vector<pair<int,int> > makeBridges(const Solution* s,int bridge);
 
     //private:

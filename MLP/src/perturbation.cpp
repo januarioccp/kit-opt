@@ -23,46 +23,89 @@ Perturbation::~Perturbation()
     delete localSolution;
 }
 
-Solution Perturbation::bridgePerturbation(const Solution* s, int bridge){
+void Perturbation::bridgePerturbation(Solution* s, int bridge){
 
-    vector< pair<int,int> > section(makeBridges(s,bridge));
-    int beginning;
-    int end;
-    int position=0;
+    int arc[4];
+    int tamanho = s->location.size()-1;
+    int ultimo = tamanho-1;
+    bool largada = false;
+    bool chegada = false;
 
-    for(int k = section.size()-1; k >= 0; k--){
-        beginning = section[k].first;
-        end = section[k].second;
-         
-        if(beginning == end){
-            cout<<"Error on "<<__FILE__<<" line "<<__LINE__<<endl;
-            exit(0);
-        }else 
-            if(beginning > end){
-                while(beginning != end+1){
-                    localSolution->location[position++] = s->location[beginning];
-                    beginning = (beginning+1)%(s->location.size()-1);
-                }
-            }else{
-                while(beginning <= end){
-                    localSolution->location[position++] = s->location[beginning++];                    
-                }
-        }
-    }
-    localSolution->location[s->location.size()-1] = localSolution->location[0];
+    arc[0] = rand()%tamanho;
 
+    if(arc[0]==0)
+        largada = true;
+    if(arc[0]==ultimo)
+        chegada = true;
+
+    do{
+        arc[1] = rand()%tamanho;
+    }while(arc[1] == arc[0] || 
+           abs(arc[0]-arc[1]) < 2 ||
+           (largada && arc[1]==ultimo) ||
+           (chegada && arc[1]==0));
+
+    if(arc[1]==0)
+        largada = true;
+    if(arc[1]==ultimo)
+        chegada = true;
+
+    if(arc[0] > arc[1])
+        swap(arc[0],arc[1]);
+
+    do{
+        arc[2] = rand()%tamanho;
+    }while(arc[2] == arc[0] || 
+           arc[2] == arc[1] || 
+           abs(arc[2]-arc[0]) < 2 ||
+           abs(arc[2]-arc[1]) < 2 ||
+           (largada && arc[2]==ultimo) ||
+           (chegada && arc[2]==0));
+
+    if(arc[2]==0)
+        largada = true;
+    if(arc[2]==ultimo)
+        chegada = true;
+
+    if(arc[1] > arc[2])
+        swap(arc[2],arc[1]);
+    if(arc[0] > arc[1])
+        swap(arc[0],arc[1]);
+
+    do{
+        arc[3] = rand()%tamanho;
+    }while(arc[3] == arc[0] || 
+           arc[3] == arc[1] || 
+           arc[3] == arc[2] || 
+           abs(arc[3]-arc[0]) < 2 ||
+           abs(arc[3]-arc[1]) < 2 ||
+           abs(arc[3]-arc[2]) < 2 ||
+           (largada && arc[3]==ultimo) ||
+           (chegada && arc[3]==0));
     
-    // TODO remove it from here!
-    localSolution->computeCostValueMLP();
+    if(arc[2] > arc[3])
+        swap(arc[2],arc[3]);
+    if(arc[1] > arc[2])
+        swap(arc[2],arc[1]);
+    if(arc[0] > arc[1])
+        swap(arc[0],arc[1]);
 
-    return (*localSolution);
+    rotate(s->location.begin()+arc[0]+1,s->location.begin()+arc[2]+1,s->location.begin()+arc[3]+1);
+    rotate(s->location.begin()+arc[0]+(arc[3]-arc[2])+1,s->location.begin()+arc[1]+(arc[3]-arc[2])+1,s->location.begin()+arc[3]+1);
+
+    s->computeCostValueMLP();
+
 }
 
 
+/**
+ * Removing and re-inserting four arcs in such a way that a feasible tour is generated 
+*/
 vector<pair<int,int> > Perturbation::makeBridges(const Solution* s, int bridges){
 
+    
+
     int minimum = 2;
-    // int maximum = max(minimum, int(s->location.size()-1)/10);
     vector< pair<int,int> > section;
     bool selected;
     for(int i=0; i < bridges; i++){
