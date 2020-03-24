@@ -101,6 +101,14 @@ void Solution::computeCostValueMLP(){
             else
                 duration[j][j] = 0;
 
+    for(unsigned i=0; i < duration.size(); i++)
+        for(int j=i; j >= 0 ; j--)
+            if(i!=j)
+                duration[i][j] =   duration[i][j+1] + in->distanceGet(location[j],location[j+1]);
+            else
+                duration[j][j] = 0;
+        
+
     for(unsigned i=0; i < cost.size(); i++)
         for(unsigned j=i; j < cost[i].size(); j++)
             if(i!=j)
@@ -108,10 +116,17 @@ void Solution::computeCostValueMLP(){
             else
                 cost[i][j] = 0;
 
+    for(unsigned i=0; i < cost.size(); i++)
+        for(int j=i; j >=0; j--)
+            if(i!=j)
+                cost[i][j] = cost[i][j+1] + duration[i][j];
+            else
+                cost[i][j] = 0;
+
     costValueMLP = C(0,this->in->dimensionGet());
 }
 
-void Solution::update(int a, int b){
+void Solution::updateSwap(int a, int b){
     if(a>b)
         swap(a,b);
 
@@ -129,6 +144,22 @@ void Solution::update(int a, int b){
                 else
                     duration[j][j] = 0;
 
+        for(unsigned i=a; i <= b; i++)
+            for(int j=a; j >= 0; j--)
+                if(i!=j)
+                    duration[i][j] =  duration[i][j+1] + in->distanceGet(location[j],location[j+1]);
+                else
+                    duration[j][j] = 0;
+
+        for(unsigned i=b; i < duration.size(); i++){
+            for(int j=b; j >=0; j--){
+                if(i!=j)
+                    duration[i][j] =  duration[i][j+1] + in->distanceGet(location[j],location[j+1]);
+                else
+                    duration[j][j] = 0;
+            }
+        }
+
         for(unsigned i=0; i <= a; i++)
             for(unsigned j=a; j < cost[i].size(); j++)
                 if(i!=j)
@@ -142,6 +173,58 @@ void Solution::update(int a, int b){
                     cost[i][j] = cost[i][j-1] + duration[i][j];
                 else
                     cost[i][j] = 0;
+
+        for(unsigned i=a; i <= b; i++)
+            for(int j=a; j >= 0; j--)
+                if(i!=j)
+                    cost[i][j] = cost[i][j+1] + duration[i][j];
+                else
+                    cost[i][j] = 0;
+
+        for(unsigned i=b; i < cost.size(); i++)
+            for(int j=b; j >= 0; j--)
+                if(i!=j)
+                    cost[i][j] = cost[i][j+1] + duration[i][j];
+                else
+                    cost[i][j] = 0;
+
+    costValueMLP = C(0,this->in->dimensionGet());
+}
+
+void Solution::update2opt(int a, int b){
+    if(a>b)
+        swap(a,b);
+
+        for(int i=0; i <= b; i++)
+            for(unsigned j=max(a,i); j < duration.size(); j++)
+                if(i!=j)
+                    duration[i][j] =  duration[i][j-1] + in->distanceGet(location[j-1],location[j]);
+                else
+                    duration[j][j] = 0;
+
+        for(int i=a; i < duration.size(); i++)
+            for(int j=min(b,i); j >= 0; j--)
+                if(i!=j)
+                    duration[i][j] =  duration[i][j+1] + in->distanceGet(location[j],location[j+1]);
+                else
+                    duration[j][j] = 0;
+
+
+        for(int i=0; i <= b; i++)
+            for(int j=max(a,i); j < cost.size(); j++)
+                if(i!=j)
+                    cost[i][j] = cost[i][j-1] + duration[i][j];
+                else
+                    cost[i][j] = 0;
+
+        for(int i=a; i < duration.size(); i++)
+            for(int j=min(b,i); j >= 0; j--)
+                if(i!=j)
+                    cost[i][j] = cost[i][j+1] + duration[i][j];
+                else
+                    cost[i][j] = 0;
+
+    //this->printDuration();
 
     costValueMLP = C(0,this->in->dimensionGet());
 }

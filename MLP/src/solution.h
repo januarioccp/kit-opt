@@ -22,7 +22,8 @@ class Solution{
         int T_recursive(int begin, int end);
         int C_recursive(int begin, int end);
 
-        void update(int a, int b);
+        void updateSwap(int a, int b);
+        void update2opt(int a, int b);
 
     //private:
         vector< vector<int> > duration; //T(sigma)
