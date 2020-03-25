@@ -32,9 +32,9 @@ LocalSearch::LocalSearch( Input* input)
 LocalSearch::~LocalSearch()
 {
     delete s;
-    delete s_star;
-    delete s_line;
-    delete s_rvnd;
+    delete [] s_star;
+    delete [] s_line;
+    delete [] s_rvnd;
     delete c;
     delete p;
     delete n;
