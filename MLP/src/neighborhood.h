@@ -2,6 +2,8 @@
 #define NEIGHBORHOOD_H_INCLUDED
 #include "solution.h"
 #include "colormod.h"
+#include <chrono>
+using namespace std;
 
 class Neighborhood{
     public:
@@ -36,7 +38,7 @@ class Neighborhood{
 
     //private:
     int t,c,w;
-    std::chrono::time_point<std::chrono::system_clock> temp1, temp2;
+    chrono::time_point<chrono::system_clock> temp1, temp2;
     vector<double> tempo;
     Input* in;
     // Statistics* st;
