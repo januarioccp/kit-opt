@@ -58,9 +58,7 @@ void Neighborhood::improove(Solution *s, string choosenNeighborhood)
 
 void Neighborhood::firstSwap(Solution *s)
 {
-    double delta = 0;
-    //while(!stuck){
-    stuck = true;
+    double delta = 0;   
     for (unsigned i = 0; i < s->location.size() - 1; i++)
         for (unsigned j = i + 1; j < s->location.size() - 1; j++)
         {
