@@ -16,7 +16,6 @@ class Perturbation{
 
     //private:
     Input* in;
-    Solution* localSolution;
     friend ostream & operator << (ostream &out, const Perturbation &c);
     
 };

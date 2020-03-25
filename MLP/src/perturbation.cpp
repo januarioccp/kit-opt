@@ -15,12 +15,11 @@ using namespace std;
 Perturbation::Perturbation( Input* input)
 {
     this->in = input;
-    localSolution = new Solution(in);
 }
 
 Perturbation::~Perturbation()
 {
-    delete localSolution;
+    
 }
 
 void Perturbation::bridgePerturbation(Solution* s){
