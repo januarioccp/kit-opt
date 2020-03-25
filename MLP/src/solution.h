@@ -39,6 +39,8 @@ class Solution{
 
     friend ostream & operator << (ostream &out, const Solution &c);
 
+    Solution& operator=(const Solution& other); // copy assignment
+
     double t_(unsigned i, unsigned j);
 
     void copy(const Solution *s);

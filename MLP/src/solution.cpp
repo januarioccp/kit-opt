@@ -34,11 +34,11 @@ Solution::~Solution()
 {
     for (int i = 0; i < size; i++)
     {
-        delete[] duration[i];
-        delete[] cost[i];
+        delete duration[i];
+        delete cost[i];
     }
-    delete[] duration;
-    delete[] cost;
+    delete duration;
+    delete cost;
 }
 
 double Solution::t_(unsigned i, unsigned j)
@@ -258,6 +258,31 @@ void Solution::printDuration()
         }
         cout << endl;
     }
+}
+
+Solution &Solution::operator=(const Solution &other) // copy assignment
+{
+    if (this != &other)
+    { // self-assignment check expected
+        if (other.size != size)
+        {                    // storage cannot be reused
+            cout<<"I will not deal with this kind of situation!"<<endl;
+            cout<<__FILE__<<":"<<__LINE__<<endl;
+            exit(0);
+            // delete[] mArray; // destroy storage in this
+            // size = 0;
+            // mArray = nullptr;             // preserve invariants in case next line throws
+            // mArray = new int[other.size]; // create storage in this
+            // size = other.size;
+        }
+        this->location = other.location;
+        this->costValueMLP = other.costValueMLP;
+        for (int i = 0; i < size; i++)
+            std::copy(other.cost[i], other.cost[i] + other.size, cost[i]);
+        for (int i = 0; i < size; i++)
+            std::copy(other.duration[i], other.duration[i] + other.size, duration[i]);
+    }
+    return *this;
 }
 
 ostream &operator<<(ostream &out, const Solution &s)
