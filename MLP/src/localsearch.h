@@ -19,6 +19,7 @@ class LocalSearch{
         void deleteNeighborhood(string choosenNeighborhood);
         double f(Solution* s);
         void reset();
+        friend ostream & operator << (ostream &out, LocalSearch &c);
     private:
         vector<double> tempo;
         vector<string> NL;
