@@ -66,7 +66,6 @@ void Neighborhood::firstSwap(Solution *s)
             if (delta < 0)
             {
                 swapMove(s, i, j, delta);
-                stuck = false;
             }
         }
     //}
