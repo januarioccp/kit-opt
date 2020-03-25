@@ -13,10 +13,28 @@ Solution::Solution(Input *input){
         location.push_back(i);
     location.push_back(1);
 
-    // Resize already fill the ellements with zeros!!!
-    duration.resize(in->dimensionGet()+1, vector<int>(in->dimensionGet()+1));
-    cost.resize(in->dimensionGet()+1, vector<int>(in->dimensionGet()+1));
+    size = in->dimensionGet()+1;
+    duration = new int*[size];
+    for(int i = 0; i < size; i++){
+        duration[i] = new int[size];
+        duration[i][i] = 0;
+    }
 
+    cost = new int*[size];
+    for(int i = 0; i < size; i++){
+        cost[i] = new int[size];
+        cost[i][i] = 0;
+    }
+
+}
+
+Solution::~Solution(){
+    for(int i = 0; i < size; i++){
+        delete [] duration[i];
+        delete [] cost[i];
+    }
+    delete [] duration;
+    delete [] cost;
 }
 
 double Solution::t_(unsigned i, unsigned j){
@@ -26,15 +44,15 @@ double Solution::t_(unsigned i, unsigned j){
 void Solution::reset(){
     costValueMLP = INT_MAX;
     
-    for(unsigned i=0; i < duration.size(); i++)
-        for(unsigned j=i; j < duration[i].size(); j++)
+    for(int i=0; i < size; i++)
+        for(int j=i; j < size; j++)
             if(i!=j)
                 duration[i][j] = -1;
             else
                 duration[i][j] = 0;
         
-    for(unsigned i=0; i < cost.size(); i++)
-        for(unsigned j=i; j < cost[i].size(); j++)
+    for(int i=0; i < size; i++)
+        for(int j=i; j < size; j++)
             if(i!=j)
                 cost[i][j] = -1;
             else
@@ -54,54 +72,23 @@ int Solution::W(int begin, int end){
 }
 
 int Solution::T_recursive(int begin, int end){
-    if(duration[begin][end]!= -1)
-        return duration[begin][end];
-    int answer = 0;
-    if(begin >= end){
-        answer = 0;
-    }
-    else{
-        // int middle = floor((begin+end)/2);
-        // answer = T(begin,middle) + in->distanceGet(location[middle],location[middle+1]) + T(middle+1,end);
-        answer = T_recursive(begin,end-1) + in->distanceGet(location[end-1],location[end]) + T_recursive(end,end);
-    }
-    duration[begin][end] = answer;
-    
-    return answer;
+    return duration[begin][end];
 }
 
 int Solution::C(int begin, int end){
      return cost[begin][end];
 }
 
-int Solution::C_recursive(int begin, int end){
-    if(cost[begin][end]!= -1)
-        return cost[begin][end];
-    int answer = 0;
-    if(begin >= end){
-        answer = 0;
-    }
-    else{
-        answer = C_recursive(begin,end-1) + 
-            W(end,end) *(
-                T_recursive(begin,end-1) +
-                in->distanceGet(location[end-1],location[end])) 
-                + C_recursive(end,end);
-    }
-    cost[begin][end] = answer;
-    return answer;
-}
-
 void Solution::computeCostValueMLP(){
 
-    for(unsigned i=0; i < duration.size(); i++)
-        for(unsigned j=i; j < duration[i].size(); j++)
+    for(int i=0; i < size; i++)
+        for(int j=i; j < size; j++)
             if(i!=j)
                 duration[i][j] =  duration[i][j-1] + in->distanceGet(location[j-1],location[j]);
             else
                 duration[j][j] = 0;
 
-    for(unsigned i=0; i < duration.size(); i++)
+    for(int i=0; i < size; i++)
         for(int j=i; j >= 0 ; j--)
             if(i!=j)
                 duration[i][j] =   duration[i][j+1] + in->distanceGet(location[j],location[j+1]);
@@ -109,14 +96,14 @@ void Solution::computeCostValueMLP(){
                 duration[j][j] = 0;
         
 
-    for(unsigned i=0; i < cost.size(); i++)
-        for(unsigned j=i; j < cost[i].size(); j++)
+    for(int i=0; i < size; i++)
+        for(int j=i; j < size; j++)
             if(i!=j)
                 cost[i][j] = cost[i][j-1] + duration[i][j];
             else
                 cost[i][j] = 0;
 
-    for(unsigned i=0; i < cost.size(); i++)
+    for(int i=0; i < size; i++)
         for(int j=i; j >=0; j--)
             if(i!=j)
                 cost[i][j] = cost[i][j+1] + duration[i][j];
@@ -130,28 +117,28 @@ void Solution::updateSwap(int a, int b){
     if(a>b)
         swap(a,b);
 
-        for(unsigned i=0; i <= a; i++)
-            for(unsigned j=a; j < duration[i].size(); j++)
+        for(int i=0; i <= a; i++)
+            for(int j=a; j < size; j++)
                 if(i!=j)
                     duration[i][j] =  duration[i][j-1] + in->distanceGet(location[j-1],location[j]);
                 else
                     duration[j][j] = 0;
 
-        for(unsigned i=a+1; i <= b; i++)
-            for(unsigned j=b; j < duration[i].size(); j++)
+        for(int i=a+1; i <= b; i++)
+            for(int j=b; j < size; j++)
                 if(i!=j)
                     duration[i][j] =  duration[i][j-1] + in->distanceGet(location[j-1],location[j]);
                 else
                     duration[j][j] = 0;
 
-        for(unsigned i=a; i <= b; i++)
+        for(int i=a; i <= b; i++)
             for(int j=a; j >= 0; j--)
                 if(i!=j)
                     duration[i][j] =  duration[i][j+1] + in->distanceGet(location[j],location[j+1]);
                 else
                     duration[j][j] = 0;
 
-        for(unsigned i=b; i < duration.size(); i++){
+        for(int i=b; i < size; i++){
             for(int j=b; j >=0; j--){
                 if(i!=j)
                     duration[i][j] =  duration[i][j+1] + in->distanceGet(location[j],location[j+1]);
@@ -160,28 +147,28 @@ void Solution::updateSwap(int a, int b){
             }
         }
 
-        for(unsigned i=0; i <= a; i++)
-            for(unsigned j=a; j < cost[i].size(); j++)
+        for(int i=0; i <= a; i++)
+            for(int j=a; j < size; j++)
                 if(i!=j)
                     cost[i][j] = cost[i][j-1] + duration[i][j];
                 else
                     cost[i][j] = 0;
 
-        for(unsigned i=a+1; i <= b; i++)
-            for(unsigned j=b; j < cost[i].size(); j++)
+        for(int i=a+1; i <= b; i++)
+            for(int j=b; j < size; j++)
                 if(i!=j)
                     cost[i][j] = cost[i][j-1] + duration[i][j];
                 else
                     cost[i][j] = 0;
 
-        for(unsigned i=a; i <= b; i++)
+        for(int i=a; i <= b; i++)
             for(int j=a; j >= 0; j--)
                 if(i!=j)
                     cost[i][j] = cost[i][j+1] + duration[i][j];
                 else
                     cost[i][j] = 0;
 
-        for(unsigned i=b; i < cost.size(); i++)
+        for(int i=b; i < size; i++)
             for(int j=b; j >= 0; j--)
                 if(i!=j)
                     cost[i][j] = cost[i][j+1] + duration[i][j];
@@ -196,13 +183,13 @@ void Solution::update2opt(int a, int b){
         swap(a,b);
 
         for(int i=0; i <= b; i++)
-            for(unsigned j=max(a,i); j < duration.size(); j++)
+            for(int j=max(a,i); j < size; j++)
                 if(i!=j)
                     duration[i][j] =  duration[i][j-1] + in->distanceGet(location[j-1],location[j]);
                 else
                     duration[j][j] = 0;
 
-        for(int i=a; i < duration.size(); i++)
+        for(int i=a; i < size; i++)
             for(int j=min(b,i); j >= 0; j--)
                 if(i!=j)
                     duration[i][j] =  duration[i][j+1] + in->distanceGet(location[j],location[j+1]);
@@ -211,13 +198,13 @@ void Solution::update2opt(int a, int b){
 
 
         for(int i=0; i <= b; i++)
-            for(int j=max(a,i); j < cost.size(); j++)
+            for(int j=max(a,i); j < size; j++)
                 if(i!=j)
                     cost[i][j] = cost[i][j-1] + duration[i][j];
                 else
                     cost[i][j] = 0;
 
-        for(int i=a; i < duration.size(); i++)
+        for(int i=a; i < size; i++)
             for(int j=min(b,i); j >= 0; j--)
                 if(i!=j)
                     cost[i][j] = cost[i][j+1] + duration[i][j];
@@ -236,8 +223,8 @@ void Solution::copy(const Solution *s){
 
 void Solution::printCost(){
     cout<<endl;
-    for(unsigned i=0; i < cost.size(); i++){
-        for(unsigned j=0; j < cost[i].size(); j++)
+    for(int i=0; i < size; i++){
+        for(int j=0; j < size; j++)
         {
             cout<<setw(6)<<cost[i][j];
         }
@@ -247,8 +234,8 @@ void Solution::printCost(){
 
 void Solution::printDuration(){
     cout<<endl;
-    for(unsigned i=0; i < duration.size(); i++){
-        for(unsigned j=0; j < duration[i].size(); j++)
+    for(int i=0; i < size; i++){
+        for(int j=0; j < size; j++)
         {
             cout<<setw(5)<<duration[i][j];
         }

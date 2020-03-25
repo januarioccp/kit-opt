@@ -13,6 +13,7 @@ class Solution{
     // Create get/set functions
     public:
         Solution(Input *in);
+        ~Solution();
         void computeCostValueMLP();
         void reset();
         //int T(int begin, int end);
@@ -20,17 +21,17 @@ class Solution{
 
         int W(int begin, int end);
         int T_recursive(int begin, int end);
-        int C_recursive(int begin, int end);
 
         void updateSwap(int a, int b);
         void update2opt(int a, int b);
 
     //private:
-        vector< vector<int> > duration; //T(sigma)
-        vector< vector<int> > cost; //C(sigma)
+        int** duration; //T(sigma)
+        int** cost; //C(sigma)
 
         double costValueMLP;
         
+        int size;
         vector<int> location;
         Input* in;
 

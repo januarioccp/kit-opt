@@ -8,7 +8,7 @@
             "name": "(lldb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/tsp",
+            "program": "${workspaceFolder}/mlp",
             "args": ["${workspaceFolder}/instances/burma14.tsp"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

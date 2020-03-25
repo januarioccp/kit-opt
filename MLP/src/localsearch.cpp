@@ -26,7 +26,7 @@ LocalSearch::LocalSearch( Input* input)
     c = new Construction(s);
     p = new Perturbation(in);
     n = new Neighborhood(in);
-    tempo.resize(10);
+    tempo.resize(8);
 }
 
 LocalSearch::~LocalSearch()
@@ -85,7 +85,7 @@ void LocalSearch::reset(){
 Solution LocalSearch::GILSRVND(int Imax, int Iils, vector<double> R){
     Color::Modifier red(Color::FG_RED);
     Color::Modifier deff(Color::FG_DEFAULT);
-    std::chrono::time_point<std::chrono::system_clock> start, end, temp1, temp2;
+    std::chrono::time_point<std::chrono::system_clock> temp1, temp2;
     reset();
 
     for(int i = 1; i <= Imax; i++){
@@ -116,6 +116,7 @@ Solution LocalSearch::GILSRVND(int Imax, int Iils, vector<double> R){
             s_star->copy(s_line);
         }
     }
+    cout<<*n<<endl;
     return (*s_star);
 }
 

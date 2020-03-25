@@ -35,6 +35,9 @@ class Neighborhood{
         
 
     //private:
+    int t,c,w;
+    std::chrono::time_point<std::chrono::system_clock> temp1, temp2;
+    vector<double> tempo;
     Input* in;
     // Statistics* st;
     vector<string> NL;

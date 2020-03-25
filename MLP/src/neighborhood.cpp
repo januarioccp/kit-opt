@@ -16,13 +16,34 @@ Neighborhood::Neighborhood( Input* input){
     
     NL.push_back("bestSwap");
     NL.push_back("bestTwoOpt");
-  //  NL.push_back("bestReInsertion-1");
+    NL.push_back("bestReInsertion-1");
     NL.push_back("bestReInsertion-2");
     NL.push_back("bestReInsertion-3");
    // NL.push_back("bestReInsertion-4");
 
     // So far 4 subsequences is enough
     sigma.resize(in->dimensionGet());
+    tempo.resize(10);
+}
+
+ostream & operator << (ostream &out, const Neighborhood &nb){
+    out << setw(20) <<
+    "re-insertion move:\t" << 
+    nb.tempo[0]/1000000.0 << endl;
+
+    out << setw(20) <<
+    "re-insertion delta:\t" << 
+    nb.tempo[1]/1000000.0 << endl;
+
+    out << setw(20) <<
+    "re-insertion o<d:\t" << 
+    nb.tempo[2]/1000000.0 << endl;
+
+    out << setw(20) <<
+    "re-insertion o>d:\t" << 
+    nb.tempo[3]/1000000.0 << endl;
+
+    return out;
 }
 
 void Neighborhood::improove(Solution* s,string choosenNeighborhood){
@@ -104,12 +125,12 @@ double Neighborhood::swapDeltaEvaluation(Solution* s,int i,int j){
                 s->t_(sigma[0].second,sigma[1].first) + 
                 s->T_recursive(sigma[1].first,sigma[1].second);
             
-            c = s->C_recursive(sigma[0].first,sigma[0].second) + 
+            c = s->C(sigma[0].first,sigma[0].second) + 
                 s->W(sigma[1].first,sigma[1].second) * ( 
                     s->T_recursive(sigma[0].first,sigma[0].second) +
                     s->t_(sigma[0].second,sigma[1].first)
                 ) + 
-                s->C_recursive(sigma[1].first,sigma[1].second);
+                s->C(sigma[1].first,sigma[1].second);
 
             w = s->W(sigma[0].first,sigma[0].second) + 
                 s->W(sigma[1].first,sigma[1].second);
@@ -118,7 +139,7 @@ double Neighborhood::swapDeltaEvaluation(Solution* s,int i,int j){
                 c = c + 
                     s->W(sigma[sub+1].first,sigma[sub+1].second) * 
                         ( t + s->t_(sigma[sub].second,sigma[sub+1].first) ) + 
-                    s->C_recursive(sigma[sub+1].first,sigma[sub+1].second);
+                    s->C(sigma[sub+1].first,sigma[sub+1].second);
 
                 t = t + 
                 s->t_(sigma[sub].second,sigma[sub+1].first) + 
@@ -152,12 +173,12 @@ double Neighborhood::swapDeltaEvaluation(Solution* s,int i,int j){
                 s->t_(sigma[0].second,sigma[1].first) + 
                 s->T_recursive(sigma[1].first,sigma[1].second);
             
-            c = s->C_recursive(sigma[0].first,sigma[0].second) + 
+            c = s->C(sigma[0].first,sigma[0].second) + 
                 s->W(sigma[1].first,sigma[1].second) * ( 
                     s->T_recursive(sigma[0].first,sigma[0].second) +
                     s->t_(sigma[0].second,sigma[1].first)
                 ) + 
-                s->C_recursive(sigma[1].first,sigma[1].second);
+                s->C(sigma[1].first,sigma[1].second);
 
             w = s->W(sigma[0].first,sigma[0].second) + 
                 s->W(sigma[1].first,sigma[1].second);
@@ -166,7 +187,7 @@ double Neighborhood::swapDeltaEvaluation(Solution* s,int i,int j){
                 c = c + 
                     s->W(sigma[sub+1].first,sigma[sub+1].second) * 
                         ( t + s->t_(sigma[sub].second,sigma[sub+1].first) ) + 
-                    s->C_recursive(sigma[sub+1].first,sigma[sub+1].second);
+                    s->C(sigma[sub+1].first,sigma[sub+1].second);
 
                 t = t + 
                 s->t_(sigma[sub].second,sigma[sub+1].first) + 
@@ -266,12 +287,12 @@ double Neighborhood::twoOptDeltaEvaluation(Solution* s,int i,int j){
         s->t_(sigma[0].second,sigma[1].first) + 
         s->T_recursive(sigma[1].first,sigma[1].second);
             
-            c = s->C_recursive(sigma[0].first,sigma[0].second) + 
+            c = s->C(sigma[0].first,sigma[0].second) + 
                 s->W(sigma[1].first,sigma[1].second) * ( 
                     s->T_recursive(sigma[0].first,sigma[0].second) +
                     s->t_(sigma[0].second,sigma[1].first)
                 ) + 
-                s->C_recursive(sigma[1].first,sigma[1].second);
+                s->C(sigma[1].first,sigma[1].second);
 
             w = s->W(sigma[0].first,sigma[0].second) + 
                 s->W(sigma[1].first,sigma[1].second);
@@ -280,7 +301,7 @@ double Neighborhood::twoOptDeltaEvaluation(Solution* s,int i,int j){
         c = c + 
         s->W(sigma[sub+1].first,sigma[sub+1].second) * 
         ( t + s->t_(sigma[sub].second,sigma[sub+1].first) ) + 
-        s->C_recursive(sigma[sub+1].first,sigma[sub+1].second);
+        s->C(sigma[sub+1].first,sigma[sub+1].second);
         
         t = t + 
         s->t_(sigma[sub].second,sigma[sub+1].first) + 
@@ -317,37 +338,21 @@ void Neighborhood::twoOptMove(Solution* s,int i,int j, double delta){
     
 }
 
-void Neighborhood::firstReInsertion(Solution* s, int size){
-    bool stuck = false;
-    double delta = 0;
-    int last = s->location.size()-1;
-    while(!stuck){
-        stuck = true;
-        for(int origin=0; origin < last; origin++){
-            for(int destination=0; destination < last; destination++){
-                delta = reInsertionDeltaEvaluation(s,origin,destination,size);
-                if(delta < 0){
-                    reInsertionMove(s,origin,destination,size,delta);
-                    stuck = false;
-                }
-            }
-        }
-    }
-}
-
 void Neighborhood::bestReInsertion(Solution* s, int size){
-    bool stuck = false;
     double delta = 0;
     int origin_best;
     int destination_best;
     double delta_best;
-    int last = s->location.size()-1;
 
         delta_best = INT_MAX;
-        for(int origin=1; origin < s->location.size()-size; origin++){
-            for(int destination=1; destination < s->location.size()-size; destination++){
+        for(int origin=1; origin < s->size-size; origin++){
+            for(int destination=1; destination < s->size-size; destination++){
                 if(origin!=destination && abs(origin-destination) > size){
+                    temp1 = std::chrono::system_clock::now();
                     delta = reInsertionDeltaEvaluation(s,origin,destination,size);
+                    temp2 = std::chrono::system_clock::now();
+                    if(size == 1)
+                        tempo[1] += std::chrono::duration_cast<std::chrono::microseconds>(temp2 - temp1).count();
                     if(delta < 0 && delta < delta_best){
                         delta_best = delta;
                         origin_best = origin;
@@ -357,17 +362,19 @@ void Neighborhood::bestReInsertion(Solution* s, int size){
             }
         }
         if(delta_best < 0){
+            temp1 = std::chrono::system_clock::now();
             reInsertionMove(s,origin_best,destination_best,size,delta_best);
+            temp2 = std::chrono::system_clock::now();
+            if(size == 1)
+                tempo[0] += std::chrono::duration_cast<std::chrono::microseconds>(temp2 - temp1).count();
         }
 }
 
 double Neighborhood::reInsertionDeltaEvaluation(Solution* s,int origin, int destination, int size){
-    
-    int last = s->location.size()-1;
 
-    int t = 0;
-    int c = 0;
-    int w = 0;
+    t = 0;
+    c = 0;
+    w = 0;
 
     if(origin < destination){
         sigma[0].first = 0;
@@ -386,12 +393,12 @@ double Neighborhood::reInsertionDeltaEvaluation(Solution* s,int origin, int dest
             s->t_(sigma[0].second,sigma[1].first) + 
             s->T_recursive(sigma[1].first,sigma[1].second);
                 
-                c = s->C_recursive(sigma[0].first,sigma[0].second) + 
+                c = s->C(sigma[0].first,sigma[0].second) + 
                     s->W(sigma[1].first,sigma[1].second) * ( 
                         s->T_recursive(sigma[0].first,sigma[0].second) +
                         s->t_(sigma[0].second,sigma[1].first)
                     ) + 
-                    s->C_recursive(sigma[1].first,sigma[1].second);
+                    s->C(sigma[1].first,sigma[1].second);
 
                 w = s->W(sigma[0].first,sigma[0].second) + 
                     s->W(sigma[1].first,sigma[1].second);
@@ -400,7 +407,7 @@ double Neighborhood::reInsertionDeltaEvaluation(Solution* s,int origin, int dest
             c = c + 
             s->W(sigma[sub+1].first,sigma[sub+1].second) * 
             ( t + s->t_(sigma[sub].second,sigma[sub+1].first) ) + 
-            s->C_recursive(sigma[sub+1].first,sigma[sub+1].second);
+            s->C(sigma[sub+1].first,sigma[sub+1].second);
             
             t = t + 
             s->t_(sigma[sub].second,sigma[sub+1].first) + 
@@ -429,12 +436,12 @@ double Neighborhood::reInsertionDeltaEvaluation(Solution* s,int origin, int dest
             s->t_(sigma[0].second,sigma[1].first) + 
             s->T_recursive(sigma[1].first,sigma[1].second);
                 
-                c = s->C_recursive(sigma[0].first,sigma[0].second) + 
+                c = s->C(sigma[0].first,sigma[0].second) + 
                     s->W(sigma[1].first,sigma[1].second) * ( 
                         s->T_recursive(sigma[0].first,sigma[0].second) +
                         s->t_(sigma[0].second,sigma[1].first)
                     ) + 
-                    s->C_recursive(sigma[1].first,sigma[1].second);
+                    s->C(sigma[1].first,sigma[1].second);
 
                 w = s->W(sigma[0].first,sigma[0].second) + 
                     s->W(sigma[1].first,sigma[1].second);
@@ -443,7 +450,7 @@ double Neighborhood::reInsertionDeltaEvaluation(Solution* s,int origin, int dest
             c = c + 
             s->W(sigma[sub+1].first,sigma[sub+1].second) * 
             ( t + s->t_(sigma[sub].second,sigma[sub+1].first) ) + 
-            s->C_recursive(sigma[sub+1].first,sigma[sub+1].second);
+            s->C(sigma[sub+1].first,sigma[sub+1].second);
             
             t = t + 
             s->t_(sigma[sub].second,sigma[sub+1].first) + 
@@ -462,7 +469,7 @@ void Neighborhood::reInsertionMove(Solution* s, int origin,int destination, int 
     
     int last = s->location.size();
     s->costValueMLP+=delta;
-    if(origin < destination){        
+    if(origin < destination){     
             rotate(s->location.begin()+origin,s->location.begin()+origin+size,s->location.begin()+destination+size);
             s->update2opt(origin,destination+size);
     } else {

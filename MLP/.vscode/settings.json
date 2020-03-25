@@ -66,6 +66,17 @@
         "sstream": "cpp",
         "stdexcept": "cpp",
         "streambuf": "cpp",
-        "typeinfo": "cpp"
+        "typeinfo": "cpp",
+        "filesystem": "cpp",
+        "__cxx_version": "cpp",
+        "__functional_03": "cpp",
+        "__functional_base_03": "cpp",
+        "__undef_macros": "cpp",
+        "cassert": "cpp",
+        "ccomplex": "cpp",
+        "cerrno": "cpp",
+        "climits": "cpp",
+        "ctgmath": "cpp",
+        "__memory": "cpp"
     }
 }
