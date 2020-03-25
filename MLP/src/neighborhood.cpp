@@ -58,7 +58,6 @@ void Neighborhood::improove(Solution *s, string choosenNeighborhood)
 
 void Neighborhood::firstSwap(Solution *s)
 {
-    bool stuck = false;
     double delta = 0;
     //while(!stuck){
     stuck = true;
