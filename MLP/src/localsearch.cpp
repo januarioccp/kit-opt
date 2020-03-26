@@ -31,10 +31,14 @@ LocalSearch::LocalSearch(Input* input)
 
 LocalSearch::~LocalSearch()
 {
+    s->deleteMe();
     delete s;
+
     s_star->deleteMe();
     delete s_star;
-    // delete [] s_line;
+    
+    s_line->deleteMe();
+    delete s_line;
     // delete [] s_rvnd;
     delete c;
     delete p;
