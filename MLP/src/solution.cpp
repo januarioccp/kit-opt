@@ -8,13 +8,14 @@ Solution::Solution(Input *input)
 {
 
     this->in = input;
+    dimension = input->dimensionGet();
     contador = 0;
     // Create a generic basic solution
-    for (unsigned i = 1; i <= this->in->dimensionGet(); i++)
+    for (int i = 1; i <= dimension; i++)
         location.push_back(i);
     location.push_back(1);
 
-    size = in->dimensionGet() + 1;
+    size = dimension + 1;
     duration = new int *[size];
     for (int i = 0; i < size; i++)
     {
@@ -119,7 +120,7 @@ void Solution::computeCostValueMLP()
             else
                 cost[i][j] = 0;
 
-    costValueMLP = C(0, this->in->dimensionGet());
+    costValueMLP = C(0, this->dimension);
 }
 
 void Solution::updateSwap(int a, int b)
@@ -187,7 +188,7 @@ void Solution::updateSwap(int a, int b)
             else
                 cost[i][j] = 0;
 
-    costValueMLP = C(0, this->in->dimensionGet());
+    costValueMLP = C(0, this->dimension);
 }
 
 void Solution::update2opt(int a, int b)
@@ -225,7 +226,7 @@ void Solution::update2opt(int a, int b)
 
     //this->printDuration();
 
-    costValueMLP = C(0, this->in->dimensionGet());
+    costValueMLP = C(0, this->dimension);
 }
 
 void Solution::copy(const Solution *s)
@@ -290,10 +291,10 @@ ostream &operator<<(ostream &out, const Solution &s)
     Color::Modifier red(Color::FG_RED);
     Color::Modifier deff(Color::FG_DEFAULT);
 
-    if (s.location.size() <= s.in->dimensionGet())
+    if (s.size <= s.dimension)
         out << red << "Warning! Incomplete solution!!!" << deff << endl;
 
-    out << "Dimension: " << s.in->dimensionGet() << endl;
+    out << "Dimension: " << s.dimension << endl;
     out << "Latency: " << setprecision(1) << fixed << s.costValueMLP << endl;
     out << "i = [";
     for (unsigned i = 0; i < s.location.size(); i++)

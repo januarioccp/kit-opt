@@ -32,6 +32,8 @@ class Solution{
         double costValueMLP;
         
         int size;
+        int dimension;
+        
         vector<int> location;
         Input* in;
 
