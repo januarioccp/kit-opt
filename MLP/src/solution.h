@@ -13,7 +13,7 @@ class Solution{
     // Create get/set functions
     public:
         Solution(Input *in);
-        Solution(Solution &s){cout<<"no"<<endl;};
+        Solution(Solution &s);
         ~Solution();
         void computeCostValueMLP();
         void reset();

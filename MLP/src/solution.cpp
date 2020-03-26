@@ -261,14 +261,26 @@ void Solution::printDuration()
     }
 }
 
+Solution::Solution(Solution &other)
+{
+    this->location = other.location;
+    this->costValueMLP = other.costValueMLP;
+    this->size = other.size;
+    this->dimension = other.dimension;
+    for (int i = 0; i < size; i++)
+        std::copy(other.cost[i], other.cost[i] + other.size, cost[i]);
+    for (int i = 0; i < size; i++)
+        std::copy(other.duration[i], other.duration[i] + other.size, duration[i]);
+}
+
 Solution &Solution::operator=(const Solution &other) // copy assignment
 {
     if (this != &other)
     { // self-assignment check expected
         if (other.size != size)
-        {                    // storage cannot be reused
-            cout<<"I will not deal with this kind of situation!"<<endl;
-            cout<<__FILE__<<":"<<__LINE__<<endl;
+        { // storage cannot be reused
+            cout << "I will not deal with this kind of situation!" << endl;
+            cout << __FILE__ << ":" << __LINE__ << endl;
             exit(0);
             // delete[] mArray; // destroy storage in this
             // size = 0;
@@ -278,6 +290,8 @@ Solution &Solution::operator=(const Solution &other) // copy assignment
         }
         this->location = other.location;
         this->costValueMLP = other.costValueMLP;
+        this->size = other.size;
+        this->dimension = other.dimension;
         for (int i = 0; i < size; i++)
             std::copy(other.cost[i], other.cost[i] + other.size, cost[i]);
         for (int i = 0; i < size; i++)
