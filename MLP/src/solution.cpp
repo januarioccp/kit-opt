@@ -33,13 +33,13 @@ Solution::Solution(Input *input)
 
 Solution::~Solution()
 {
-    for (int i = 0; i < size; i++)
-    {
-        delete duration[i];
-        delete cost[i];
-    }
-    delete duration;
-    delete cost;
+    // for (int i = 0; i < size; i++)
+    // {
+    //     delete duration[i];
+    //     delete cost[i];
+    // }
+    // delete duration;
+    // delete cost;
 }
 
 double Solution::t_(unsigned i, unsigned j)

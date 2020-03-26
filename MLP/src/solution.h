@@ -13,6 +13,7 @@ class Solution{
     // Create get/set functions
     public:
         Solution(Input *in);
+        Solution(Solution &s){cout<<"no"<<endl;};
         ~Solution();
         void computeCostValueMLP();
         void reset();
@@ -33,7 +34,7 @@ class Solution{
         
         int size;
         int dimension;
-        
+
         vector<int> location;
         Input* in;
 
