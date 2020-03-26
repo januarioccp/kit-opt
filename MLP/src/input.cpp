@@ -345,7 +345,7 @@ Input::Input( int argc, char** argv)
             }
         }
         delete [] latitude;
-        delete longitude;
+        delete [] longitude;
 
     }
 
