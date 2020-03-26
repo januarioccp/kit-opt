@@ -270,9 +270,6 @@ void Solution::printDuration()
 Solution::Solution(Solution &other)
 {
     if(size != other.size){
-        if(cost)
-            deleteMe();
-
         this->size = other.size;
         duration = new int *[size];
         cost = new int *[size];

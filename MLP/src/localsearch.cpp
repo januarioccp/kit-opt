@@ -33,6 +33,7 @@ LocalSearch::~LocalSearch()
 {
     delete s;
     s_star->deleteMe();
+    delete s_star;
     // delete [] s_line;
     // delete [] s_rvnd;
     delete c;
