@@ -52,5 +52,6 @@ int main(int argc, char** argv) {
 
     // cout<<sol<<endl;
 
+    sol.deleteMe();
     return 0;
 }

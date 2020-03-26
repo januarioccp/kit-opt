@@ -15,6 +15,7 @@ class Solution{
         Solution(Input *in);
         Solution(Solution &s);
         ~Solution();
+        void deleteMe();
         void computeCostValueMLP();
         void reset();
         //int T(int begin, int end);

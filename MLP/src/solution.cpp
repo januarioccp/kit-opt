@@ -42,6 +42,16 @@ Solution::~Solution()
     // delete cost;
 }
 
+void Solution::deleteMe(){
+    for (int i = 0; i < size; i++)
+    {
+        delete duration[i];
+        delete cost[i];
+    }
+    delete duration;
+    delete cost;
+}
+
 double Solution::t_(unsigned i, unsigned j)
 {
     return in->distanceGet(location[i], location[j]);
