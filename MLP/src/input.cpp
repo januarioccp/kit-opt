@@ -344,6 +344,8 @@ Input::Input( int argc, char** argv)
                 dist[i][j] = CalcDistGeo ( latitude, longitude, i, j );
             }
         }
+        delete [] latitude;
+        delete longitude;
 
     }
 
