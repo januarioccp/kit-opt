@@ -17,16 +17,12 @@ Solution::Solution(Input *input)
 
     size = dimension + 1;
     duration = new int *[size];
-    for (int i = 0; i < size; i++)
-    {
-        duration[i] = new int[size];
-        duration[i][i] = 0;
-    }
-
     cost = new int *[size];
     for (int i = 0; i < size; i++)
     {
+        duration[i] = new int[size];
         cost[i] = new int[size];
+        duration[i][i] = 0;
         cost[i][i] = 0;
     }
 }
@@ -273,10 +269,26 @@ void Solution::printDuration()
 
 Solution::Solution(Solution &other)
 {
+    if(size != other.size){
+        if(cost)
+            deleteMe();
+
+        this->size = other.size;
+        duration = new int *[size];
+        cost = new int *[size];
+        for (int i = 0; i < size; i++)
+        {
+            duration[i] = new int[size];
+            cost[i] = new int[size];
+            duration[i][i] = 0;
+            cost[i][i] = 0;
+        }
+    }
     this->location = other.location;
     this->costValueMLP = other.costValueMLP;
     this->size = other.size;
     this->dimension = other.dimension;
+
     for (int i = 0; i < size; i++)
         std::copy(other.cost[i], other.cost[i] + other.size, cost[i]);
     for (int i = 0; i < size; i++)
