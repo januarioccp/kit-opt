@@ -48,7 +48,7 @@ int main(int argc, char** argv) {
         cout<<","<<seed<<endl;
     }
 
-    cout<<ls<<endl;
+    // cout<<ls<<endl;
 
     // cout<<sol<<endl;
 
