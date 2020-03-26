@@ -4,6 +4,10 @@
 #include <climits>
 using namespace std;
 
+Solution::Solution(){
+    size = 0;
+}
+
 Solution::Solution(Input *input)
 {
 

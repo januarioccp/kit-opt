@@ -12,6 +12,7 @@ using namespace std;
 class Solution{
     // Create get/set functions
     public:
+        Solution();
         Solution(Input *in);
         Solution(Solution &s);
         ~Solution();
