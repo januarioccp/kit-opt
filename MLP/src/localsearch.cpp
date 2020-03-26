@@ -32,7 +32,7 @@ LocalSearch::LocalSearch(Input* input)
 LocalSearch::~LocalSearch()
 {
     delete s;
-    // delete [] s_star;
+    s_star->deleteMe();
     // delete [] s_line;
     // delete [] s_rvnd;
     delete c;
