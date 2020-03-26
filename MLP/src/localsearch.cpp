@@ -13,6 +13,7 @@
 #include <vector>
 #include <algorithm> 
 #include <chrono>
+#include <climits>
 using namespace std;
 
 LocalSearch::LocalSearch(Input* input)
