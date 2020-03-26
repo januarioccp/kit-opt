@@ -12,13 +12,12 @@ class LocalSearch{
     public:
         LocalSearch(Input *input);
         ~LocalSearch();
-        Solution GILSRVND(int Imax, int Iils, vector<double> R);
+        void GILSRVND(int Imax, int Iils, vector<double> R, Solution& s_star);
         void RVND(Solution* s);
         double randomValue(vector<double> R);
         string randomNeighborhood();
         void deleteNeighborhood(string choosenNeighborhood);
         double f(Solution* s);
-        void reset();
         friend ostream & operator << (ostream &out, LocalSearch &c);
     private:
         vector<double> tempo;
@@ -27,7 +26,6 @@ class LocalSearch{
         double alpha;
         Solution* s;
         Solution* s_line;
-        Solution* s_star;
         Solution* s_rvnd;
         Construction* c;
         Perturbation* p;

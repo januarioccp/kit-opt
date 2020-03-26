@@ -38,7 +38,7 @@ int main(int argc, char** argv) {
         srand(seed);
         clock_t beginC = clock();
         
-        sol = ls.GILSRVND(Imax,Iils,R);
+        ls.GILSRVND(Imax,Iils,R,sol);
         
         clock_t endC = clock();
         double elapsed_secs = double(endC - beginC) / CLOCKS_PER_SEC;

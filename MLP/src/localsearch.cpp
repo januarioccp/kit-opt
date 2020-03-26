@@ -20,7 +20,6 @@ LocalSearch::LocalSearch(Input* input)
     
     this->in = input;
     s =  new Solution(in);
-    s_star =  new Solution(in);
     s_line =  new Solution(in);
     s_rvnd =  new Solution(in);
     c = new Construction(s);
@@ -33,9 +32,6 @@ LocalSearch::~LocalSearch()
 {
     s->deleteMe();
     delete s;
-
-    s_star->deleteMe();
-    delete s_star;
     
     s_line->deleteMe();
     delete s_line;
@@ -83,17 +79,13 @@ ostream & operator << (ostream &out, LocalSearch &ls){
     return out;
 }
 
-void LocalSearch::reset(){
-    s_star->reset();
-    s_line->reset();
-}
-
 // GILS-RVND from EJOR2012-Marcos
-Solution LocalSearch::GILSRVND(int Imax, int Iils, vector<double> R){
+void LocalSearch::GILSRVND(int Imax, int Iils, vector<double> R, Solution& s_star){
     Color::Modifier red(Color::FG_RED);
     Color::Modifier deff(Color::FG_DEFAULT);
     std::chrono::time_point<std::chrono::system_clock> temp1, temp2;
-    reset();
+    s_star.costValueMLP = INT_MAX;
+    s_line->costValueMLP = INT_MAX;
 
     for(int i = 1; i <= Imax; i++){
         alpha = randomValue(R);      
@@ -119,12 +111,12 @@ Solution LocalSearch::GILSRVND(int Imax, int Iils, vector<double> R){
             tempo[7] += std::chrono::duration_cast<std::chrono::microseconds>(temp2 - temp1).count();
             iterILS = iterILS + 1;
         }//end_while
-        if(f(s_line) < f(s_star)){
-            s_star->copy(s_line);
+        if(f(s_line) < f(&s_star)){
+            s_star.copy(s_line);
         }
     }
+
     cout<<*n<<endl;
-    return (*s_star);
 }
 
 double LocalSearch::f(Solution* s){
