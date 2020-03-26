@@ -9,6 +9,7 @@
 #include <iomanip>
 #include <set>
 #include <algorithm>
+#include <climits>
 using namespace std;
 
 Neighborhood::Neighborhood(Input *input)
@@ -33,9 +34,9 @@ ostream &operator<<(ostream &out, const Neighborhood &nb)
 
     out << setw(20) << "re-insertion delta:\t" << nb.tempo[1] / 1000000.0 << endl;
 
-    out << setw(20) << "re-insertion o<d:\t" << nb.tempo[2] / 1000000.0 << endl;
+    // out << setw(20) << "re-insertion o<d:\t" << nb.tempo[2] / 1000000.0 << endl;
 
-    out << setw(20) << "re-insertion o>d:\t" << nb.tempo[3] / 1000000.0 << endl;
+    // out << setw(20) << "re-insertion o>d:\t" << nb.tempo[3] / 1000000.0 << endl;
 
     return out;
 }
@@ -101,7 +102,6 @@ double Neighborhood::swapDeltaEvaluation(Solution *s, int i, int j)
 
     int t;
     int c;
-    int w;
 
     if (i == 0)
         return INT_MAX;
@@ -129,9 +129,6 @@ double Neighborhood::swapDeltaEvaluation(Solution *s, int i, int j)
                                                      s->t_(sigma[0].second, sigma[1].first)) +
             s->C(sigma[1].first, sigma[1].second);
 
-        w = s->W(sigma[0].first, sigma[0].second) +
-            s->W(sigma[1].first, sigma[1].second);
-
         for (int sub = 1; sub < 3; sub++)
         {
             c = c +
@@ -142,8 +139,6 @@ double Neighborhood::swapDeltaEvaluation(Solution *s, int i, int j)
             t = t +
                 s->t_(sigma[sub].second, sigma[sub + 1].first) +
                 s->T_recursive(sigma[sub + 1].first, sigma[sub + 1].second);
-
-            w = w + s->W(sigma[1].first, sigma[1].second);
         }
 
         return c - s->costValueMLP;
@@ -175,8 +170,6 @@ double Neighborhood::swapDeltaEvaluation(Solution *s, int i, int j)
                                                      s->t_(sigma[0].second, sigma[1].first)) +
             s->C(sigma[1].first, sigma[1].second);
 
-        w = s->W(sigma[0].first, sigma[0].second) +
-            s->W(sigma[1].first, sigma[1].second);
 
         for (int sub = 1; sub < 4; sub++)
         {
@@ -188,8 +181,6 @@ double Neighborhood::swapDeltaEvaluation(Solution *s, int i, int j)
             t = t +
                 s->t_(sigma[sub].second, sigma[sub + 1].first) +
                 s->T_recursive(sigma[sub + 1].first, sigma[sub + 1].second);
-
-            w = w + s->W(sigma[1].first, sigma[1].second);
         }
 
         return c - s->costValueMLP;
@@ -280,7 +271,6 @@ double Neighborhood::twoOptDeltaEvaluation(Solution *s, int i, int j)
         swap(i, j);
     int t = 0;
     int c = 0;
-    int w = 0;
 
     sigma[0].first = 0;
     sigma[0].second = i;
@@ -300,9 +290,6 @@ double Neighborhood::twoOptDeltaEvaluation(Solution *s, int i, int j)
                                                  s->t_(sigma[0].second, sigma[1].first)) +
         s->C(sigma[1].first, sigma[1].second);
 
-    w = s->W(sigma[0].first, sigma[0].second) +
-        s->W(sigma[1].first, sigma[1].second);
-
     for (int sub = 1; sub < 2; sub++)
     {
         c = c +
@@ -313,8 +300,6 @@ double Neighborhood::twoOptDeltaEvaluation(Solution *s, int i, int j)
         t = t +
             s->t_(sigma[sub].second, sigma[sub + 1].first) +
             s->T_recursive(sigma[sub + 1].first, sigma[sub + 1].second);
-
-        w = w + s->W(sigma[1].first, sigma[1].second);
     }
 
     return c - s->costValueMLP;
@@ -348,6 +333,8 @@ void Neighborhood::twoOptMove(Solution *s, int i, int j, double delta)
 
 void Neighborhood::bestReInsertion(Solution *s, int size)
 {
+    temp1 = std::chrono::system_clock::now();
+
     double delta = 0;
     int origin_best;
     int destination_best;
@@ -360,11 +347,8 @@ void Neighborhood::bestReInsertion(Solution *s, int size)
         {
             if (origin != destination && abs(origin - destination) > size)
             {
-                temp1 = std::chrono::system_clock::now();
                 delta = reInsertionDeltaEvaluation(s, origin, destination, size);
-                temp2 = std::chrono::system_clock::now();
-                if (size == 1)
-                    tempo[1] += std::chrono::duration_cast<std::chrono::microseconds>(temp2 - temp1).count();
+                
                 if (delta < 0 && delta < delta_best)
                 {
                     delta_best = delta;
@@ -374,6 +358,9 @@ void Neighborhood::bestReInsertion(Solution *s, int size)
             }
         }
     }
+    temp2 = std::chrono::system_clock::now();
+    if (size == 1)
+                    tempo[1] += std::chrono::duration_cast<std::chrono::microseconds>(temp2 - temp1).count();
     if (delta_best < 0)
     {
         temp1 = std::chrono::system_clock::now();
@@ -389,7 +376,6 @@ double Neighborhood::reInsertionDeltaEvaluation(Solution *s, int origin, int des
 
     t = 0;
     c = 0;
-    w = 0;
 
     if (origin < destination)
     {
@@ -405,8 +391,8 @@ double Neighborhood::reInsertionDeltaEvaluation(Solution *s, int origin, int des
         sigma[3].first = destination + size;
         sigma[3].second = in->dimensionGet();
 
-        t = s->T_recursive(sigma[0].first, sigma[0].second) +
-            s->t_(sigma[0].second, sigma[1].first) +
+        t = s->duration[0][sigma[0].second] +
+            in->dist[s->location[sigma[0].second]][s->location[sigma[1].first]] +
             s->T_recursive(sigma[1].first, sigma[1].second);
 
         c = s->C(sigma[0].first, sigma[0].second) +
@@ -414,21 +400,17 @@ double Neighborhood::reInsertionDeltaEvaluation(Solution *s, int origin, int des
                                                      s->t_(sigma[0].second, sigma[1].first)) +
             s->C(sigma[1].first, sigma[1].second);
 
-        w = s->W(sigma[0].first, sigma[0].second) +
-            s->W(sigma[1].first, sigma[1].second);
-
         for (int sub = 1; sub < 3; sub++)
         {
             c = c +
                 s->W(sigma[sub + 1].first, sigma[sub + 1].second) *
                     (t + s->t_(sigma[sub].second, sigma[sub + 1].first)) +
-                s->C(sigma[sub + 1].first, sigma[sub + 1].second);
+                s->cost[sigma[sub + 1].first][sigma[sub + 1].second];
+            if(t<2)
+                t = t +
+                    in->dist[s->location[sigma[sub].second]][s->location[sigma[sub+1].first]] +
+                    s->duration[sigma[sub + 1].first][sigma[sub + 1].second];
 
-            t = t +
-                s->t_(sigma[sub].second, sigma[sub + 1].first) +
-                s->T_recursive(sigma[sub + 1].first, sigma[sub + 1].second);
-
-            w = w + s->W(sigma[1].first, sigma[1].second);
         }
 
         return c - s->costValueMLP;
@@ -456,21 +438,16 @@ double Neighborhood::reInsertionDeltaEvaluation(Solution *s, int origin, int des
                                                      s->t_(sigma[0].second, sigma[1].first)) +
             s->C(sigma[1].first, sigma[1].second);
 
-        w = s->W(sigma[0].first, sigma[0].second) +
-            s->W(sigma[1].first, sigma[1].second);
-
         for (int sub = 1; sub < 3; sub++)
         {
             c = c +
                 s->W(sigma[sub + 1].first, sigma[sub + 1].second) *
                     (t + s->t_(sigma[sub].second, sigma[sub + 1].first)) +
-                s->C(sigma[sub + 1].first, sigma[sub + 1].second);
-
-            t = t +
-                s->t_(sigma[sub].second, sigma[sub + 1].first) +
-                s->T_recursive(sigma[sub + 1].first, sigma[sub + 1].second);
-
-            w = w + s->W(sigma[1].first, sigma[1].second);
+                s->cost[sigma[sub + 1].first][sigma[sub + 1].second];
+            if(t<2)
+                t = t +
+                    in->dist[s->location[sigma[sub].second]][s->location[sigma[sub+1].first]] +
+                    s->duration[sigma[sub + 1].first][sigma[sub + 1].second];
         }
 
         return c - s->costValueMLP;

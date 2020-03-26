@@ -80,13 +80,26 @@ void Solution::reset()
 
 int Solution::W(int begin, int end)
 {
-    if (begin > end)
-        swap(begin, end);
-    if (begin == 0)
-        begin++;
-    if (end == 0)
-        return 0;
-    return end - begin + 1;
+    if (begin > end){
+        if (!begin)
+            return 0;
+        if (end == 0)
+            // end++;
+            return begin - end + 2;
+        return begin - end + 1;
+    }
+    else
+    {
+        if (!end)
+            return 0;
+        if (begin == 0)
+            // begin++;
+            return end - begin + 2;
+        return end - begin + 1;
+    }
+    
+        
+    
 }
 
 int Solution::T_recursive(int begin, int end)

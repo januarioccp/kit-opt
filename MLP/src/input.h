@@ -23,7 +23,7 @@ class Input{
         
         friend ostream & operator << (ostream &out, Input &c);
 
-    private:
+    // private:
         unsigned dimension_; // quantidade total de vertices
         double ** dist; // matriz de adjacencia
         /**
