@@ -39,7 +39,9 @@ LocalSearch::~LocalSearch()
     
     s_line->deleteMe();
     delete s_line;
-    // delete [] s_rvnd;
+
+    s_rvnd->deleteMe();
+    delete s_rvnd;
     delete c;
     delete p;
     delete n;
