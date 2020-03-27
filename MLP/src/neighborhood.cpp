@@ -24,7 +24,6 @@ Neighborhood::Neighborhood(Input *input)
     // NL.push_back("bestReInsertion-4");
 
     // So far 4 subsequences is enough
-    sigma.resize(in->dimensionGet());
     tempo.resize(10);
 }
 
@@ -57,21 +56,6 @@ void Neighborhood::improove(Solution *s, string choosenNeighborhood)
     //     bestReInsertion(s,4);
 }
 
-void Neighborhood::firstSwap(Solution *s)
-{
-    double delta = 0;
-    for (unsigned i = 0; i < s->location.size() - 1; i++)
-        for (unsigned j = i + 1; j < s->location.size() - 1; j++)
-        {
-            delta = swapDeltaEvaluation(s, i, j);
-            if (delta < 0)
-            {
-                swapMove(s, i, j, delta);
-            }
-        }
-    //}
-}
-
 void Neighborhood::bestSwap(Solution *s)
 {
     double delta = 0;
@@ -97,11 +81,8 @@ void Neighborhood::bestSwap(Solution *s)
     }
 }
 
-double Neighborhood::swapDeltaEvaluation(Solution *s, int i, int j)
+int Neighborhood::swapDeltaEvaluation(Solution *s, int i, int j)
 {
-
-    int t;
-    int c;
 
     if (i == 0)
         return INT_MAX;
@@ -111,37 +92,22 @@ double Neighborhood::swapDeltaEvaluation(Solution *s, int i, int j)
         a1 = 0;
         a2 = i - 1;
 
-        sigma[1].first = j;
-        sigma[1].second = j;
+        b1 = j;
+        b2 = j;
 
-        sigma[2].first = i;
-        sigma[2].second = i;
+        c1 = i;
+        c2 = i;
 
-        sigma[3].first = j + 1;
-        sigma[3].second = in->dimensionGet();
+        d1 = j + 1;
+        d2 = in->dimensionGet();
 
-        t = s->T_recursive(a1, a2) +
-            s->t_(a2, sigma[1].first) +
-            s->T_recursive(sigma[1].first, sigma[1].second);
+        ta = s->duration[a1][a2] + in->dist[s->location[a2]][s->location[b1]] + s->duration[b1][b2];
+        ca = s->cost[a1][a2] + s->W(b1, b2) * (s->duration[a1][a2] + s->t_(a2, b1)) + s->cost[b1][b2];
+        cb = ca + s->W(c1, c2) * (ta + s->t_(b2, c1)) + s->cost[c1][c2];
+        tb = ta + in->dist[s->location[b2]][s->location[c1]] + s->duration[c1][c2];
+        cc = cb + s->W(d1, d2) * (tb + s->t_(c2, d1)) + s->cost[d1][d2];
 
-        c = s->C(a1, a2) +
-            s->W(sigma[1].first, sigma[1].second) * (s->T_recursive(a1, a2) +
-                                                     s->t_(a2, sigma[1].first)) +
-            s->C(sigma[1].first, sigma[1].second);
-
-        for (int sub = 1; sub < 3; sub++)
-        {
-            c = c +
-                s->W(sigma[sub + 1].first, sigma[sub + 1].second) *
-                    (t + s->t_(sigma[sub].second, sigma[sub + 1].first)) +
-                s->cost[sigma[sub + 1].first][sigma[sub + 1].second];
-            if (sub < 2)
-                t = t +
-                    in->dist[s->location[sigma[sub].second]][s->location[sigma[sub + 1].first]] +
-                    s->duration[sigma[sub + 1].first][sigma[sub + 1].second];
-        }
-
-        return c - s->costValueMLP;
+        return cc - s->costValueMLP;
     }
     else
     {
@@ -149,44 +115,31 @@ double Neighborhood::swapDeltaEvaluation(Solution *s, int i, int j)
         a1 = 0;
         a2 = i - 1;
 
-        sigma[1].first = j;
-        sigma[1].second = j;
+        b1 = j;
+        b2 = j;
 
-        sigma[2].first = i + 1;
-        sigma[2].second = j - 1;
+        c1 = i + 1;
+        c2 = j - 1;
 
-        sigma[3].first = i;
-        sigma[3].second = i;
+        d1 = i;
+        d2 = i;
 
-        sigma[4].first = j + 1;
-        sigma[4].second = in->dimensionGet();
+        e1 = j + 1;
+        e2 = in->dimensionGet();
 
-        t = s->T_recursive(a1, a2) +
-            s->t_(a2, sigma[1].first) +
-            s->T_recursive(sigma[1].first, sigma[1].second);
+        ta = s->duration[a1][a2] + in->dist[s->location[a2]][s->location[b1]] + s->duration[b1][b2];
+        ca = s->cost[a1][a2] + s->W(b1, b2) * (s->duration[a1][a2] + s->t_(a2, b1)) + s->cost[b1][b2];
+        cb = ca + s->W(c1, c2) * (ta + s->t_(b2, c1)) + s->cost[c1][c2];
+        tb = ta + in->dist[s->location[b2]][s->location[c1]] + s->duration[c1][c2];
+        cc = cb + s->W(d1, d2) * (tb + s->t_(c2, d1)) + s->cost[d1][d2];
+        tc = tb + in->dist[s->location[c2]][s->location[d1]] + s->duration[d1][d2];
+        cd = cc + s->W(e1, e2) * (tc + s->t_(d2, e1)) + s->cost[e1][e2];
 
-        c = s->C(a1, a2) +
-            s->W(sigma[1].first, sigma[1].second) * (s->T_recursive(a1, a2) +
-                                                     s->t_(a2, sigma[1].first)) +
-            s->C(sigma[1].first, sigma[1].second);
-
-        for (int sub = 1; sub < 4; sub++)
-        {
-            c = c +
-                s->W(sigma[sub + 1].first, sigma[sub + 1].second) *
-                    (t + s->t_(sigma[sub].second, sigma[sub + 1].first)) +
-                s->cost[sigma[sub + 1].first][sigma[sub + 1].second];
-            if (sub < 3)
-                t = t +
-                    in->dist[s->location[sigma[sub].second]][s->location[sigma[sub + 1].first]] +
-                    s->duration[sigma[sub + 1].first][sigma[sub + 1].second];
-        }
-
-        return c - s->costValueMLP;
+        return cd - s->costValueMLP;
     }
 }
 
-void Neighborhood::swapMove(Solution *s, int a, int b, double delta)
+void Neighborhood::swapMove(Solution *s, int a, int b, int delta)
 {
     // cout<<*in<<endl;
 
@@ -204,7 +157,6 @@ void Neighborhood::swapMove(Solution *s, int a, int b, double delta)
     int v1, v2;
     v1 = s->costValueMLP;
     s->updateSwap(a, b);
-    //s->computeCostValueMLP();
     v2 = s->costValueMLP;
 
     if (v1 != v2)
@@ -212,27 +164,6 @@ void Neighborhood::swapMove(Solution *s, int a, int b, double delta)
         cout << __FILE__ << ", line " << __LINE__ << endl;
         exit(0);
     }
-}
-
-void Neighborhood::firstTwoOpt(Solution *s)
-{
-
-    double delta = 0;
-    int last = s->location.size() - 1;
-    //while(!stuck){
-    for (int i = 0; i < last; i++)
-        for (int j = i + 2; j < last; j++)
-        {
-            if (!(i == 0 && j == last - 1))
-            {
-                delta = twoOptDeltaEvaluation(s, i, j);
-                if (delta < 0)
-                {
-                    twoOptMove(s, i, j, delta);
-                }
-            }
-        }
-    // }
 }
 
 void Neighborhood::bestTwoOpt(Solution *s)
@@ -264,45 +195,29 @@ void Neighborhood::bestTwoOpt(Solution *s)
     }
 }
 
-double Neighborhood::twoOptDeltaEvaluation(Solution *s, int i, int j)
+int Neighborhood::twoOptDeltaEvaluation(Solution *s, int i, int j)
 {
     if (i > j)
         swap(i, j);
-    t = 0;
-    c = 0;
 
     a1 = 0;
     a2 = i;
 
-    sigma[1].first = j;
-    sigma[1].second = i + 1;
+    b1 = j;
+    b2 = i + 1;
 
-    sigma[2].first = j + 1;
-    sigma[2].second = in->dimensionGet();
+    c1 = j + 1;
+    c2 = in->dimensionGet();
 
-    t = s->T_recursive(a1, a2) +
-        s->t_(a2, sigma[1].first) +
-        s->T_recursive(sigma[1].first, sigma[1].second);
+    ta = s->duration[a1][a2] + in->dist[s->location[a2]][s->location[b1]] + s->duration[b1][b2];
+    ca = s->cost[a1][a2] + s->W(b1, b2) * (s->duration[a1][a2] + s->t_(a2, b1)) + s->cost[b1][b2];
+    cb = ca + s->W(c1, c2) * (ta + s->t_(b2, c1)) + s->cost[c1][c2];
+    
+    return cb - s->costValueMLP;
 
-    c = s->C(a1, a2) +
-        s->W(sigma[1].first, sigma[1].second) * (s->T_recursive(a1, a2) +
-                                                 s->t_(a2, sigma[1].first)) +
-        s->C(sigma[1].first, sigma[1].second);
-
-    int sub = 1;
-    c = c +
-        s->W(sigma[sub + 1].first, sigma[sub + 1].second) *
-            (t + s->t_(sigma[sub].second, sigma[sub + 1].first)) +
-        s->C(sigma[sub + 1].first, sigma[sub + 1].second);
-
-    t = t +
-        s->t_(sigma[sub].second, sigma[sub + 1].first) +
-        s->T_recursive(sigma[sub + 1].first, sigma[sub + 1].second);
-
-    return c - s->costValueMLP;
 }
 
-void Neighborhood::twoOptMove(Solution *s, int i, int j, double delta)
+void Neighborhood::twoOptMove(Solution *s, int i, int j, int delta)
 {
     if (i > j)
         swap(i, j);
@@ -364,11 +279,8 @@ void Neighborhood::bestReInsertion(Solution *s, int size)
     }
 }
 
-double Neighborhood::reInsertionDeltaEvaluation(Solution *s, int origin, int destination, int size)
-{
-
-    t = 0;
-    c = 0;
+int Neighborhood::reInsertionDeltaEvaluation(Solution *s, int origin, int destination, int size)
+{   
 
     if (origin < destination)
     {
@@ -384,13 +296,13 @@ double Neighborhood::reInsertionDeltaEvaluation(Solution *s, int origin, int des
         d1 = destination + size;
         d2 = in->dimensionGet();
 
-        t = s->duration[a1][a2] + in->dist[s->location[a2]][s->location[b1]] + s->duration[b1][b2];
-        c = s->cost[a1][a2] + s->W(b1, b2) * (s->duration[a1][a2] + s->t_(a2, b1)) + s->cost[b1][b2];
-        c = c + s->W(c1, c2) * (t + s->t_(b2, c1)) + s->cost[c1][c2];
-        t = t + in->dist[s->location[b2]][s->location[c1]] + s->duration[c1][c2];
-        c = c + s->W(d1, d2) * (t + s->t_(c2, d1)) + s->cost[d1][d2];
+        ta = s->duration[a1][a2] + in->dist[s->location[a2]][s->location[b1]] + s->duration[b1][b2];
+        ca = s->cost[a1][a2] + s->W(b1, b2) * (s->duration[a1][a2] + s->t_(a2, b1)) + s->cost[b1][b2];
+        cb = ca + s->W(c1, c2) * (ta + s->t_(b2, c1)) + s->cost[c1][c2];
+        tb = ta + in->dist[s->location[b2]][s->location[c1]] + s->duration[c1][c2];
+        cc = cb + s->W(d1, d2) * (tb + s->t_(c2, d1)) + s->cost[d1][d2];
 
-        return c - s->costValueMLP;
+        return cc - s->costValueMLP;
     }
     else
     {
@@ -406,17 +318,17 @@ double Neighborhood::reInsertionDeltaEvaluation(Solution *s, int origin, int des
         d1 = origin + size;
         d2 = in->dimensionGet();
 
-        t = s->duration[a1][a2] + in->dist[s->location[a2]][s->location[b1]] + s->duration[b1][b2];
-        c = s->cost[a1][a2] + s->W(b1, b2) * (s->duration[a1][a2] + s->t_(a2, b1)) + s->cost[b1][b2];
-        c = c + s->W(c1, c2) * (t + s->t_(b2, c1)) + s->cost[c1][c2];
-        t = t + in->dist[s->location[b2]][s->location[c1]] + s->duration[c1][c2];
-        c = c + s->W(d1, d2) * (t + s->t_(c2, d1)) + s->cost[d1][d2];
+        ta = s->duration[a1][a2] + in->dist[s->location[a2]][s->location[b1]] + s->duration[b1][b2];
+        ca = s->cost[a1][a2] + s->W(b1, b2) * (s->duration[a1][a2] + s->t_(a2, b1)) + s->cost[b1][b2];
+        cb = ca + s->W(c1, c2) * (ta + s->t_(b2, c1)) + s->cost[c1][c2];
+        tb = ta + in->dist[s->location[b2]][s->location[c1]] + s->duration[c1][c2];
+        cc = cb + s->W(d1, d2) * (tb + s->t_(c2, d1)) + s->cost[d1][d2];
 
-        return c - s->costValueMLP;
+        return cc - s->costValueMLP;
     }
 }
 
-void Neighborhood::reInsertionMove(Solution *s, int origin, int destination, int size, double delta)
+void Neighborhood::reInsertionMove(Solution *s, int origin, int destination, int size, int delta)
 {
 
     int last = s->location.size();

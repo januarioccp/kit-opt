@@ -15,25 +15,22 @@ class Neighborhood{
          * SWAP
         */
         void bestSwap(Solution* s);
-        void firstSwap(Solution* s);
-        double swapDeltaEvaluation(Solution* s,int i,int j);
-        void swapMove(Solution* s,int i,int j, double delta);
+        int swapDeltaEvaluation(Solution* s,int i,int j);
+        void swapMove(Solution* s,int i,int j, int delta);
 
         /**
          * 2-opt
         */
-        void firstTwoOpt(Solution* s);
         void bestTwoOpt(Solution* s);
-        double twoOptDeltaEvaluation(Solution* s,int arci,int arcj);
-        void twoOptMove(Solution* s, int arci,int arcj, double delta);
+        int twoOptDeltaEvaluation(Solution* s,int arci,int arcj);
+        void twoOptMove(Solution* s, int arci,int arcj, int delta);
 
         /**
          * reInsertion
         */
-        void firstReInsertion(Solution* s, int size = 1);
         void bestReInsertion(Solution* s, int size = 1 );
-        double reInsertionDeltaEvaluation(Solution* s, int arc, int size, int shift);
-        void reInsertionMove(Solution* s, int arc, int size, int shift, double delta);
+        int reInsertionDeltaEvaluation(Solution* s, int arc, int size, int shift);
+        void reInsertionMove(Solution* s, int arc, int size, int shift, int delta);
         
 
     //private:
@@ -42,7 +39,8 @@ class Neighborhood{
     int destination_best;
     int delta_best;
     int t,c,w;
-    int a1,a2,b1,b2,c1,c2,d1,d2;
+    int a1,a2,b1,b2,c1,c2,d1,d2,e1,e2;
+    int ca,cb,cc,cd,ta,tb,tc;
     chrono::time_point<chrono::system_clock> temp1, temp2;
     vector<double> tempo;
     Input* in;
@@ -50,8 +48,6 @@ class Neighborhood{
     vector<string> NL;
     // vector<int> reInsertionAuxVector;
     friend ostream & operator << (ostream &out, const Neighborhood &c);
-    vector< pair<int,int> > sigma;
-
 };
 
 #endif //NEIGHBORHOOD_H_INCLUDED
