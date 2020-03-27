@@ -385,7 +385,7 @@ double Neighborhood::reInsertionDeltaEvaluation(Solution *s, int origin, int des
         d2 = in->dimensionGet();
 
         t = s->duration[a1][a2] + in->dist[s->location[a2]][s->location[b1]] + s->duration[b1][b2];
-        c = s->C(a1, a2) + s->W(b1, b2) * (s->duration[a1][a2] + s->t_(a2, b1)) + s->C(b1, b2);
+        c = s->cost[a1][a2] + s->W(b1, b2) * (s->duration[a1][a2] + s->t_(a2, b1)) + s->cost[b1][b2];
         c = c + s->W(c1, c2) * (t + s->t_(b2, c1)) + s->cost[c1][c2];
         t = t + in->dist[s->location[b2]][s->location[c1]] + s->duration[c1][c2];
         c = c + s->W(d1, d2) * (t + s->t_(c2, d1)) + s->cost[d1][d2];
@@ -407,7 +407,7 @@ double Neighborhood::reInsertionDeltaEvaluation(Solution *s, int origin, int des
         d2 = in->dimensionGet();
 
         t = s->duration[a1][a2] + in->dist[s->location[a2]][s->location[b1]] + s->duration[b1][b2];
-        c = s->C(a1, a2) + s->W(b1, b2) * (s->duration[a1][a2] + s->t_(a2, b1)) + s->C(b1, b2);
+        c = s->cost[a1][a2] + s->W(b1, b2) * (s->duration[a1][a2] + s->t_(a2, b1)) + s->cost[b1][b2];
         c = c + s->W(c1, c2) * (t + s->t_(b2, c1)) + s->cost[c1][c2];
         t = t + in->dist[s->location[b2]][s->location[c1]] + s->duration[c1][c2];
         c = c + s->W(d1, d2) * (t + s->t_(c2, d1)) + s->cost[d1][d2];
