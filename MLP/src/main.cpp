@@ -13,7 +13,7 @@ using namespace std;
 
 int main(int argc, char** argv) {
     int seed = time(0);
-    //seed = 1585180792; //1585058652
+    seed = 1585180792; //1585058652
     srand(seed);
     // cout<<seed<<endl;
 
@@ -33,7 +33,7 @@ int main(int argc, char** argv) {
         R.push_back(R[i-1]+0.01);
     // END GILSRVND parameters
 
-    for(int i=1; i <=10; i++ ){
+    for(int i=1; i <=1; i++ ){
         seed++;
         srand(seed);
         clock_t beginC = clock();
@@ -48,7 +48,7 @@ int main(int argc, char** argv) {
         cout<<","<<seed<<endl;
     }
 
-    // cout<<ls<<endl;
+    cout<<ls<<endl;
 
     // cout<<sol<<endl;
 
