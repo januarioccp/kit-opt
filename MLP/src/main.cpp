@@ -15,7 +15,7 @@ int main(int argc, char** argv) {
     int seed = time(0);
     //seed = 1585356357; //1585058652
     srand(seed);
-    cout<<seed<<endl;
+    // cout<<seed<<endl;
 
     Input in(argc, argv);
     in.problemSet(1);
