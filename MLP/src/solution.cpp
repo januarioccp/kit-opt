@@ -81,20 +81,26 @@ void Solution::reset()
 int Solution::W(int begin, int end)
 {
     if (begin > end){
-        if (!begin)
+        if (!begin){
+            exit(0);
             return 0;
-        if (end == 0)
-            // end++;
+        }
+        if (end == 0){
+            // exit(0);
             return begin - end + 2;
+        }
         return begin - end + 1;
     }
     else
     {
-        if (!end)
+        if (!end){
+            exit(0);
             return 0;
-        if (begin == 0)
-            // begin++;
+        }
+        if (begin == 0){
+            exit(0);
             return end - begin + 2;
+        }
         return end - begin + 1;
     }
     

@@ -25,7 +25,7 @@ class Input{
 
     // private:
         unsigned dimension_; // quantidade total de vertices
-        double ** dist; // matriz de adjacencia
+        int ** dist; // matriz de adjacencia
         /**
          * 0 - TSP
          * 1 - MLP

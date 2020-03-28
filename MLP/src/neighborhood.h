@@ -40,7 +40,7 @@ class Neighborhood{
     int delta_best;
     int t,c,w;
     int a1,a2,b1,b2,c1,c2,d1,d2,e1,e2;
-    int ca,cb,cc,cd,ta,tb,tc;
+    int ca,cb,cc,cd,ta,tb,tc,wa,wb;
     chrono::time_point<chrono::system_clock> temp1, temp2;
     vector<double> tempo;
     Input* in;

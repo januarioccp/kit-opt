@@ -117,7 +117,7 @@ void LocalSearch::GILSRVND(int Imax, int Iils, vector<double> R, Solution& s_sta
         }
     }
 
-    // cout<<*n<<endl;
+    cout<<*n<<endl;
 }
 
 double LocalSearch::f(Solution* s){

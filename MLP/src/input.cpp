@@ -95,10 +95,10 @@ Input::Input( int argc, char** argv)
     double *y = new double [N+1];
 
     // Alocar matriz 2D
-    dist = new double*[N+1];
+    dist = new int32_t*[N+1];
 
     for ( int i = 0; i < N+1; i++ ) {
-        dist [i] = new double [N+1];
+        dist [i] = new int [N+1];
     }
 
     if ( ewt == "EXPLICIT" ) {

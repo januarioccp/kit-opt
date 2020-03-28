@@ -33,9 +33,13 @@ ostream &operator<<(ostream &out, const Neighborhood &nb)
 
     out << setw(20) << "re-insertion delta:\t" << nb.tempo[1] / 1000000.0 << endl;
 
-    // out << setw(20) << "re-insertion o<d:\t" << nb.tempo[2] / 1000000.0 << endl;
+    out << setw(20) << "or-opt2 move:\t" << nb.tempo[2] / 1000000.0 << endl;
 
-    // out << setw(20) << "re-insertion o>d:\t" << nb.tempo[3] / 1000000.0 << endl;
+    out << setw(20) << "or-opt2 delta:\t" << nb.tempo[3] / 1000000.0 << endl;
+
+    out << setw(20) << "or-opt3 move:\t" << nb.tempo[4] / 1000000.0 << endl;
+
+    out << setw(20) << "or-opt3 delta:\t" << nb.tempo[5] / 1000000.0 << endl;
 
     return out;
 }
@@ -212,9 +216,8 @@ int Neighborhood::twoOptDeltaEvaluation(Solution *s, int i, int j)
     ta = s->duration[a1][a2] + in->dist[s->location[a2]][s->location[b1]] + s->duration[b1][b2];
     ca = s->cost[a1][a2] + s->W(b1, b2) * (s->duration[a1][a2] + s->t_(a2, b1)) + s->cost[b1][b2];
     cb = ca + s->W(c1, c2) * (ta + s->t_(b2, c1)) + s->cost[c1][c2];
-    
-    return cb - s->costValueMLP;
 
+    return cb - s->costValueMLP;
 }
 
 void Neighborhood::twoOptMove(Solution *s, int i, int j, int delta)
@@ -245,30 +248,86 @@ void Neighborhood::twoOptMove(Solution *s, int i, int j, int delta)
 
 void Neighborhood::bestReInsertion(Solution *s, int size)
 {
-
     temp1 = std::chrono::system_clock::now();
 
+    d2 = in->dimensionGet();
     delta_best = INT_MAX;
     for (int origin = 1; origin < s->size - size; ++origin)
     {
         for (int destination = 1; destination < s->size - size; ++destination)
         {
-            if (origin != destination && abs(origin - destination) > size)
+            delta = 0;
+            if (origin < destination && destination - origin > size)
             {
-                delta = reInsertionDeltaEvaluation(s, origin, destination, size);
+                //continue;
+                a1 = 0;
+                a2 = origin - 1;
 
-                if (delta < 0 && delta < delta_best)
-                {
-                    delta_best = delta;
-                    origin_best = origin;
-                    destination_best = destination;
-                }
+                b1 = origin + size;
+                b2 = destination + size - 1;
+
+                c1 = origin;
+                c2 = origin + size - 1;
+
+                d1 = destination + size;
+                // d2 = in->dimensionGet();
+
+                ta = s->duration[a1][a2] + in->dist[s->location[a2]][s->location[b1]] + s->duration[b1][b2];
+                ca = s->cost[a1][a2] + (b2 - b1 + 1) * (s->duration[a1][a2] + in->dist[s->location[a2]][s->location[b1]]) + s->cost[b1][b2];
+                // wa = s->W(a1,a2) + s->W(b1,b2);
+
+                tb = s->duration[c1][c2] + in->dist[s->location[c2]][s->location[d1]] + s->duration[d1][d2];
+                cb = s->cost[c1][c2] + (d2 - d1 + 1) * (s->duration[c1][c2] + in->dist[s->location[c2]][s->location[d1]]) + s->cost[d1][d2];
+                wb = c2 - c1 + d2 - d1 + 2;
+
+                cc = ca + wb * (ta + in->dist[s->location[b2]][s->location[c1]]) + cb;
+                tc = ta + in->dist[s->location[b2]][s->location[c1]] + tb;
+
+                delta = cc - s->costValueMLP;
+            }
+            if (origin > destination && origin - destination > size)
+            {
+                a1 = 0;
+                a2 = destination - 1;
+
+                b1 = origin;
+                b2 = origin + size - 1;
+
+                c1 = destination;
+                c2 = origin - 1;
+
+                d1 = origin + size;
+
+                ta = s->duration[a1][a2] + in->dist[s->location[a2]][s->location[b1]] + s->duration[b1][b2];
+                ca = s->cost[a1][a2] + (b2 - b1 + 1) * (s->duration[a1][a2] + in->dist[s->location[a2]][s->location[b1]]) + s->cost[b1][b2];
+                // wa = s->W(a1,a2) + s->W(b1,b2);
+
+                tb = s->duration[c1][c2] + in->dist[s->location[c2]][s->location[d1]] + s->duration[d1][d2];
+                cb = s->cost[c1][c2] + (d2 - d1 + 1) * (s->duration[c1][c2] + in->dist[s->location[c2]][s->location[d1]]) + s->cost[d1][d2];
+                wb = c2 - c1 + d2 - d1 + 2;
+
+                cc = ca + wb * (ta + in->dist[s->location[b2]][s->location[c1]]) + cb;
+                tc = ta + in->dist[s->location[b2]][s->location[c1]] + tb;
+
+                delta = cc - s->costValueMLP;
+            }
+
+            if (delta < 0 && delta < delta_best)
+            {
+                delta_best = delta;
+                origin_best = origin;
+                destination_best = destination;
             }
         }
     }
+
     temp2 = std::chrono::system_clock::now();
     if (size == 1)
         tempo[1] += std::chrono::duration_cast<std::chrono::microseconds>(temp2 - temp1).count();
+    if (size == 2)
+        tempo[3] += std::chrono::duration_cast<std::chrono::microseconds>(temp2 - temp1).count();
+    if (size == 3)
+        tempo[5] += std::chrono::duration_cast<std::chrono::microseconds>(temp2 - temp1).count();
     if (delta_best < 0)
     {
         temp1 = std::chrono::system_clock::now();
@@ -276,55 +335,10 @@ void Neighborhood::bestReInsertion(Solution *s, int size)
         temp2 = std::chrono::system_clock::now();
         if (size == 1)
             tempo[0] += std::chrono::duration_cast<std::chrono::microseconds>(temp2 - temp1).count();
-    }
-}
-
-int Neighborhood::reInsertionDeltaEvaluation(Solution *s, int origin, int destination, int size)
-{   
-
-    if (origin < destination)
-    {
-        a1 = 0;
-        a2 = origin - 1;
-
-        b1 = origin + size;
-        b2 = destination + size - 1;
-
-        c1 = origin;
-        c2 = origin + size - 1;
-
-        d1 = destination + size;
-        d2 = in->dimensionGet();
-
-        ta = s->duration[a1][a2] + in->dist[s->location[a2]][s->location[b1]] + s->duration[b1][b2];
-        ca = s->cost[a1][a2] + s->W(b1, b2) * (s->duration[a1][a2] + s->t_(a2, b1)) + s->cost[b1][b2];
-        cb = ca + s->W(c1, c2) * (ta + s->t_(b2, c1)) + s->cost[c1][c2];
-        tb = ta + in->dist[s->location[b2]][s->location[c1]] + s->duration[c1][c2];
-        cc = cb + s->W(d1, d2) * (tb + s->t_(c2, d1)) + s->cost[d1][d2];
-
-        return cc - s->costValueMLP;
-    }
-    else
-    {
-        a1 = 0;
-        a2 = destination - 1;
-
-        b1 = origin;
-        b2 = origin + size - 1;
-
-        c1 = destination;
-        c2 = origin - 1;
-
-        d1 = origin + size;
-        d2 = in->dimensionGet();
-
-        ta = s->duration[a1][a2] + in->dist[s->location[a2]][s->location[b1]] + s->duration[b1][b2];
-        ca = s->cost[a1][a2] + s->W(b1, b2) * (s->duration[a1][a2] + s->t_(a2, b1)) + s->cost[b1][b2];
-        cb = ca + s->W(c1, c2) * (ta + s->t_(b2, c1)) + s->cost[c1][c2];
-        tb = ta + in->dist[s->location[b2]][s->location[c1]] + s->duration[c1][c2];
-        cc = cb + s->W(d1, d2) * (tb + s->t_(c2, d1)) + s->cost[d1][d2];
-
-        return cc - s->costValueMLP;
+        if (size == 2)
+            tempo[2] += std::chrono::duration_cast<std::chrono::microseconds>(temp2 - temp1).count();
+        if (size == 3)
+            tempo[4] += std::chrono::duration_cast<std::chrono::microseconds>(temp2 - temp1).count();
     }
 }
 
@@ -333,6 +347,7 @@ void Neighborhood::reInsertionMove(Solution *s, int origin, int destination, int
 
     int last = s->location.size();
     s->costValueMLP += delta;
+    int v1 = s->costValueMLP += delta;
     if (origin < destination)
     {
         rotate(s->location.begin() + origin, s->location.begin() + origin + size, s->location.begin() + destination + size);
@@ -342,5 +357,13 @@ void Neighborhood::reInsertionMove(Solution *s, int origin, int destination, int
     {
         rotate(s->location.begin() + destination, s->location.begin() + s->location.size() - (last - origin), s->location.end() - (last - origin) + size);
         s->update2opt(destination, origin + size);
+    }
+    int v2 = s->costValueMLP += delta;
+    if (v1 != v2)
+    {
+        cout << v1 << " " << v2 << endl;
+        cout << origin << " " << destination << endl;
+        cout << __FILE__ << __LINE__ << endl;
+        exit(0);
     }
 }
