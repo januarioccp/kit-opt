@@ -71,7 +71,36 @@ void Neighborhood::bestSwap(Solution *s)
     for (unsigned i = 1; i < s->location.size() - 1; i++)
         for (unsigned j = i + 1; j < s->location.size() - 1; j++)
         {
-            delta = swapDeltaEvaluation(s, i, j);
+            delta = 0;
+            if (i + 1 == j)
+            { //consecutives = 3 operations
+                a1 = 0;
+                a2 = i - 1;
+
+                b1 = j;
+                b2 = j;
+
+                c1 = i;
+                c2 = i;
+
+                d1 = j + 1;
+                d2 = in->dimensionGet();
+
+                ta = s->duration[a1][a2] + in->dist[s->location[a2]][s->location[b1]] + s->duration[b1][b2];
+                ca = s->cost[a1][a2] + (b2 - b1 + 1) * (s->duration[a1][a2] + in->dist[s->location[a2]][s->location[b1]]) + s->cost[b1][b2];
+                // wa = s->W(a1,a2) + s->W(b1,b2);
+
+                tb = s->duration[c1][c2] + in->dist[s->location[c2]][s->location[d1]] + s->duration[d1][d2];
+                cb = s->cost[c1][c2] + (d2 - d1 + 1) * (s->duration[c1][c2] + in->dist[s->location[c2]][s->location[d1]]) + s->cost[d1][d2];
+                wb = c2 - c1 + d2 - d1 + 2;
+
+                cc = ca + wb * (ta + in->dist[s->location[b2]][s->location[c1]]) + cb;
+                tc = ta + in->dist[s->location[b2]][s->location[c1]] + tb;
+
+                delta = cc - s->costValueMLP;
+            }
+            else
+                delta = swapDeltaEvaluation(s, i, j);
             if (delta < 0 && delta < delta_best)
             {
                 delta_best = delta;
@@ -181,24 +210,24 @@ void Neighborhood::bestTwoOpt(Solution *s)
     delta_best = INT_MAX;
     c2 = in->dimensionGet();
     for (int i = 1; i < last; i++)
-        for (int j = i + 2; j < last-1; j++)
+        for (int j = i + 2; j < last - 1; j++)
         {
             delta = 0;
-            if ( j-i > 2)
+            if (j - i > 2)
             {
                 a1 = 0;
-                    a2 = i;
+                a2 = i;
 
-                    b1 = j;
-                    b2 = i + 1;
+                b1 = j;
+                b2 = i + 1;
 
-                    c1 = j + 1;
+                c1 = j + 1;
 
-                    ta = s->duration[a1][a2] + in->dist[s->location[a2]][s->location[b1]] + s->duration[b1][b2];
-                    cb = s->cost[a1][a2] + (b1- b2 +1) * (s->duration[a1][a2] + s->t_(a2, b1)) + s->cost[b1][b2] + 
-                        (c2 - c1 + 1) * (ta + s->t_(b2, c1)) + s->cost[c1][c2];
+                ta = s->duration[a1][a2] + in->dist[s->location[a2]][s->location[b1]] + s->duration[b1][b2];
+                cb = s->cost[a1][a2] + (b1 - b2 + 1) * (s->duration[a1][a2] + s->t_(a2, b1)) + s->cost[b1][b2] +
+                     (c2 - c1 + 1) * (ta + s->t_(b2, c1)) + s->cost[c1][c2];
 
-                    delta = cb - s->costValueMLP;
+                delta = cb - s->costValueMLP;
 
                 if (delta < 0 && delta < delta_best)
                 {
@@ -229,7 +258,7 @@ int Neighborhood::twoOptDeltaEvaluation(Solution *s, int i, int j)
     c2 = in->dimensionGet();
 
     ta = s->duration[a1][a2] + in->dist[s->location[a2]][s->location[b1]] + s->duration[b1][b2];
-    cb = s->cost[a1][a2] + s->W(b1, b2) * (s->duration[a1][a2] + s->t_(a2, b1)) + s->cost[b1][b2] + 
+    cb = s->cost[a1][a2] + s->W(b1, b2) * (s->duration[a1][a2] + s->t_(a2, b1)) + s->cost[b1][b2] +
          s->W(c1, c2) * (ta + s->t_(b2, c1)) + s->cost[c1][c2];
 
     return cb - s->costValueMLP;
@@ -366,12 +395,12 @@ void Neighborhood::reInsertionMove(Solution *s, int origin, int destination, int
     if (origin < destination)
     {
         rotate(s->location.begin() + origin, s->location.begin() + origin + size, s->location.begin() + destination + size);
-        s->update2opt(origin-1, destination + size+1);
+        s->update2opt(origin - 1, destination + size + 1);
     }
     else
     {
         rotate(s->location.begin() + destination, s->location.begin() + s->location.size() - (last - origin), s->location.end() - (last - origin) + size);
-        s->update2opt(destination-1, origin + size+1);
+        s->update2opt(destination - 1, origin + size + 1);
     }
     int v2 = s->costValueMLP;
     s->computeCostValueMLP();
