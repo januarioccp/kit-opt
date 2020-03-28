@@ -179,12 +179,27 @@ void Neighborhood::bestTwoOpt(Solution *s)
 
     int last = s->location.size() - 1;
     delta_best = INT_MAX;
-    for (int i = 0; i < last; i++)
-        for (int j = i + 2; j < last; j++)
+    c2 = in->dimensionGet();
+    for (int i = 1; i < last; i++)
+        for (int j = i + 2; j < last-1; j++)
         {
-            if (!((i == 0 && j == last - 1) || (abs(i - j) < 2)))
+            delta = 0;
+            if ( j-i > 2)
             {
-                delta = twoOptDeltaEvaluation(s, i, j);
+                a1 = 0;
+                    a2 = i;
+
+                    b1 = j;
+                    b2 = i + 1;
+
+                    c1 = j + 1;
+
+                    ta = s->duration[a1][a2] + in->dist[s->location[a2]][s->location[b1]] + s->duration[b1][b2];
+                    cb = s->cost[a1][a2] + (b1- b2 +1) * (s->duration[a1][a2] + s->t_(a2, b1)) + s->cost[b1][b2] + 
+                        (c2 - c1 + 1) * (ta + s->t_(b2, c1)) + s->cost[c1][c2];
+
+                    delta = cb - s->costValueMLP;
+
                 if (delta < 0 && delta < delta_best)
                 {
                     delta_best = delta;
@@ -214,8 +229,8 @@ int Neighborhood::twoOptDeltaEvaluation(Solution *s, int i, int j)
     c2 = in->dimensionGet();
 
     ta = s->duration[a1][a2] + in->dist[s->location[a2]][s->location[b1]] + s->duration[b1][b2];
-    ca = s->cost[a1][a2] + s->W(b1, b2) * (s->duration[a1][a2] + s->t_(a2, b1)) + s->cost[b1][b2];
-    cb = ca + s->W(c1, c2) * (ta + s->t_(b2, c1)) + s->cost[c1][c2];
+    cb = s->cost[a1][a2] + s->W(b1, b2) * (s->duration[a1][a2] + s->t_(a2, b1)) + s->cost[b1][b2] + 
+         s->W(c1, c2) * (ta + s->t_(b2, c1)) + s->cost[c1][c2];
 
     return cb - s->costValueMLP;
 }
@@ -347,18 +362,20 @@ void Neighborhood::reInsertionMove(Solution *s, int origin, int destination, int
 
     int last = s->location.size();
     s->costValueMLP += delta;
-    int v1 = s->costValueMLP += delta;
+    int v1 = s->costValueMLP;
     if (origin < destination)
     {
         rotate(s->location.begin() + origin, s->location.begin() + origin + size, s->location.begin() + destination + size);
-        s->update2opt(origin, destination + size);
+        s->update2opt(origin-1, destination + size+1);
     }
     else
     {
         rotate(s->location.begin() + destination, s->location.begin() + s->location.size() - (last - origin), s->location.end() - (last - origin) + size);
-        s->update2opt(destination, origin + size);
+        s->update2opt(destination-1, origin + size+1);
     }
-    int v2 = s->costValueMLP += delta;
+    int v2 = s->costValueMLP;
+    s->computeCostValueMLP();
+    int v3 = s->costValueMLP;
     if (v1 != v2)
     {
         cout << v1 << " " << v2 << endl;
