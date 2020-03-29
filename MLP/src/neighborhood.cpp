@@ -86,6 +86,9 @@ void Neighborhood::bestSwap(Solution *s)
                 d1 = j + 1;
                 d2 = in->dimensionGet();
 
+                // e1;
+                // e2;
+
                 ta = s->duration[a1][a2] + in->dist[s->location[a2]][s->location[b1]] + s->duration[b1][b2];
                 ca = s->cost[a1][a2] + (b2 - b1 + 1) * (s->duration[a1][a2] + in->dist[s->location[a2]][s->location[b1]]) + s->cost[b1][b2];
                 // wa = s->W(a1,a2) + s->W(b1,b2);
@@ -95,7 +98,7 @@ void Neighborhood::bestSwap(Solution *s)
                 wb = c2 - c1 + d2 - d1 + 2;
 
                 cc = ca + wb * (ta + in->dist[s->location[b2]][s->location[c1]]) + cb;
-                tc = ta + in->dist[s->location[b2]][s->location[c1]] + tb;
+                // tc = ta + in->dist[s->location[b2]][s->location[c1]] + tb;
 
                 delta = cc - s->costValueMLP;
             }
@@ -159,6 +162,22 @@ int Neighborhood::swapDeltaEvaluation(Solution *s, int i, int j)
 
         e1 = j + 1;
         e2 = in->dimensionGet();
+
+
+        /* */
+        // ta = s->duration[a1][a2] + in->dist[s->location[a2]][s->location[b1]] + s->duration[b1][b2];
+        // ca = s->cost[a1][a2] + (b2 - b1 + 1) * (s->duration[a1][a2] + in->dist[s->location[a2]][s->location[b1]]) + s->cost[b1][b2];
+        // // wa = s->W(a1,a2) + s->W(b1,b2);
+        
+        // tb = s->duration[c1][c2] + in->dist[s->location[c2]][s->location[d1]] + s->duration[d1][d2];
+        // cb = s->cost[c1][c2] + (d2 - d1 + 1) * (s->duration[c1][c2] + in->dist[s->location[c2]][s->location[d1]]) + s->cost[d1][d2];
+        // wb = c2 - c1 + d2 - d1 + 2;
+        
+        // cc = ca + wb * (ta + in->dist[s->location[b2]][s->location[c1]]) + cb;
+        // tc = ta + in->dist[s->location[b2]][s->location[c1]] + tb;
+                
+        // delta = cc - s->costValueMLP;
+        /* */
 
         ta = s->duration[a1][a2] + in->dist[s->location[a2]][s->location[b1]] + s->duration[b1][b2];
         ca = s->cost[a1][a2] + s->W(b1, b2) * (s->duration[a1][a2] + s->t_(a2, b1)) + s->cost[b1][b2];
