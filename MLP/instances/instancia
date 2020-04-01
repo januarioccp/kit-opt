@@ -1,6 +1,22 @@
-5
-0 769.1 702 1398.8 1680.5 
-617.5 0 371.1 785.8 1602.2 
-764.3 499.7 0 1018.9 2216.7 
-1393.6 796.5 1047.6 0 2143.9 
-1963.4 1862.6 2113.7 2492.2 0 
+instances/att48.tsp
+instances/berlin52.tsp
+instances/brazil58.tsp
+instances/dantzig42.tsp
+instances/eil101.tsp
+instances/eil51.tsp
+instances/eil76.tsp
+instances/gr48.tsp
+instances/gr96.tsp
+instances/hk48.tsp
+instances/kroA100.tsp
+instances/kroB100.tsp
+instances/kroC100.tsp
+instances/kroD100.tsp
+instances/kroE100.tsp
+instances/lin105.tsp
+instances/pr107.tsp
+instances/pr76.tsp
+instances/rat99.tsp
+instances/rd100.tsp
+instances/st70.tsp
+instances/swiss42.tsp

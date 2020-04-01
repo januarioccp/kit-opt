@@ -25,21 +25,30 @@ Neighborhood::Neighborhood(Input *input)
 
     // So far 4 subsequences is enough
     tempo.resize(10);
+    contador.resize(20);
 }
 
 ostream &operator<<(ostream &out, const Neighborhood &nb)
 {
-    out << setw(20) << "re-insertion move:\t" << nb.tempo[0] / 1000000.0 << endl;
+    // out << setw(20) << "re-insertion move:\t" << nb.tempo[0] / 1000000.0 << " seconds\t"<<nb.contador[0]<<" times"<<endl;
 
-    out << setw(20) << "re-insertion delta:\t" << nb.tempo[1] / 1000000.0 << endl;
+    out << setw(20) << "re-insertion delta:\t" << nb.tempo[1] / 1000000.0 <<" seconds\t"<<nb.contador[1]<<" times"<<endl;
 
-    out << setw(20) << "or-opt2 move:\t" << nb.tempo[2] / 1000000.0 << endl;
+    // out << setw(20) << "or-opt2 move:\t" << nb.tempo[2] / 1000000.0 << " seconds\t"<<nb.contador[2]<<" times"<<endl;
 
-    out << setw(20) << "or-opt2 delta:\t" << nb.tempo[3] / 1000000.0 << endl;
+    out << setw(20) << "or-opt2 delta:\t" << nb.tempo[3] / 1000000.0 << " seconds\t"<<nb.contador[3]<<" times"<<endl;
 
-    out << setw(20) << "or-opt3 move:\t" << nb.tempo[4] / 1000000.0 << endl;
+    // out << setw(20) << "or-opt3 move:\t" << nb.tempo[4] / 1000000.0 << " seconds\t"<<nb.contador[4]<<" times"<<endl;
 
-    out << setw(20) << "or-opt3 delta:\t" << nb.tempo[5] / 1000000.0 << endl;
+    out << setw(20) << "or-opt3 delta:\t" << nb.tempo[5] / 1000000.0 << " seconds\t"<<nb.contador[5]<<" times"<<endl;
+
+    // out << setw(20) << "swap move:\t" << nb.tempo[6] / 1000000.0 << " seconds\t"<<nb.contador[6]<<" times"<<endl;
+
+    out << setw(20) << "swap delta:\t" << nb.tempo[7] / 1000000.0 << " seconds\t"<<nb.contador[7]<<" times"<<endl;
+
+    // out << setw(20) << "2opt move:\t" << nb.tempo[8] / 1000000.0 << " seconds\t"<<nb.contador[8]<<" times"<<endl;
+
+    out << setw(20) << "2opt delta:\t" << nb.tempo[9] / 1000000.0 << " seconds\t"<<nb.contador[9]<<" times"<<endl;
 
     return out;
 }
@@ -47,7 +56,7 @@ ostream &operator<<(ostream &out, const Neighborhood &nb)
 void Neighborhood::improove(Solution *s, string choosenNeighborhood)
 {
     if (choosenNeighborhood == "bestSwap")
-        bestSwap(s);
+        Swap(s);
     else if (choosenNeighborhood == "bestTwoOpt")
         bestTwoOpt(s);
     else if (choosenNeighborhood == "bestReInsertion-1")
@@ -60,16 +69,16 @@ void Neighborhood::improove(Solution *s, string choosenNeighborhood)
     //     bestReInsertion(s,4);
 }
 
-void Neighborhood::bestSwap(Solution *s)
+void Neighborhood::Swap(Solution *s)
 {
-    double delta = 0;
+    int delta = 0;
     int i_best;
     int j_best;
-    double delta_best;
+    int delta_best = delta_best = INT_MAX;
 
-    delta_best = INT_MAX;
-    for (unsigned i = 1; i < s->location.size() - 1; i++)
-        for (unsigned j = i + 1; j < s->location.size() - 1; j++)
+    temp1 = std::chrono::system_clock::now();
+    for (unsigned i = 1; i < s->location.size() - 2; i++)
+        for (unsigned j = i + 2; j < s->location.size() - 1; j++)
         {
             delta = 0;
             if (i + 1 == j)
@@ -89,12 +98,12 @@ void Neighborhood::bestSwap(Solution *s)
                 // e1;
                 // e2;
 
-                ta = s->duration[a1][a2] + in->dist[s->location[a2]][s->location[b1]] + s->duration[b1][b2];
-                ca = s->cost[a1][a2] + (b2 - b1 + 1) * (s->duration[a1][a2] + in->dist[s->location[a2]][s->location[b1]]) + s->cost[b1][b2];
+                ta = s->reOpt[0][a1][a2] + in->dist[s->location[a2]][s->location[b1]] + s->reOpt[0][b1][b2];
+                ca = s->reOpt[1][a1][a2] + (b2 - b1 + 1) * (s->reOpt[0][a1][a2] + in->dist[s->location[a2]][s->location[b1]]) + s->reOpt[1][b1][b2];
                 // wa = s->W(a1,a2) + s->W(b1,b2);
 
-                tb = s->duration[c1][c2] + in->dist[s->location[c2]][s->location[d1]] + s->duration[d1][d2];
-                cb = s->cost[c1][c2] + (d2 - d1 + 1) * (s->duration[c1][c2] + in->dist[s->location[c2]][s->location[d1]]) + s->cost[d1][d2];
+                tb = s->reOpt[0][c1][c2] + in->dist[s->location[c2]][s->location[d1]] + s->reOpt[0][d1][d2];
+                cb = s->reOpt[1][c1][c2] + (d2 - d1 + 1) * (s->reOpt[0][c1][c2] + in->dist[s->location[c2]][s->location[d1]]) + s->reOpt[1][d1][d2];
                 wb = c2 - c1 + d2 - d1 + 2;
 
                 cc = ca + wb * (ta + in->dist[s->location[b2]][s->location[c1]]) + cb;
@@ -118,13 +127,13 @@ void Neighborhood::bestSwap(Solution *s)
                 e1 = j + 1;
                 e2 = in->dimension_;
 
-                ta = s->duration[a1][a2] + in->dist[s->location[a2]][s->location[b1]] + s->duration[b1][b2];
-                ca = s->cost[a1][a2] + (b2 - b1 +1) * (s->duration[a1][a2] + s->t_(a2, b1)) + s->cost[b1][b2];
-                cb = ca + (c2 - c1 + 1) * (ta + s->t_(b2, c1)) + s->cost[c1][c2];
-                tb = ta + in->dist[s->location[b2]][s->location[c1]] + s->duration[c1][c2];
-                cc = cb + (d2 - d1 +1) * (tb + s->t_(c2, d1)) + s->cost[d1][d2];
-                tc = tb + in->dist[s->location[c2]][s->location[d1]] + s->duration[d1][d2];
-                cd = cc + (e2 - e1 +1) * (tc + s->t_(d2, e1)) + s->cost[e1][e2];
+                ta = s->reOpt[0][a1][a2] + in->dist[s->location[a2]][s->location[b1]] + s->reOpt[0][b1][b2];
+                ca = s->reOpt[1][a1][a2] + (b2 - b1 +1) * (s->reOpt[0][a1][a2] + s->t_(a2, b1)) + s->reOpt[1][b1][b2];
+                cb = ca + (c2 - c1 + 1) * (ta + s->t_(b2, c1)) + s->reOpt[1][c1][c2];
+                tb = ta + in->dist[s->location[b2]][s->location[c1]] + s->reOpt[0][c1][c2];
+                cc = cb + (d2 - d1 +1) * (tb + s->t_(c2, d1)) + s->reOpt[1][d1][d2];
+                tc = tb + in->dist[s->location[c2]][s->location[d1]] + s->reOpt[0][d1][d2];
+                cd = cc + (e2 - e1 +1) * (tc + s->t_(d2, e1)) + s->reOpt[1][e1][e2];
                 delta = cd - s->costValueMLP;
             }
             if (delta < 0 && delta < delta_best)
@@ -134,9 +143,16 @@ void Neighborhood::bestSwap(Solution *s)
                 j_best = j;
             }
         }
+        temp2 = std::chrono::system_clock::now();
+        tempo[7] += std::chrono::duration_cast<std::chrono::microseconds>(temp2 - temp1).count();
+        contador[7]++;
     if (delta_best < 0)
     {
+        temp1 = std::chrono::system_clock::now();
         swapMove(s, i_best, j_best, delta_best);
+        temp2 = std::chrono::system_clock::now();
+        tempo[6] += chrono::duration_cast<chrono::microseconds>(temp2 - temp1).count();
+        contador[6]++;
     }
 }
 
@@ -159,13 +175,13 @@ int Neighborhood::swapDeltaEvaluation(Solution *s, int i, int j)
         e1 = j + 1;
         e2 = in->dimensionGet();
 
-        ta = s->duration[a1][a2] + in->dist[s->location[a2]][s->location[b1]] + s->duration[b1][b2];
-        ca = s->cost[a1][a2] + s->W(b1, b2) * (s->duration[a1][a2] + s->t_(a2, b1)) + s->cost[b1][b2];
-        cb = ca + s->W(c1, c2) * (ta + s->t_(b2, c1)) + s->cost[c1][c2];
-        tb = ta + in->dist[s->location[b2]][s->location[c1]] + s->duration[c1][c2];
-        cc = cb + s->W(d1, d2) * (tb + s->t_(c2, d1)) + s->cost[d1][d2];
-        tc = tb + in->dist[s->location[c2]][s->location[d1]] + s->duration[d1][d2];
-        cd = cc + s->W(e1, e2) * (tc + s->t_(d2, e1)) + s->cost[e1][e2];
+        ta = s->reOpt[0][a1][a2] + in->dist[s->location[a2]][s->location[b1]] + s->reOpt[0][b1][b2];
+        ca = s->reOpt[1][a1][a2] + s->W(b1, b2) * (s->reOpt[0][a1][a2] + s->t_(a2, b1)) + s->reOpt[1][b1][b2];
+        cb = ca + s->W(c1, c2) * (ta + s->t_(b2, c1)) + s->reOpt[1][c1][c2];
+        tb = ta + in->dist[s->location[b2]][s->location[c1]] + s->reOpt[0][c1][c2];
+        cc = cb + s->W(d1, d2) * (tb + s->t_(c2, d1)) + s->reOpt[1][d1][d2];
+        tc = tb + in->dist[s->location[c2]][s->location[d1]] + s->reOpt[0][d1][d2];
+        cd = cc + s->W(e1, e2) * (tc + s->t_(d2, e1)) + s->reOpt[1][e1][e2];
 
         return cd - s->costValueMLP;
 }
@@ -199,19 +215,18 @@ void Neighborhood::swapMove(Solution *s, int a, int b, int delta)
 
 void Neighborhood::bestTwoOpt(Solution *s)
 {
-    double delta = 0;
+    int delta = 0;
     int i_best;
     int j_best;
-    double delta_best;
-
+    int delta_best = INT_MAX;
     int last = s->location.size() - 1;
-    delta_best = INT_MAX;
+    a1 = 0;
     c2 = in->dimensionGet();
+    temp1 = std::chrono::system_clock::now();
     for (int i = 1; i < last; i++)
-        for (int j = i + 2; j < last - 1; j++)
+        for (int j = i + 1; j < last - 1; j++)
         {
-            delta = 0;
-                a1 = 0;
+                
                 a2 = i;
 
                 b1 = j;
@@ -219,9 +234,9 @@ void Neighborhood::bestTwoOpt(Solution *s)
 
                 c1 = j + 1;
 
-                ta = s->duration[a1][a2] + in->dist[s->location[a2]][s->location[b1]] + s->duration[b1][b2];
-                cb = s->cost[a1][a2] + (b1 - b2 + 1) * (s->duration[a1][a2] + s->t_(a2, b1)) + s->cost[b1][b2] +
-                     (c2 - c1 + 1) * (ta + s->t_(b2, c1)) + s->cost[c1][c2];
+                ta = s->reOpt[0][a1][a2] + in->dist[s->location[a2]][s->location[b1]] + s->reOpt[0][b1][b2];
+                cb = s->reOpt[1][a1][a2] + (b1 - b2 + 1) * (s->reOpt[0][a1][a2] + s->t_(a2, b1)) + s->reOpt[1][b1][b2] +
+                     (c2 - c1 + 1) * (ta + s->t_(b2, c1)) + s->reOpt[1][c1][c2];
 
                 delta = cb - s->costValueMLP;
 
@@ -233,9 +248,16 @@ void Neighborhood::bestTwoOpt(Solution *s)
                 }
             
         }
+    temp2 = std::chrono::system_clock::now();
+    tempo[9] += std::chrono::duration_cast<std::chrono::microseconds>(temp2 - temp1).count();
+    contador[9]++;
     if (delta_best < 0)
     {
+        temp1 = std::chrono::system_clock::now();
         twoOptMove(s, i_best, j_best, delta_best);
+        temp2 = std::chrono::system_clock::now();
+        tempo[8] += std::chrono::duration_cast<std::chrono::microseconds>(temp2 - temp1).count();
+        contador[8]++;
     }
 }
 
@@ -253,9 +275,9 @@ int Neighborhood::twoOptDeltaEvaluation(Solution *s, int i, int j)
     c1 = j + 1;
     c2 = in->dimensionGet();
 
-    ta = s->duration[a1][a2] + in->dist[s->location[a2]][s->location[b1]] + s->duration[b1][b2];
-    cb = s->cost[a1][a2] + s->W(b1, b2) * (s->duration[a1][a2] + s->t_(a2, b1)) + s->cost[b1][b2] +
-         s->W(c1, c2) * (ta + s->t_(b2, c1)) + s->cost[c1][c2];
+    ta = s->reOpt[0][a1][a2] + in->dist[s->location[a2]][s->location[b1]] + s->reOpt[0][b1][b2];
+    cb = s->reOpt[1][a1][a2] + s->W(b1, b2) * (s->reOpt[0][a1][a2] + s->t_(a2, b1)) + s->reOpt[1][b1][b2] +
+         s->W(c1, c2) * (ta + s->t_(b2, c1)) + s->reOpt[1][c1][c2];
 
     return cb - s->costValueMLP;
 }
@@ -289,7 +311,6 @@ void Neighborhood::twoOptMove(Solution *s, int i, int j, int delta)
 void Neighborhood::bestReInsertion(Solution *s, int size)
 {
     temp1 = std::chrono::system_clock::now();
-
     d2 = in->dimensionGet();
     delta_best = INT_MAX;
     for (int origin = 1; origin < s->size - size; ++origin)
@@ -297,7 +318,7 @@ void Neighborhood::bestReInsertion(Solution *s, int size)
         for (int destination = 1; destination < s->size - size; ++destination)
         {
             delta = 0;
-            if (origin < destination && destination - origin > size)
+            if (origin < destination)
             {
                 //continue;
                 a1 = 0;
@@ -312,12 +333,12 @@ void Neighborhood::bestReInsertion(Solution *s, int size)
                 d1 = destination + size;
                 // d2 = in->dimensionGet();
 
-                ta = s->duration[a1][a2] + in->dist[s->location[a2]][s->location[b1]] + s->duration[b1][b2];
-                ca = s->cost[a1][a2] + (b2 - b1 + 1) * (s->duration[a1][a2] + in->dist[s->location[a2]][s->location[b1]]) + s->cost[b1][b2];
+                ta = s->reOpt[0][a1][a2] + in->dist[s->location[a2]][s->location[b1]] + s->reOpt[0][b1][b2];
+                ca = s->reOpt[1][a1][a2] + (b2 - b1 + 1) * (s->reOpt[0][a1][a2] + in->dist[s->location[a2]][s->location[b1]]) + s->reOpt[1][b1][b2];
                 // wa = s->W(a1,a2) + s->W(b1,b2);
 
-                tb = s->duration[c1][c2] + in->dist[s->location[c2]][s->location[d1]] + s->duration[d1][d2];
-                cb = s->cost[c1][c2] + (d2 - d1 + 1) * (s->duration[c1][c2] + in->dist[s->location[c2]][s->location[d1]]) + s->cost[d1][d2];
+                tb = s->reOpt[0][c1][c2] + in->dist[s->location[c2]][s->location[d1]] + s->reOpt[0][d1][d2];
+                cb = s->reOpt[1][c1][c2] + (d2 - d1 + 1) * (s->reOpt[0][c1][c2] + in->dist[s->location[c2]][s->location[d1]]) + s->reOpt[1][d1][d2];
                 wb = c2 - c1 + d2 - d1 + 2;
 
                 cc = ca + wb * (ta + in->dist[s->location[b2]][s->location[c1]]) + cb;
@@ -325,7 +346,7 @@ void Neighborhood::bestReInsertion(Solution *s, int size)
 
                 delta = cc - s->costValueMLP;
             }
-            if (origin > destination && origin - destination > size)
+            if (origin > destination)
             {
                 a1 = 0;
                 a2 = destination - 1;
@@ -338,12 +359,12 @@ void Neighborhood::bestReInsertion(Solution *s, int size)
 
                 d1 = origin + size;
 
-                ta = s->duration[a1][a2] + in->dist[s->location[a2]][s->location[b1]] + s->duration[b1][b2];
-                ca = s->cost[a1][a2] + (b2 - b1 + 1) * (s->duration[a1][a2] + in->dist[s->location[a2]][s->location[b1]]) + s->cost[b1][b2];
+                ta = s->reOpt[0][a1][a2] + in->dist[s->location[a2]][s->location[b1]] + s->reOpt[0][b1][b2];
+                ca = s->reOpt[1][a1][a2] + (b2 - b1 + 1) * (s->reOpt[0][a1][a2] + in->dist[s->location[a2]][s->location[b1]]) + s->reOpt[1][b1][b2];
                 // wa = s->W(a1,a2) + s->W(b1,b2);
 
-                tb = s->duration[c1][c2] + in->dist[s->location[c2]][s->location[d1]] + s->duration[d1][d2];
-                cb = s->cost[c1][c2] + (d2 - d1 + 1) * (s->duration[c1][c2] + in->dist[s->location[c2]][s->location[d1]]) + s->cost[d1][d2];
+                tb = s->reOpt[0][c1][c2] + in->dist[s->location[c2]][s->location[d1]] + s->reOpt[0][d1][d2];
+                cb = s->reOpt[1][c1][c2] + (d2 - d1 + 1) * (s->reOpt[0][c1][c2] + in->dist[s->location[c2]][s->location[d1]]) + s->reOpt[1][d1][d2];
                 wb = c2 - c1 + d2 - d1 + 2;
 
                 cc = ca + wb * (ta + in->dist[s->location[b2]][s->location[c1]]) + cb;
@@ -362,23 +383,35 @@ void Neighborhood::bestReInsertion(Solution *s, int size)
     }
 
     temp2 = std::chrono::system_clock::now();
-    if (size == 1)
+    if (size == 1){
         tempo[1] += std::chrono::duration_cast<std::chrono::microseconds>(temp2 - temp1).count();
-    if (size == 2)
+        contador[1]++;
+    }
+    if (size == 2){
         tempo[3] += std::chrono::duration_cast<std::chrono::microseconds>(temp2 - temp1).count();
-    if (size == 3)
+        contador[3]++;
+    }
+    if (size == 3){
         tempo[5] += std::chrono::duration_cast<std::chrono::microseconds>(temp2 - temp1).count();
+        contador[5]++;
+    }
     if (delta_best < 0)
     {
         temp1 = std::chrono::system_clock::now();
         reInsertionMove(s, origin_best, destination_best, size, delta_best);
         temp2 = std::chrono::system_clock::now();
-        if (size == 1)
+        if (size == 1){
             tempo[0] += std::chrono::duration_cast<std::chrono::microseconds>(temp2 - temp1).count();
-        if (size == 2)
+            contador[0]++;
+        }
+        if (size == 2){
             tempo[2] += std::chrono::duration_cast<std::chrono::microseconds>(temp2 - temp1).count();
-        if (size == 3)
+            contador[2]++;
+        }
+        if (size == 3){
             tempo[4] += std::chrono::duration_cast<std::chrono::microseconds>(temp2 - temp1).count();
+            contador[4]++;
+        }
     }
 }
 

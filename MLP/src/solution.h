@@ -29,6 +29,7 @@ class Solution{
         void update2opt(int a, int b);
 
     //private:
+        int*** reOpt;
         int** duration; //T(sigma)
         int** cost; //C(sigma)
 

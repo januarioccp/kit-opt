@@ -8,12 +8,13 @@
 #include <fstream>
 #include <iostream>
 #include <ctime>
-
+#include <chrono>
 using namespace std;
 
 int main(int argc, char** argv) {
+    chrono::time_point<chrono::system_clock> temp1, temp2;
     int seed = time(0);
-    seed = 1585487763; //1585058652
+    //seed = 1585487770; //1585058652
     srand(seed);
     // cout<<seed<<endl;
 
@@ -25,30 +26,32 @@ int main(int argc, char** argv) {
     LocalSearch ls(&in);
 
     // BEGIN GILSRVND parameters
-    int Imax = 10;
-    int Iils = min(in.dimensionGet(),unsigned(100));
+    int Imax = 9;
+    int Iils = min(in.dimensionGet()-1,unsigned(100)-1);
     vector<double> R;
     R.push_back(0.00);
     for(int i=1; i <= 25; i++)
         R.push_back(R[i-1]+0.01);
     // END GILSRVND parameters
 
-    for(int i=1; i <=10; i++ ){
+    for(int i=1; i <=1; i++ ){
         srand(seed);
-        clock_t beginC = clock();
-        
+        // clock_t beginC = clock();
+        temp1 = std::chrono::system_clock::now();
         ls.GILSRVND(Imax,Iils,R,sol);
-        
-        clock_t endC = clock();
-        double elapsed_secs = double(endC - beginC) / CLOCKS_PER_SEC;
+        temp2 = std::chrono::system_clock::now();
+        // clock_t endC = clock();
+        // double elapsed_secs = double(endC - beginC) / CLOCKS_PER_SEC;
+
         printf("%.*s", int(strlen(argv[1]))-14, argv[1] + 10);
-        cout<<","<<elapsed_secs<<",";
+        // cout<<","<<elapsed_secs<<",";
+        cout<<","<<chrono::duration_cast<chrono::microseconds>(temp2 - temp1).count()/1000000.0<<",";
         cout<<fixed<<sol.costValueMLP;
         cout<<","<<seed<<endl;
         seed++;
     }
 
-    // cout<<ls<<endl;
+    cout<<ls<<endl;
 
     // cout<<sol<<endl;
 

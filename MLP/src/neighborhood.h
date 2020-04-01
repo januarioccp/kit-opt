@@ -14,7 +14,7 @@ class Neighborhood{
         /**
          * SWAP
         */
-        void bestSwap(Solution* s);
+        void Swap(Solution* s);
         int swapDeltaEvaluation(Solution* s,int i,int j);
         void swapMove(Solution* s,int i,int j, int delta);
 
@@ -43,6 +43,7 @@ class Neighborhood{
     int ca,cb,cc,cd,ta,tb,tc,wa,wb,wc;
     chrono::time_point<chrono::system_clock> temp1, temp2;
     vector<double> tempo;
+    vector<int> contador;
     Input* in;
     // Statistics* st;
     vector<string> NL;
