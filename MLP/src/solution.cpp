@@ -50,7 +50,7 @@ void Solution::deleteMe()
     for (int i = 0; i < size; i++)
     {
         delete[] reOpt[0][i];
-        delete[] reOpt[1][1];
+        delete[] reOpt[1][i];
     }
     delete[] reOpt[0];
     delete[] reOpt[1];
