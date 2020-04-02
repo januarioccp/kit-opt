@@ -46,9 +46,9 @@ LocalSearch::~LocalSearch()
 
 ostream &operator<<(ostream &out, LocalSearch &ls)
 {
-    out << setw(14) << "RND:\t" << ls.tempo[0] / 1000000.0 << endl;
+    // out << setw(14) << "RND:\t" << ls.tempo[0] / 1000000.0 << endl;
 
-    out << setw(14) << "Constructive:\t" << ls.tempo[1] / 1000000.0 << endl;
+    // out << setw(14) << "Constructive:\t" << ls.tempo[1] / 1000000.0 << endl;
 
     out << setw(14) << "Swap:\t" << ls.tempo[2] / 1000000.0 << endl;
 
@@ -66,27 +66,25 @@ ostream &operator<<(ostream &out, LocalSearch &ls)
 }
 
 // GILS-RVND from EJOR2012-Marcos
-void LocalSearch::GILSRVND(int Imax, int Iils, vector<double> R, Solution &s_star)
+void LocalSearch::GILSRVND(int &Imax, int &Iils, vector<double> &R, Solution &s_star)
 {
     std::chrono::time_point<std::chrono::system_clock> temp1, temp2;
     s_star.costValueMLP = INT_MAX;
     s_line->costValueMLP = INT_MAX;
 
-    for (int i = 1; i <= Imax; i++)
+    for (int i = 0; i < Imax; i++)
     {
-        alpha = randomValue(R);
-        temp1 = std::chrono::system_clock::now();
+        alpha = R[rand() % 26];
+
         c->constructiveProcedure(s, alpha);
-        temp2 = std::chrono::system_clock::now();
-        tempo[1] += std::chrono::duration_cast<std::chrono::microseconds>(temp2 - temp1).count();
         s_line->copy(s);
+
         iterILS = 0;
         while (iterILS < Iils)
         {
-            temp1 = std::chrono::system_clock::now();
+
             RVND(s);
-            temp2 = std::chrono::system_clock::now();
-            tempo[0] += std::chrono::duration_cast<std::chrono::microseconds>(temp2 - temp1).count();
+
             if (f(s) < f(s_line))
             {
                 s_line->copy(s);
@@ -113,17 +111,12 @@ double LocalSearch::f(Solution *s)
     return s->costValueMLP;
 }
 
-double LocalSearch::randomValue(vector<double> R)
+double LocalSearch::randomValue(vector<double> &R)
 {
     return R[rand() % R.size()];
 }
 
-string LocalSearch::randomNeighborhood()
-{
-    return NL[rand() % NL.size()];
-}
-
-void LocalSearch::deleteNeighborhood(string choosenNeighborhood)
+void LocalSearch::deleteNeighborhood(int &choosenNeighborhood)
 {
     auto it = find(NL.begin(), NL.end(), choosenNeighborhood);
     if (it != NL.end())
@@ -135,31 +128,39 @@ void LocalSearch::RVND(Solution *s)
     std::chrono::time_point<std::chrono::system_clock> temp1, temp2;
     (*s_rvnd) = (*s);
     NL = n->NeighborhoodList();
-    string choosenNeighborhood;
-    while (NL.size() != 0)
+    int choosenNeighborhood;
+    while (!NL.empty())
     {
-        choosenNeighborhood = randomNeighborhood();
-        temp1 = std::chrono::system_clock::now();
-        n->improove(s_rvnd, choosenNeighborhood);
-        temp2 = std::chrono::system_clock::now();
+        choosenNeighborhood = rand() % NL.size();
 
-        if (choosenNeighborhood == "bestSwap")
-            tempo[2] += std::chrono::duration_cast<std::chrono::microseconds>(temp2 - temp1).count();
-        else if (choosenNeighborhood == "bestTwoOpt")
-            tempo[3] += std::chrono::duration_cast<std::chrono::microseconds>(temp2 - temp1).count();
-        else if (choosenNeighborhood == "bestReInsertion-1")
-            tempo[4] += std::chrono::duration_cast<std::chrono::microseconds>(temp2 - temp1).count();
-        else if (choosenNeighborhood == "bestReInsertion-2")
-            tempo[5] += std::chrono::duration_cast<std::chrono::microseconds>(temp2 - temp1).count();
-        else if (choosenNeighborhood == "bestReInsertion-3")
-            tempo[6] += std::chrono::duration_cast<std::chrono::microseconds>(temp2 - temp1).count();
+        switch (NL[choosenNeighborhood])
+        {
+        case 0:
+            n->Swap(s_rvnd);
+            break;
+        case 1:
+            n->bestTwoOpt(s_rvnd);
+            break;
+        case 2:
+            n->bestReInsertion(s_rvnd, 1);
+            break;
+        case 3:
+            n->bestReInsertion(s_rvnd, 2);
+            break;
+        case 4:
+            n->bestReInsertion(s_rvnd, 3);
+            break;
+        default:
+            break;
+        }
 
         if (f(s_rvnd) < f(s))
         {
             (*s) = (*s_rvnd);
             NL = n->NeighborhoodList();
         }
-        else
-            deleteNeighborhood(choosenNeighborhood);
+        else{
+            NL.erase(NL.begin() + choosenNeighborhood);
+        }
     }
 }

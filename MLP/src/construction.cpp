@@ -37,7 +37,7 @@ Construction::Construction( Solution* s)
 
 }
 
-void Construction::constructiveProcedure(Solution* s, const double alpha){
+void Construction::constructiveProcedure(Solution* s, const double &alpha){
     
     // Local variables
     int position;
@@ -56,7 +56,7 @@ void Construction::constructiveProcedure(Solution* s, const double alpha){
     while ( CL.size() > 0){
         // Sort CL in ascending order according to their distance with respect to r
         calculaCustoInsercaoMLP(s);
-        position = rand()%(int(floor(custoInsercao.size()*alpha))+1);
+        position = rand()%(int(floor((custoInsercao.size()-1)*alpha)+1));
         s->location.push_back(custoInsercao[position].noInserido);
         remove(CL.begin(), CL.end(), custoInsercao[position].noInserido);
         CL.resize(CL.size()-1);    

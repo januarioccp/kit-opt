@@ -16,57 +16,36 @@ Neighborhood::Neighborhood(Input *input)
 {
     this->in = input;
 
-    NL.push_back("bestSwap");
-    NL.push_back("bestTwoOpt");
-    NL.push_back("bestReInsertion-1");
-    NL.push_back("bestReInsertion-2");
-    NL.push_back("bestReInsertion-3");
-    // NL.push_back("bestReInsertion-4");
+    for(int i=0; i < 5; i++)
+        NL.push_back(i);
 
-    // So far 4 subsequences is enough
     tempo.resize(10);
     contador.resize(20);
 }
 
 ostream &operator<<(ostream &out, const Neighborhood &nb)
 {
-    // out << setw(20) << "re-insertion move:\t" << nb.tempo[0] / 1000000.0 << " seconds\t"<<nb.contador[0]<<" times"<<endl;
+    out << setw(20) << "re-insertion move:\t" << nb.tempo[0] / 1000000.0 << " seconds\t"<<nb.contador[0]<<" times"<<endl;
 
     out << setw(20) << "re-insertion delta:\t" << nb.tempo[1] / 1000000.0 <<" seconds\t"<<nb.contador[1]<<" times"<<endl;
 
-    // out << setw(20) << "or-opt2 move:\t" << nb.tempo[2] / 1000000.0 << " seconds\t"<<nb.contador[2]<<" times"<<endl;
+    out << setw(20) << "or-opt2 move:\t" << nb.tempo[2] / 1000000.0 << " seconds\t"<<nb.contador[2]<<" times"<<endl;
 
     out << setw(20) << "or-opt2 delta:\t" << nb.tempo[3] / 1000000.0 << " seconds\t"<<nb.contador[3]<<" times"<<endl;
 
-    // out << setw(20) << "or-opt3 move:\t" << nb.tempo[4] / 1000000.0 << " seconds\t"<<nb.contador[4]<<" times"<<endl;
+    out << setw(20) << "or-opt3 move:\t" << nb.tempo[4] / 1000000.0 << " seconds\t"<<nb.contador[4]<<" times"<<endl;
 
     out << setw(20) << "or-opt3 delta:\t" << nb.tempo[5] / 1000000.0 << " seconds\t"<<nb.contador[5]<<" times"<<endl;
 
-    // out << setw(20) << "swap move:\t" << nb.tempo[6] / 1000000.0 << " seconds\t"<<nb.contador[6]<<" times"<<endl;
+    out << setw(20) << "swap move:\t" << nb.tempo[6] / 1000000.0 << " seconds\t"<<nb.contador[6]<<" times"<<endl;
 
     out << setw(20) << "swap delta:\t" << nb.tempo[7] / 1000000.0 << " seconds\t"<<nb.contador[7]<<" times"<<endl;
 
-    // out << setw(20) << "2opt move:\t" << nb.tempo[8] / 1000000.0 << " seconds\t"<<nb.contador[8]<<" times"<<endl;
+    out << setw(20) << "2opt move:\t" << nb.tempo[8] / 1000000.0 << " seconds\t"<<nb.contador[8]<<" times"<<endl;
 
     out << setw(20) << "2opt delta:\t" << nb.tempo[9] / 1000000.0 << " seconds\t"<<nb.contador[9]<<" times"<<endl;
 
     return out;
-}
-
-void Neighborhood::improove(Solution *s, string choosenNeighborhood)
-{
-    if (choosenNeighborhood == "bestSwap")
-        Swap(s);
-    else if (choosenNeighborhood == "bestTwoOpt")
-        bestTwoOpt(s);
-    else if (choosenNeighborhood == "bestReInsertion-1")
-        bestReInsertion(s, 1);
-    else if (choosenNeighborhood == "bestReInsertion-2")
-        bestReInsertion(s, 2);
-    else if (choosenNeighborhood == "bestReInsertion-3")
-        bestReInsertion(s, 3);
-    // else if(choosenNeighborhood == "bestReInsertion-4")
-    //     bestReInsertion(s,4);
 }
 
 void Neighborhood::Swap(Solution *s)
@@ -78,7 +57,7 @@ void Neighborhood::Swap(Solution *s)
 
     temp1 = std::chrono::system_clock::now();
     for (unsigned i = 1; i < s->location.size() - 2; i++)
-        for (unsigned j = i + 2; j < s->location.size() - 1; j++)
+        for (unsigned j = i + 1; j < s->location.size() - 1; j++)
         {
             delta = 0;
             if (i + 1 == j)
@@ -415,7 +394,7 @@ void Neighborhood::bestReInsertion(Solution *s, int size)
     }
 }
 
-void Neighborhood::reInsertionMove(Solution *s, int origin, int destination, int size, int delta)
+void Neighborhood::reInsertionMove(Solution *s, int &origin, int &destination, int &size, int &delta)
 {
 
     int last = s->location.size();

@@ -9,8 +9,8 @@ class Neighborhood{
     public:
         // Neighborhood(Input *input, Statistics *st);
         Neighborhood(Input *input);
-        vector<string> NeighborhoodList(){return NL;};
-        void improove(Solution* s,string choosenNeighborhood);
+        vector<int> NeighborhoodList(){return NL;};
+        void improove(Solution* s,int &choosenNeighborhood);
         /**
          * SWAP
         */
@@ -29,8 +29,8 @@ class Neighborhood{
          * reInsertion
         */
         void bestReInsertion(Solution* s, int size = 1 );
-        int reInsertionDeltaEvaluation(Solution* s, int arc, int size, int shift);
-        void reInsertionMove(Solution* s, int arc, int size, int shift, int delta);
+        int reInsertionDeltaEvaluation(Solution* s, int &arc, int &size, int &shift);
+        void reInsertionMove(Solution* s, int &arc, int &size, int &shift, int &delta);
         
 
     //private:
@@ -46,7 +46,7 @@ class Neighborhood{
     vector<int> contador;
     Input* in;
     // Statistics* st;
-    vector<string> NL;
+    vector<int> NL;
     // vector<int> reInsertionAuxVector;
     friend ostream & operator << (ostream &out, const Neighborhood &c);
 };

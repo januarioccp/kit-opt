@@ -67,19 +67,19 @@ void Solution::reset()
 {
     costValueMLP = INT_MAX;
 
-    for (int i = 0; i < size; i++)
-        for (int j = i; j < size; j++)
-            if (i != j)
-                reOpt[0][i][j] = -1;
-            else
-                reOpt[0][i][j] = 0;
+    // for (int i = 0; i < size; i++)
+    //     for (int j = i; j < size; j++)
+    //         if (i != j)
+    //             reOpt[0][i][j] = -1;
+    //         else
+    //             reOpt[0][i][j] = 0;
 
-    for (int i = 0; i < size; i++)
-        for (int j = i; j < size; j++)
-            if (i != j)
-                reOpt[1][i][j] = -1;
-            else
-                reOpt[1][i][j] = 0;
+    // for (int i = 0; i < size; i++)
+    //     for (int j = i; j < size; j++)
+    //         if (i != j)
+    //             reOpt[1][i][j] = -1;
+    //         else
+    //             reOpt[1][i][j] = 0;
 
     location.resize(0);
 }
@@ -305,7 +305,7 @@ Solution::Solution(Solution &other)
         this->size = other.size;
         reOpt = new int **[2];
         reOpt[0] = new int *[size];
-        cost = new int *[size];
+        reOpt[1] = new int *[size];
         for (int i = 0; i < size; i++)
         {
             reOpt[0][i] = new int[size];

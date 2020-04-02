@@ -30,8 +30,6 @@ class Solution{
 
     //private:
         int*** reOpt;
-        int** duration; //T(sigma)
-        int** cost; //C(sigma)
 
         double costValueMLP;
         
