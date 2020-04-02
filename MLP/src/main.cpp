@@ -12,6 +12,7 @@
 #include <iostream>
 #include <ctime>
 #include <chrono>
+#include <climits>
 using namespace std;
 
 // Structures
