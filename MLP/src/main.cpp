@@ -1,18 +1,14 @@
 #include "readData.h"
-// #include "input.h"
-// #include "solution.h"
-// #include "construction.h"
-#include "neighborhood.h"
-#include "perturbation.h"
-#include "localsearch.h"
 #include <algorithm>
 #include <cmath>
-#include <cstring>
-#include <fstream>
-#include <iostream>
 #include <ctime>
 #include <chrono>
 #include <climits>
+#include <cstring>
+#include <fstream>
+#include <iostream>
+#include <vector>
+#include <string>
 using namespace std;
 
 // Structures
@@ -26,8 +22,9 @@ struct InsertionInfo
 // Functions
 void GILSRVND(int &Imax, int &Iils, vector<double> &R, vector<int> &s, int &costMLP);
 void constructiveProcedure(vector<int> &s, int &costMLP, double &alpha);
+vector<int> construction(double alpha);
 static bool compareByCost(const InsertionInfo &a, const InsertionInfo &b) { return a.custo < b.custo; }
-void calculaCustoInsercaoMLP(vector<int> s);
+void calculaCustoInsercaoMLP(vector<int> &s);
 void computeCostValueMLP(vector<int> &s);
 void bridgePerturbation(vector<int> &s);
 void RVND(vector<int> &s, int &costMLP);
@@ -131,6 +128,7 @@ void GILSRVND(int &Imax, int &Iils, vector<double> &R, vector<int> &sol, int &co
         alpha = R[rand() % 26];
 
         constructiveProcedure(sol, costMLP, alpha);
+
         s_line = sol;
         s_lineCost = costMLP;
 
@@ -166,6 +164,40 @@ void GILSRVND(int &Imax, int &Iils, vector<double> &R, vector<int> &sol, int &co
     cout << __LINE__ << endl;
 #endif
     // cout << *n << endl;
+}
+
+vector<int> construction(double alpha)
+{
+  int r = 1;
+  std::vector<int> s(N + 1), CL(N - 1);
+  std::vector<double> distances(N - 1);
+
+  s[0] = s[s.size() - 1] = r;
+
+  for (int i = 2; i <= N; i++)
+  {
+    CL[i - 2] = i;
+  }
+
+  int c = 1;
+  while (!CL.empty())
+  {
+    for (int i = 0; i < CL.size(); i++)
+    {
+      distances[i] = distancia[r][CL[i]];
+    }
+    std::sort(distances.begin(), distances.end());
+
+    int a = rand() % (int)std::floor(alpha * (CL.size() - 1) + 1);
+    r = CL[a];
+    s[c] = r;
+    c++;
+
+    CL.erase(CL.begin() + a);
+    distances.erase(distances.begin());
+  }
+
+  return s;
 }
 
 void constructiveProcedure(vector<int> &s, int &costMLP, double &alpha)
@@ -205,7 +237,7 @@ void constructiveProcedure(vector<int> &s, int &costMLP, double &alpha)
 #endif
 }
 
-void calculaCustoInsercaoMLP(vector<int> s)
+void calculaCustoInsercaoMLP(vector<int> &s)
 {
 
     custoInsercao.resize(CL.size());
@@ -222,30 +254,20 @@ void calculaCustoInsercaoMLP(vector<int> s)
 void computeCostValueMLP(vector<int> &s)
 {
 
-#ifdef DEBUG
-    cout << __LINE__ << endl;
-#endif
     for (int i = 0; i <= N; i++)
         for (int j = i; j <= N; j++)
-            if (i != j)
+            if (i != j){
                 reOpt[0][i][j] = reOpt[0][i][j - 1] + distancia[s[j - 1]][s[j]];
-            else
-                reOpt[0][j][j] = 0;
-
-#ifdef DEBUG
-    cout << __LINE__ << endl;
-#endif
-    for (int i = 0; i <= N; i++)
-        for (int j = i; j >= 0; j--)
-            if (i != j)
-                reOpt[0][i][j] = reOpt[0][i][j + 1] + distancia[s[j]][s[j + 1]];
+                reOpt[0][j][i] = reOpt[0][i][j];
+            }
             else
                 reOpt[0][j][j] = 0;
 
     for (int i = 0; i <= N; i++)
         for (int j = i; j <= N; j++)
-            if (i != j)
+            if (i != j){
                 reOpt[1][i][j] = reOpt[1][i][j - 1] + reOpt[0][i][j];
+            }
             else
                 reOpt[1][i][j] = 0;
 
@@ -253,10 +275,7 @@ void computeCostValueMLP(vector<int> &s)
         for (int j = i; j >= 0; j--)
             if (i != j)
                 reOpt[1][i][j] = reOpt[1][i][j + 1] + reOpt[0][i][j];
-            else
-                reOpt[1][i][j] = 0;
-
-    //solCost = reOpt[1][0][N];
+  
 }
 
 void init()
@@ -731,8 +750,7 @@ void reInsertionMove(vector<int> &s, int &costMLP, int &origin, int &destination
     }
     else
     {
-        int last = s.size();
-        rotate(s.begin() + destination, s.begin() + s.size() - (last - origin), s.end() - (last - origin) + size);
+        rotate(s.begin() + destination, s.begin() + origin, s.end() - s.size() + origin + size);
         updateSwap(s, destination, origin + size);
         // update2opt(s, destination, origin + size);
     }

@@ -1,6 +1,5 @@
 #ifndef LOCALSEARCH_H_INCLUDED
 #define LOCALSEARCH_H_INCLUDED
-#include "solution.h"
 #include "colormod.h"
 #include "construction.h"
 #include "perturbation.h"

@@ -1,4 +1,4 @@
-CXX      := -g++
+CXX      := -g++ -O3
 CXXFLAGS := -std=c++14
 LDFLAGS  := #include CPLEX flags here!!!
 BUILD    := ./build
