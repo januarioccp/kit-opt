@@ -40,11 +40,12 @@ int UB = INT_MAX;
  * */
 void calcularSolucao(Node &no, hungarian_problem_t &p);
 int computeDistance(Node &no);
-int escolherSubtour(Node &no);
+void escolherSubtour(Node &no);
 void printArvore(list<Node> &arvore);
 void printArvore(stack<Node> &tree);
 void printNode(Node &no);
 void prune(list<Node> &tree, int UB);
+void prune(stack<Node> &tree, int UB);
 void largura(Node &no, hungarian_problem_t &p);
 void profundidade(Node &no, hungarian_problem_t &p);
 
@@ -71,7 +72,7 @@ int main(int argc, char **argv)
 	hungarian_init(&p, cost, input->getDimension(), input->getDimension(), mode); // Carregando o problema
 	// hungarian_solve(&p);
 	Node sol;
-	// largura(sol, p);
+	//largura(sol, p);
 	profundidade(sol, p);
 	printNode(sol);
 
@@ -143,7 +144,7 @@ int computeDistance(Node &raiz)
 	return custo;
 }
 
-int escolherSubtour(Node &no)
+void escolherSubtour(Node &no)
 {
 	int size = INT_MAX;
 	for (int i = 0; i < no.subtour.size(); i++)
@@ -155,7 +156,7 @@ int escolherSubtour(Node &no)
 		}
 	}
 	no.index = 0;
-	return no.escolhido;
+	// return no.escolhido;
 }
 
 void printArvore(stack<Node> &tree)
@@ -204,11 +205,30 @@ void prune(list<Node> &tree, int UB)
 {
 	for (list<Node>::iterator it = tree.begin(); it != tree.end(); ++it)
 	{
-		if (it->lower_bound >= UB)
+		if (it->lower_bound >= UB){
 			tree.erase(it);
+		}
 	}
 	//tree.unique(compare);
 }
+
+void prune(stack<Node> &tree, int UB)
+{
+	stack<Node> temp;
+	while(!tree.empty()){
+		if(tree.top().lower_bound < UB){
+			temp.push(tree.top());
+			cout<<"it works!"<<endl;
+		}
+		tree.pop();
+	}
+
+	while(!temp.empty()){
+		tree.push(temp.top());
+		temp.pop();
+	}
+	
+} 
 
 bool compare(Node &a, Node &b)
 {
