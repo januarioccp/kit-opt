@@ -280,7 +280,7 @@ void profundidade(Node &no, hungarian_problem_t &p)
 	pair<int, int> arco_proibido;
 	while (!arvoreDFS.empty())
 	{
-		cout<<arvoreDFS.size()<<endl;
+		// cout<<arvoreDFS.size()<<endl;
 		nutella = arvoreDFS.top();
 		n.arcos_proibidos = nutella.arcos_proibidos;
 		arco_proibido.first = nutella.subtour[nutella.escolhido][nutella.index];
