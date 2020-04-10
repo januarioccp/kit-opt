@@ -23,7 +23,8 @@ typedef struct node
 bool compare(Node &a, Node &b);
 
 list<Node> arvore;
-stack<Node> arvoreBFS;
+stack<Node> arvoreDFS;
+vector<int> mapeamento;
 
 Data *input;
 double **cost;
@@ -40,6 +41,7 @@ void calcularSolucao(Node &no, hungarian_problem_t &p);
 int computeDistance(Node &no);
 int escolherSubtour(Node &no);
 void printArvore(list<Node> &arvore);
+void printArvore(stack<Node> &tree);
 void printNode(Node &no);
 void prune(list<Node> &tree, int UB);
 void largura(Node &no, hungarian_problem_t &p);
@@ -89,7 +91,7 @@ void calcularSolucao(Node &no, hungarian_problem_t &p)
 	hungarian_solve(&p);
 
 	no.subtour.resize(0);
-	vector<int> mapeamento;
+	
 	mapeamento.resize(N);
 	int next, prev;
 	fill(mapeamento.begin(), mapeamento.end(), -1);
@@ -122,6 +124,7 @@ void calcularSolucao(Node &no, hungarian_problem_t &p)
 	}
 
 	computeDistance(no);
+	
 }
 
 int computeDistance(Node &raiz)
@@ -153,6 +156,22 @@ int escolherSubtour(Node &no)
 	no.index = 0;
 	return no.escolhido;
 }
+
+void printArvore(stack<Node> &tree)
+{
+	stack<Node> temp;
+	while(!tree.empty()){
+		temp.push(tree.top());
+		printNode(tree.top());
+		tree.pop();
+	}
+
+	while(!temp.empty()){
+		tree.push(temp.top());
+		temp.pop();
+	}
+	
+} 
 
 void printArvore(list<Node> &tree)
 {
@@ -189,7 +208,6 @@ void prune(list<Node> &tree, int UB)
 	}
 	//tree.unique(compare);
 }
-
 
 bool compare(Node &a, Node &b)
 {
@@ -247,49 +265,48 @@ void largura(Node &no, hungarian_problem_t &p)
 				}
 			}
 		}
-
-		// printArvore(arvore);
-		// cout<<nutella.lower_bound<<"-"<<UB<<endl;
 	}
 }
-
 
 void profundidade(Node &no, hungarian_problem_t &p)
 {
 	calcularSolucao(no, p);
-	arvoreBFS.push(no);
+	escolherSubtour(no);
+	arvoreDFS.push(no);
+
 	Node nutella;
-	while (!arvoreBFS.empty())
+	Node n;
+	pair<int, int> arco_proibido;
+	while (!arvoreDFS.empty())
 	{
-		nutella = arvoreBFS.top();
-		arvoreBFS.pop();
+		cout<<arvoreDFS.size()<<endl;
+		nutella = arvoreDFS.top();
+		n.arcos_proibidos = nutella.arcos_proibidos;
+		arco_proibido.first = nutella.subtour[nutella.escolhido][nutella.index];
+		arco_proibido.second = nutella.subtour[nutella.escolhido][nutella.index + 1];
+		n.arcos_proibidos.push_back(arco_proibido);
+		calcularSolucao(n, p);
+		escolherSubtour(n);
 
-		if (nutella.lower_bound >= UB)
-			continue;
-
-
-		TODO continuar aqui!
-		escolherSubtour(nutella);
-		for (int i = 0; i < nutella.subtour[nutella.escolhido].size() - 1; i++)
-		{ // iterar por todos os arcos do subtour escolhido
-			Node n;
-			n.arcos_proibidos = nutella.arcos_proibidos;
-			pair<int, int> arco_proibido;
-			arco_proibido.first = nutella.subtour[nutella.escolhido][i];
-			arco_proibido.second = nutella.subtour[nutella.escolhido][i + 1];
-			n.arcos_proibidos.push_back(arco_proibido);
-			calcularSolucao(n, p);
-			if (n.lower_bound < UB)
+		nutella.index++;
+		arvoreDFS.pop();
+		
+		if (nutella.index < nutella.subtour[nutella.escolhido].size()-1)
+			arvoreDFS.push(nutella);
+		
+		if (n.lower_bound < UB)
+		{
+			arvoreDFS.push(n); //inserir novos nos na arvore
+			if (n.subtour.size() == 1)
 			{
-				arvore.push_back(n); //inserir novos nos na arvore
-				if (n.subtour.size() == 1)
-				{
-					UB = n.lower_bound;
-					no = n;
-					prune(arvore, UB);
-				}
+				// printNode(n);
+				// cout<<"Press enter: ";
+				// cin.get();
+				UB = n.lower_bound;
+				no = n;
+				arvoreDFS.pop();
+				// prune(arvore, UB);
 			}
 		}
 	}
-	
 }
