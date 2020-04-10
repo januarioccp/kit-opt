@@ -4,6 +4,7 @@
 #include <list>
 #include <iomanip>
 #include <stack>
+#include <climits>
 using namespace std;
 
 #include "data.h"
@@ -144,7 +145,7 @@ int computeDistance(Node &raiz)
 
 int escolherSubtour(Node &no)
 {
-	int size = INT_MAX / 2;
+	int size = INT_MAX;
 	for (int i = 0; i < no.subtour.size(); i++)
 	{
 		if (no.subtour[i].size() < size)
