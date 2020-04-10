@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <list>
 #include <iomanip>
+#include <stack>
 using namespace std;
 
 #include "data.h"
@@ -14,15 +15,22 @@ typedef struct node
 	vector<vector<int> > subtour;			//conjunto de subtours da solucao gerada pelo algoritmo hungaro
 	double lower_bound;						// lower bound produzido pelo no (ou custo total da solucao do algoritmo hungaro)
 	int escolhido;							//subtour escolhido dado o criterio de selecao
+	int index;								//indice dentro do subtour escolhido dado o criterio de selecao
 	bool podar;								//variavel que diz se o no deve gerar filhos
 } Node;
 
+// Function for binary_predicate
+bool compare(Node &a, Node &b);
+
 list<Node> arvore;
+stack<Node> arvoreBFS;
+
 Data *input;
-Node raiz;
 double **cost;
 int N;
 int mode = HUNGARIAN_MODE_MINIMIZE_COST;
+int LB = 0;
+int UB = INT_MAX;
 
 /** 
  * calcular solucao usando algoritmo hungaro e matriz de distancia inicial e 
@@ -33,6 +41,9 @@ int computeDistance(Node &no);
 int escolherSubtour(Node &no);
 void printArvore(list<Node> &arvore);
 void printNode(Node &no);
+void prune(list<Node> &tree, int UB);
+void largura(Node &no, hungarian_problem_t &p);
+void profundidade(Node &no, hungarian_problem_t &p);
 
 int main(int argc, char **argv)
 {
@@ -56,29 +67,10 @@ int main(int argc, char **argv)
 
 	hungarian_init(&p, cost, input->getDimension(), input->getDimension(), mode); // Carregando o problema
 	// hungarian_solve(&p);
-
-	calcularSolucao(raiz, p);
-	arvore.push_back(raiz); //inserir novos nos na arvore
-
-	for (int j = 0; j < arvore.size(); j++)
-	{
-		Node nutella = arvore.front();
-		arvore.pop_front();
-		escolherSubtour(nutella);
-		if (!nutella.podar)
-			for (int i = 0; i < nutella.subtour[nutella.escolhido].size() - 1; i++)
-			{ // iterar por todos os arcos do subtour escolhido
-				Node n;
-				n.arcos_proibidos = nutella.arcos_proibidos;
-				pair<int, int> arco_proibido;
-				arco_proibido.first = nutella.subtour[nutella.escolhido][i];
-				arco_proibido.second = nutella.subtour[nutella.escolhido][i + 1];
-				n.arcos_proibidos.push_back(arco_proibido);
-				calcularSolucao(n, p);
-				arvore.push_back(n); //inserir novos nos na arvore
-			}
-		printArvore(arvore);
-	}
+	Node sol;
+	// largura(sol, p);
+	profundidade(sol, p);
+	printNode(sol);
 
 	hungarian_free(&p);
 	for (int i = 0; i < input->getDimension(); i++)
@@ -87,18 +79,16 @@ int main(int argc, char **argv)
 	delete input;
 
 	return 0;
-
-	arvore.push_back(raiz);
 }
 
-void calcularSolucao(Node &raiz, hungarian_problem_t &p)
+void calcularSolucao(Node &no, hungarian_problem_t &p)
 {
 	hungarian_init(&p, cost, input->getDimension(), input->getDimension(), mode);
-	for (int i = 0; i < raiz.arcos_proibidos.size(); i++)
-		p.cost[raiz.arcos_proibidos[i].first][raiz.arcos_proibidos[i].second] = INT_MAX;
+	for (int i = 0; i < no.arcos_proibidos.size(); i++)
+		p.cost[no.arcos_proibidos[i].first][no.arcos_proibidos[i].second] = INT_MAX;
 	hungarian_solve(&p);
 
-	raiz.subtour.resize(0);
+	no.subtour.resize(0);
 	vector<int> mapeamento;
 	mapeamento.resize(N);
 	int next, prev;
@@ -109,9 +99,9 @@ void calcularSolucao(Node &raiz, hungarian_problem_t &p)
 		if (mapeamento[i] == -1)
 		{
 			prev = i;
-			raiz.subtour.push_back(std::vector<int>());
-			mapeamento[prev] = raiz.subtour.size() - 1;
-			raiz.subtour[mapeamento[prev]].push_back(prev);
+			no.subtour.push_back(std::vector<int>());
+			mapeamento[prev] = no.subtour.size() - 1;
+			no.subtour[mapeamento[prev]].push_back(prev);
 			do
 			{
 				for (int j = 0; j < N; j++)
@@ -121,17 +111,17 @@ void calcularSolucao(Node &raiz, hungarian_problem_t &p)
 						break;
 				}
 				mapeamento[next] = mapeamento[prev];
-				raiz.subtour[mapeamento[next]].push_back(next);
+				no.subtour[mapeamento[next]].push_back(next);
 				prev = next;
 			} while (next != i);
-			if (raiz.subtour.size() > 1)
-				raiz.podar = false;
+			if (no.subtour.size() > 1)
+				no.podar = false;
 			else
-				raiz.podar = true;
+				no.podar = true;
 		}
 	}
 
-	computeDistance(raiz);
+	computeDistance(no);
 }
 
 int computeDistance(Node &raiz)
@@ -152,37 +142,154 @@ int computeDistance(Node &raiz)
 int escolherSubtour(Node &no)
 {
 	int size = INT_MAX / 2;
-	for (int i = 0; i < raiz.subtour.size(); i++)
+	for (int i = 0; i < no.subtour.size(); i++)
 	{
-		if (raiz.subtour[i].size() < size)
+		if (no.subtour[i].size() < size)
 		{
-			size = raiz.subtour[i].size();
-			raiz.escolhido = i;
+			size = no.subtour[i].size();
+			no.escolhido = i;
 		}
 	}
-	return raiz.escolhido;
+	no.index = 0;
+	return no.escolhido;
 }
 
-void printArvore(list<Node> &arvore)
+void printArvore(list<Node> &tree)
 {
-	for (list<Node>::iterator it = arvore.begin(); it != arvore.end(); ++it)
+	for (list<Node>::iterator it = tree.begin(); it != tree.end(); ++it)
 	{
+		if (it->subtour.size() == 1)
+			cout << "***";
 		printNode(*it);
 	}
 }
 
 void printNode(Node &no)
 {
-	for (int i = 0; i < raiz.subtour.size(); i++)
+	for (int i = 0; i < no.subtour.size(); i++)
 	{
 		cout << "{";
-		for (int j = 0; j < raiz.subtour[i].size(); j++)
+		for (int j = 0; j < no.subtour[i].size(); j++)
 		{
-			cout << raiz.subtour[i][j];
-			if (j < raiz.subtour[i].size() - 1)
+			cout << no.subtour[i][j];
+			if (j < no.subtour[i].size() - 1)
 				cout << ",";
 		}
 		cout << "}";
 	}
-	cout << " - " << raiz.lower_bound << endl;
+	cout << " - " << no.lower_bound << endl;
+}
+
+void prune(list<Node> &tree, int UB)
+{
+	for (list<Node>::iterator it = tree.begin(); it != tree.end(); ++it)
+	{
+		if (it->lower_bound >= UB)
+			tree.erase(it);
+	}
+	//tree.unique(compare);
+}
+
+
+bool compare(Node &a, Node &b)
+{
+	if (a.lower_bound != b.lower_bound)
+		return false;
+	else
+	{
+		if (a.subtour.size() != b.subtour.size())
+			return false;
+		for (int i = 0; i < a.subtour.size(); i++)
+		{
+			if (a.subtour[i].size() != b.subtour[i].size())
+				return false;
+			for (int j = 0; j < a.subtour[i].size(); j++)
+			{
+				if (a.subtour[i][j] != b.subtour[i][j])
+					return false;
+			}
+		}
+
+		return true;
+	}
+}
+
+void largura(Node &no, hungarian_problem_t &p)
+{
+	calcularSolucao(no, p);
+	arvore.push_back(no); //inserir novos nos na arvore
+	Node nutella;
+	while (!arvore.empty())
+	{
+		nutella = arvore.front();
+		arvore.pop_front();
+		if (nutella.lower_bound >= UB)
+			continue;
+
+		escolherSubtour(nutella);
+		for (int i = 0; i < nutella.subtour[nutella.escolhido].size() - 1; i++)
+		{ // iterar por todos os arcos do subtour escolhido
+			Node n;
+			n.arcos_proibidos = nutella.arcos_proibidos;
+			pair<int, int> arco_proibido;
+			arco_proibido.first = nutella.subtour[nutella.escolhido][i];
+			arco_proibido.second = nutella.subtour[nutella.escolhido][i + 1];
+			n.arcos_proibidos.push_back(arco_proibido);
+			calcularSolucao(n, p);
+			if (n.lower_bound < UB)
+			{
+				arvore.push_back(n); //inserir novos nos na arvore
+				if (n.subtour.size() == 1)
+				{
+					UB = n.lower_bound;
+					no = n;
+					prune(arvore, UB);
+				}
+			}
+		}
+
+		// printArvore(arvore);
+		// cout<<nutella.lower_bound<<"-"<<UB<<endl;
+	}
+}
+
+
+void profundidade(Node &no, hungarian_problem_t &p)
+{
+	calcularSolucao(no, p);
+	arvoreBFS.push(no);
+	Node nutella;
+	while (!arvoreBFS.empty())
+	{
+		nutella = arvoreBFS.top();
+		arvoreBFS.pop();
+
+		if (nutella.lower_bound >= UB)
+			continue;
+
+
+		TODO continuar aqui!
+		escolherSubtour(nutella);
+		for (int i = 0; i < nutella.subtour[nutella.escolhido].size() - 1; i++)
+		{ // iterar por todos os arcos do subtour escolhido
+			Node n;
+			n.arcos_proibidos = nutella.arcos_proibidos;
+			pair<int, int> arco_proibido;
+			arco_proibido.first = nutella.subtour[nutella.escolhido][i];
+			arco_proibido.second = nutella.subtour[nutella.escolhido][i + 1];
+			n.arcos_proibidos.push_back(arco_proibido);
+			calcularSolucao(n, p);
+			if (n.lower_bound < UB)
+			{
+				arvore.push_back(n); //inserir novos nos na arvore
+				if (n.subtour.size() == 1)
+				{
+					UB = n.lower_bound;
+					no = n;
+					prune(arvore, UB);
+				}
+			}
+		}
+	}
+	
 }
