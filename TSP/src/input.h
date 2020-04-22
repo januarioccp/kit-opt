@@ -5,7 +5,7 @@ using namespace std;
 
 class Input{
     public:
-        Input(){};
+        Input(char**);
         Input( int , char**);
 
         // Dimension
@@ -25,6 +25,7 @@ class Input{
     private:
         unsigned dimension_; // quantidade total de vertices
         double ** distance_; // matriz de adjacencia
+        
         /**
          * 0 - TSP
          * 1 - MLP

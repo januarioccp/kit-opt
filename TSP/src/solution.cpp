@@ -134,10 +134,11 @@ ostream & operator << (ostream &out, const Solution &s)
         }
     out << "}" << endl;
 
-    for(unsigned i=0; i < s.location.size()-1; i++)
+    for(unsigned i=0; i < s.location.size()-1; i++){
         myCost+=s.in->distanceGet(s.location[i],s.location[i+1]);
+    }
 
-    if(myCost != s.costValueTSP)
+    if(abs(myCost - s.costValueTSP) > 0.0001)
         out << red << "Something wrong...the cost should be: " <<myCost<<deff<<endl;
     return out;
 }

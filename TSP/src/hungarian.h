@@ -36,6 +36,8 @@ extern "C" {
 #define HUNGARIAN_MODE_MINIMIZE_COST   0
 #define HUNGARIAN_MODE_MAXIMIZE_UTIL 1
 
+#define INF (0x7FFFFFFF)
+
 typedef struct {
   int num_rows;
   int num_cols;

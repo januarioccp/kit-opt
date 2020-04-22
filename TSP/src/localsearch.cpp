@@ -32,7 +32,7 @@ void LocalSearch::reset(){
 }
 
 // GILS-RVND from EJOR2012-Marcos
-Solution LocalSearch::GILSRVND(int Imax, int Iils, vector<double> R){
+Solution LocalSearch::GILSRVND(int Imax, int Iils, vector<double> &R){
     Color::Modifier red(Color::FG_RED);
     Color::Modifier deff(Color::FG_DEFAULT);
     reset();
@@ -44,14 +44,14 @@ Solution LocalSearch::GILSRVND(int Imax, int Iils, vector<double> R){
         iterILS = 0;
         while(iterILS < Iils){
             RVND(s);
-            if(f(s) < f(s_line)){
+            if(f(s) + __DBL_EPSILON__ < f(s_line)){
                 (*s_line) = (*s);
                 iterILS = 0;
             }//end_if
             (*s) = p->bridgePerturbation(s_line,4);
             iterILS = iterILS + 1;
         }//end_while
-        if(f(s_line) < f(s_star)){
+        if(f(s_line) + __DBL_EPSILON__ < f(s_star)){
             (*s_star) = (*s_line);
             //cout<<(*s_star)<<endl;
         }
@@ -87,7 +87,7 @@ void LocalSearch::RVND(Solution* s){
     while(NL.size() != 0){
         choosenNeighborhood = randomNeighborhood();
         n->improove(s_rvnd,choosenNeighborhood);
-        if(f(s_rvnd) < f(s)){
+        if(f(s_rvnd) + __DBL_EPSILON__ < f(s)){
             (*s) = (*s_rvnd);
         }
         else

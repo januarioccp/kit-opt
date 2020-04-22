@@ -3,3 +3,7 @@ GILS-RVND-TSP/.DS_Store
 TSP/obj/*.o
 TSP/.vscode
 obj/neighborhood.d
+*.out
+*.vscode
+.DS_Store
+*.dSYM

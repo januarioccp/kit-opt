@@ -24,7 +24,7 @@ Neighborhood::Neighborhood( Input* input){
     NL.push_back("bestReInsertion-2");
     //NL.push_back("firstReInsertion-3");
     NL.push_back("bestReInsertion-3");
-    NL.push_back("bestReInsertion-4");
+    // NL.push_back("bestReInsertion-4");
 
     // So far 4 subsequences is enough
     sigma.resize(5);
@@ -33,18 +33,8 @@ Neighborhood::Neighborhood( Input* input){
 void Neighborhood::improove(Solution* s,string choosenNeighborhood){
     if(choosenNeighborhood == "bestSwap")
         bestSwap(s);
-    else if(choosenNeighborhood == "firstSwap")
-        firstSwap(s);
-    else if(choosenNeighborhood == "firstTwoOpt")
-        firstTwoOpt(s);
     else if(choosenNeighborhood == "bestTwoOpt")
         bestTwoOpt(s);
-    else if(choosenNeighborhood == "firstReInsertion-1")
-        firstReInsertion(s,1);
-    else if(choosenNeighborhood == "firstReInsertion-2")
-        firstReInsertion(s,2);
-    else if(choosenNeighborhood == "firstReInsertion-3")
-        firstReInsertion(s,3);
     else if(choosenNeighborhood == "bestReInsertion-1")
         bestReInsertion(s,1);
     else if(choosenNeighborhood == "bestReInsertion-2")
@@ -75,7 +65,7 @@ void Neighborhood::firstSwap(Solution* s){
 
 void Neighborhood::bestSwap(Solution* s){
     bool stuck = false;
-    double delta = 0;
+    double delta = 0.0;
 
     int i_best;
     int j_best;
@@ -89,13 +79,13 @@ void Neighborhood::bestSwap(Solution* s){
                 // clock_t beginC = clock();
                 delta = swapDeltaEvaluation(s,i,j);
                 // st->insert(beginC,clock(),0);
-                if(delta < 0 && delta < delta_best){
+                if(delta + __DBL_EPSILON__ < 0.0 && delta + __DBL_EPSILON__ < delta_best){
                     delta_best = delta;
                     i_best = i;
                     j_best = j;
                 }
             }
-        if(delta_best < 0){
+        if(delta_best + __DBL_EPSILON__ < 0.0 ){
             swapMove(s,i_best,j_best,delta_best);
             stuck = false;
         }
@@ -188,7 +178,7 @@ void Neighborhood::firstTwoOpt(Solution* s){
 
 void Neighborhood::bestTwoOpt(Solution* s){
   bool stuck = false;
-    double delta = 0;
+    double delta = 0.0;
 
     int i_best;
     int j_best;
@@ -202,14 +192,14 @@ void Neighborhood::bestTwoOpt(Solution* s){
             for(int j=i+2; j < last; j++){
                 if(!((i==0 && j == last-1) || (abs(i-j)<2))){
                     delta = twoOptDeltaEvaluation(s,i,j);
-                    if(delta < 0 && delta < delta_best){
+                    if(delta + __DBL_EPSILON__ < 0.0 && delta + __DBL_EPSILON__ < delta_best){
                         delta_best = delta;
                         i_best = i;
                         j_best = j;
                     }
                 }
             }
-        if(delta_best < 0){
+        if(delta_best + __DBL_EPSILON__ < 0.0){
             twoOptMove(s,i_best,j_best,delta_best);
             stuck = false;
         }
@@ -263,7 +253,7 @@ void Neighborhood::firstReInsertion(Solution* s, int size){
 
 void Neighborhood::bestReInsertion(Solution* s, int size){
     bool stuck = false;
-    double delta = 0;
+    double delta = 0.0;
     int origin_best;
     int destination_best;
     double delta_best;
@@ -275,14 +265,14 @@ void Neighborhood::bestReInsertion(Solution* s, int size){
         for(int origin=0; origin < last; origin++){
             for(int destination=0; destination < last; destination++){
                 delta = reInsertionDeltaEvaluation(s,origin,destination,size);
-                if(delta < 0 && delta < delta_best){
+                if(delta + __DBL_EPSILON__ < 0.0 && delta + __DBL_EPSILON__ < delta_best){
                     delta_best = delta;
                     origin_best = origin;
                     destination_best = destination;
                 }
             }
         }
-        if(delta_best < 0){
+        if(delta_best + __DBL_EPSILON__ < 0.0){
             reInsertionMove(s,origin_best,destination_best,size,delta_best);
             stuck = false;
         }
