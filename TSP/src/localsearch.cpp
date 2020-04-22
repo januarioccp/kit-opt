@@ -126,18 +126,6 @@ void LocalSearch::RVND(Solution *s)
         if (f(s_rvnd) + 0.0001 < f(s))
         {
             (*s) = (*s_rvnd);
-            cout << fixed << setprecision(2) << s->costValueTSP;
-            cout << " 0" << endl;
-            for (int i = 0; i < s->location.size() - 1; i++)
-            {
-                cout << s->location[i] - 1;
-                if (i > 0 && i % 33 == 0)
-                    cout << "\\"
-                         << "\n ";
-                else
-                    cout << " ";
-            }
-            cout << endl;
         }
         else
             deleteNeighborhood(choosenNeighborhood);
