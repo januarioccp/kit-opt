@@ -60,7 +60,7 @@ Solution LocalSearch::GILSRVND(int Imax, int Iils, vector<double> &R)
     for (int i = 1; i <= Imax; i++)
     {
         alpha = randomValue(R);
-        c->constructiveProcedure(s,alpha);
+        c->constructiveProcedure(s, alpha);
         //c->trivial(s);
         (*s_line) = (*s);
         iterILS = 0;
@@ -126,7 +126,22 @@ void LocalSearch::RVND(Solution *s)
         if (f(s_rvnd) + 0.0001 < f(s))
         {
             (*s) = (*s_rvnd);
-            cout<<f(s)<<endl;
+            cout << f(s) << endl;
+            if (f(s) < 78478868)
+            {
+                cout << fixed << setprecision(2) << s->costValueTSP;
+                cout << " 0" << endl;
+                for (int i = 0; i < s->location.size() - 1; i++)
+                {
+                    cout << s->location[i] - 1;
+                    if (i > 0 && i % 33 == 0)
+                        cout << "\\"
+                             << "\n ";
+                    else
+                        cout << " ";
+                }
+                cout << endl;
+            }
         }
         else
             deleteNeighborhood(choosenNeighborhood);
