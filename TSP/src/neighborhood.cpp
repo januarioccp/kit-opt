@@ -79,13 +79,13 @@ void Neighborhood::bestSwap(Solution* s){
                 // clock_t beginC = clock();
                 delta = swapDeltaEvaluation(s,i,j);
                 // st->insert(beginC,clock(),0);
-                if(delta + __DBL_EPSILON__ < 0.0 && delta + __DBL_EPSILON__ < delta_best){
+                if(delta + 0.001 < 0.0 && delta + 0.001 < delta_best){
                     delta_best = delta;
                     i_best = i;
                     j_best = j;
                 }
             }
-        if(delta_best + __DBL_EPSILON__ < 0.0 ){
+        if(delta_best + 0.001 < 0.0 ){
             swapMove(s,i_best,j_best,delta_best);
             stuck = false;
         }
@@ -192,14 +192,14 @@ void Neighborhood::bestTwoOpt(Solution* s){
             for(int j=i+2; j < last; j++){
                 if(!((i==0 && j == last-1) || (abs(i-j)<2))){
                     delta = twoOptDeltaEvaluation(s,i,j);
-                    if(delta + __DBL_EPSILON__ < 0.0 && delta + __DBL_EPSILON__ < delta_best){
+                    if(delta + 0.001 < 0.0 && delta + 0.001 < delta_best){
                         delta_best = delta;
                         i_best = i;
                         j_best = j;
                     }
                 }
             }
-        if(delta_best + __DBL_EPSILON__ < 0.0){
+        if(delta_best + 0.001 < 0.0){
             twoOptMove(s,i_best,j_best,delta_best);
             stuck = false;
         }
@@ -265,14 +265,14 @@ void Neighborhood::bestReInsertion(Solution* s, int size){
         for(int origin=0; origin < last; origin++){
             for(int destination=0; destination < last; destination++){
                 delta = reInsertionDeltaEvaluation(s,origin,destination,size);
-                if(delta + __DBL_EPSILON__ < 0.0 && delta + __DBL_EPSILON__ < delta_best){
+                if(delta + 0.001 < 0.0 && delta + 0.001 < delta_best){
                     delta_best = delta;
                     origin_best = origin;
                     destination_best = destination;
                 }
             }
         }
-        if(delta_best + __DBL_EPSILON__ < 0.0){
+        if(delta_best + 0.001 < 0.0){
             reInsertionMove(s,origin_best,destination_best,size,delta_best);
             stuck = false;
         }

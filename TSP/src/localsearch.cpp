@@ -37,9 +37,9 @@ Solution LocalSearch::GILSRVND(int Imax, int Iils, vector<double> &R){
     Color::Modifier deff(Color::FG_DEFAULT);
     reset();
 
-    alpha = randomValue(R);        
-    c->constructiveProcedure(s,alpha);
-    return (*s);
+    // alpha = randomValue(R);        
+    // c->constructiveProcedure(s,alpha);
+    // return (*s);
 
     for(int i = 1; i <= Imax; i++){
         alpha = randomValue(R);        
@@ -48,16 +48,21 @@ Solution LocalSearch::GILSRVND(int Imax, int Iils, vector<double> &R){
         iterILS = 0;
         while(iterILS < Iils){
             RVND(s);
-            if(f(s) + __DBL_EPSILON__ < f(s_line)){
+            if(f(s) + 0.001 < f(s_line)){
                 (*s_line) = (*s);
                 iterILS = 0;
             }//end_if
             (*s) = p->bridgePerturbation(s_line,4);
             iterILS = iterILS + 1;
         }//end_while
-        if(f(s_line) + __DBL_EPSILON__ < f(s_star)){
+        if(f(s_line) + 0.001 < f(s_star)){
             (*s_star) = (*s_line);
-            // cout<<(*s_star)<<endl;
+            
+            cout<<fixed<<setprecision(2)<<s_star->costValueTSP;
+	        cout<<" 0"<<endl;
+	        for(int i=0; i < s_star->location.size()-1; i++)
+		        cout<<s_star->location[i]-1<<" ";
+	        cout<<endl;
         }
         // if(f(s_star) <= 37600)
         //     return (*s_star);
