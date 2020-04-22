@@ -38,6 +38,14 @@ Construction::Construction( Solution* s)
 
 }
 
+void Construction::trivial(Solution* s){
+    s->location.resize(0);
+    for(unsigned i = 1; i <= s->in->dimensionGet(); i++)
+        s->location.push_back(i);
+    s->location.push_back(s->location[0]);
+    s->computeCostValueTSP();
+}
+
 void Construction::constructiveProcedure(Solution* s, const double alpha){
     
     if(s->in->problemGet() == 0)

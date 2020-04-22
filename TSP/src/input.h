@@ -1,6 +1,7 @@
 #ifndef INPUT_H_INCLUDED
 #define INPUT_H_INCLUDED
 #include <iostream>
+#include <vector>
 using namespace std;
 
 class Input{
@@ -25,7 +26,9 @@ class Input{
     private:
         unsigned dimension_; // quantidade total de vertices
         double ** distance_; // matriz de adjacencia
-        
+        vector<double> x;
+        vector<double> y;
+
         /**
          * 0 - TSP
          * 1 - MLP

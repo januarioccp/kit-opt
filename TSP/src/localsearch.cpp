@@ -38,13 +38,16 @@ Solution LocalSearch::GILSRVND(int Imax, int Iils, vector<double> &R){
     reset();
 
     alpha = randomValue(R);        
-    c->constructiveProcedure(s,alpha);
+    c->trivial(s);
+    // cout<<*s<<endl;
+    // c->constructiveProcedure(s,alpha);
     RVND(s);
     return (*s);
 
     for(int i = 1; i <= Imax; i++){
         alpha = randomValue(R);        
-        c->constructiveProcedure(s,alpha);
+        // c->constructiveProcedure(s,alpha);
+        c->trivial(s);
         (*s_line) = (*s);
         iterILS = 0;
         while(iterILS < Iils){
