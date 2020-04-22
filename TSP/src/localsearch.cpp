@@ -46,7 +46,7 @@ Solution LocalSearch::GILSRVND(int Imax, int Iils, vector<double> &R)
     for (int i = 0; i < s->location.size() - 1; i++)
     {
         cout << s->location[i] - 1 << " ";
-        if (i > 0 && i % 35 == 0)
+        if (i > 0 && i % 33 == 0)
             cout << "\"+\n \" ";
     }
     cout << endl;
@@ -128,7 +128,7 @@ void LocalSearch::RVND(Solution *s)
             for (int i = 0; i < s->location.size() - 1; i++)
             {
                 cout << s->location[i] - 1 << " ";
-                if (i > 0 && i % 35 == 0)
+                if (i > 0 && i % 33 == 0)
                     cout << "\"+\n \" ";
             }
             cout << endl;
