@@ -44,7 +44,11 @@ Solution LocalSearch::GILSRVND(int Imax, int Iils, vector<double> &R)
     cout << fixed << setprecision(2) << s->costValueTSP;
     cout << " 0" << endl;
     for (int i = 0; i < s->location.size() - 1; i++)
+    {
         cout << s->location[i] - 1 << " ";
+        if (i > 0 && i % 35 == 0)
+            cout << "\"+\n \" ";
+    }
     cout << endl;
     // c->constructiveProcedure(s,alpha);
     RVND(s);
@@ -122,7 +126,11 @@ void LocalSearch::RVND(Solution *s)
             cout << fixed << setprecision(2) << s->costValueTSP;
             cout << " 0" << endl;
             for (int i = 0; i < s->location.size() - 1; i++)
+            {
                 cout << s->location[i] - 1 << " ";
+                if (i > 0 && i % 35 == 0)
+                    cout << "\"+\n \" ";
+            }
             cout << endl;
         }
         else

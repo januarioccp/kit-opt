@@ -116,11 +116,11 @@ int main(int argc, char** argv) {
         // cout<<","<<seed<<endl;
     }
 
-	cout<<fixed<<setprecision(2)<<sol.costValueTSP;
-	cout<<" 0"<<endl;
-	for(int i=0; i < sol.location.size()-1; i++)
-		cout<<sol.location[i]-1<<" ";
-	cout<<endl;
+	// cout<<fixed<<setprecision(2)<<sol.costValueTSP;
+	// cout<<" 0"<<endl;
+	// for(int i=0; i < sol.location.size()-1; i++)
+	// 	cout<<sol.location[i]-1<<" ";
+	// cout<<endl;
 
     // UB = sol.costValueTSP;
     // input = new Data(argc, argv[1]);
