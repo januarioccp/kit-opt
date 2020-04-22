@@ -126,6 +126,7 @@ void LocalSearch::RVND(Solution *s)
         if (f(s_rvnd) + 0.0001 < f(s))
         {
             (*s) = (*s_rvnd);
+            cout<<f(s)<<endl;
         }
         else
             deleteNeighborhood(choosenNeighborhood);
