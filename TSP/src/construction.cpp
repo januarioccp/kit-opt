@@ -44,14 +44,32 @@ void Construction::constructiveProcedure(Solution* s, const double alpha){
     {// IF it is the Traveling Salesman Problem
         int position;
         calculaCustoInsercao(s);
+        clock_t begin;
         while ( CL.size() > 0)
         {
+            begin = clock();
             position = rand()%(int(floor(custoInsercao.size()*alpha))+1);
+            cout<<"position = "<<(double)(clock() - begin) / CLOCKS_PER_SEC << endl;
+
+            begin = clock();
             s->location.insert(s->location.begin() + custoInsercao[position].arestaRemovida +1, custoInsercao[position].noInserido); 
+            cout<<"insert = "<<(double)(clock() - begin) / CLOCKS_PER_SEC << endl;
+
             s->costValueTSP+=custoInsercao[position].custo;
+
+            begin = clock();
             remove(CL.begin(), CL.end(), custoInsercao[position].noInserido);
+            cout<<"remove = "<<(double)(clock() - begin) / CLOCKS_PER_SEC << endl;
+
+            begin = clock();
             CL.resize(CL.size()-1);
+            cout<<"resize = "<<(double)(clock() - begin) / CLOCKS_PER_SEC << endl;
+
+            begin = clock();
             calculaCustoInsercao(s);
+            cout<<"calculaCustoInsercao = "<<(double)(clock() - begin) / CLOCKS_PER_SEC << endl;
+
+            cout<<endl;
         }
     }else
     { // if it is the Minimum Latency Problem

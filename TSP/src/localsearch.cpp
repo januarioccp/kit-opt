@@ -37,6 +37,10 @@ Solution LocalSearch::GILSRVND(int Imax, int Iils, vector<double> &R){
     Color::Modifier deff(Color::FG_DEFAULT);
     reset();
 
+    alpha = randomValue(R);        
+    c->constructiveProcedure(s,alpha);
+    return (*s);
+
     for(int i = 1; i <= Imax; i++){
         alpha = randomValue(R);        
         c->constructiveProcedure(s,alpha);
@@ -55,8 +59,8 @@ Solution LocalSearch::GILSRVND(int Imax, int Iils, vector<double> &R){
             (*s_star) = (*s_line);
             // cout<<(*s_star)<<endl;
         }
-        if(f(s_star) <= 37600)
-            return (*s_star);
+        // if(f(s_star) <= 37600)
+        //     return (*s_star);
     }
     return (*s_star);
 }
