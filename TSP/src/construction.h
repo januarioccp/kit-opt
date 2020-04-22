@@ -10,7 +10,7 @@ Construction{
         void calculaCustoInsercaoMLP(Solution* s);
         void trivial(Solution* s);
         void constructiveProcedure(Solution* s, const double alpha);
-        void constructiveProcedureMLP(Solution* s, const double alpha);
+        // void constructiveProcedureMLP(Solution* s, const double alpha);
 
     struct InsertionInfo {
         int noInserido; // no k a ser inserido

@@ -13,21 +13,14 @@ class Solution{
     public:
         Solution(Input *in);
         void computeCostValueTSP();
-        void computeCostValueMLP();
-        void reset();
-        int W(int begin, int end);
-        int T(int begin, int end);
-        // int C(int begin, int end);
 
-        // int W_recursive(int begin, int end);
-        // int T_recursive(int begin, int end);
-        int C_recursive(int begin, int end);
+        void reset();
 
     //private:
-        vector< vector<int> > duration; //T(sigma)
-        vector< vector<int> > cost; //C(sigma)
+        // vector< vector<int> > duration; //T(sigma)
+        // vector< vector<int> > cost; //C(sigma)
 
-        double costValueMLP;
+        // double costValueMLP;
         double costValueTSP;
         
         vector<int> location;

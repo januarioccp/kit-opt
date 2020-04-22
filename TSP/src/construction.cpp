@@ -48,8 +48,6 @@ void Construction::trivial(Solution* s){
 
 void Construction::constructiveProcedure(Solution* s, const double alpha){
     
-    if(s->in->problemGet() == 0)
-    {// IF it is the Traveling Salesman Problem
         int position;
         calculaCustoInsercao(s);
         // clock_t begin;
@@ -79,39 +77,7 @@ void Construction::constructiveProcedure(Solution* s, const double alpha){
 
             // cout<<endl;
         }
-    }else
-    { // if it is the Minimum Latency Problem
-        constructiveProcedureMLP(s,alpha);
-    }
     
-}
-
-void Construction::constructiveProcedureMLP(Solution* s, const double alpha){
-    
-    // Local variables
-    int position;
-
-    // Algorithm 2
-    // Line 2 - $s \cup {0}$
-    s->reset();
-    s->location.push_back(1);
-
-    // Line 3,4 - Initialize Candidate list CL
-    CL.resize(0);
-    for(unsigned int i=2; i <= s->in->dimensionGet(); i++)
-        CL.push_back(i);
-    
-    // Line 5,6 
-    while ( CL.size() > 0){
-        // Sort CL in ascending order according to their distance with respect to r
-        calculaCustoInsercaoMLP(s);
-        position = rand()%(int(floor(custoInsercao.size()*alpha))+1);
-        s->location.push_back(custoInsercao[position].noInserido);
-        remove(CL.begin(), CL.end(), custoInsercao[position].noInserido);
-        CL.resize(CL.size()-1);    
-    }
-    s->location.push_back(s->location[0]);
-    s->computeCostValueMLP();
 }
 
 void Construction::calculaCustoInsercao(Solution* s){
@@ -129,18 +95,6 @@ void Construction::calculaCustoInsercao(Solution* s){
             l++;
         } 
     }
-    sort(custoInsercao.begin(), custoInsercao.end(), compareByCost);
-}
-
-void Construction::calculaCustoInsercaoMLP(Solution* s){
-
-    custoInsercao.resize(CL.size());
-    
-    for (unsigned i=0; i <CL.size(); i++ ) {
-        custoInsercao[i].custo = s->in->distanceGet(s->location[s->location.size()-1],CL[i]); 
-        custoInsercao[i].noInserido = CL[i];
-    }
-    
     sort(custoInsercao.begin(), custoInsercao.end(), compareByCost);
 }
 
