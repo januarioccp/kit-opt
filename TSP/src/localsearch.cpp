@@ -60,8 +60,8 @@ Solution LocalSearch::GILSRVND(int Imax, int Iils, vector<double> &R)
     for (int i = 1; i <= Imax; i++)
     {
         alpha = randomValue(R);
-        // c->constructiveProcedure(s,alpha);
-        c->trivial(s);
+        c->constructiveProcedure(s,alpha);
+        //c->trivial(s);
         (*s_line) = (*s);
         iterILS = 0;
         while (iterILS < Iils)
