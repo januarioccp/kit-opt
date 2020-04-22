@@ -127,9 +127,11 @@ void LocalSearch::RVND(Solution *s)
             cout << " 0" << endl;
             for (int i = 0; i < s->location.size() - 1; i++)
             {
-                cout << s->location[i] - 1 << " ";
+                cout << s->location[i] - 1;
                 if (i > 0 && i % 33 == 0)
-                    cout << "\"+\n \" ";
+                    cout << "\\"<<"\n ";
+                else
+                    cout << " ";
             }
             cout << endl;
         }
