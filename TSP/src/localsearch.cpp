@@ -41,7 +41,11 @@ Solution LocalSearch::GILSRVND(int Imax, int Iils, vector<double> &R)
 
     alpha = randomValue(R);
     c->trivial(s);
-    // cout<<*s<<endl;
+    cout << fixed << setprecision(2) << s->costValueTSP;
+    cout << " 0" << endl;
+    for (int i = 0; i < s->location.size() - 1; i++)
+        cout << s->location[i] - 1 << " ";
+    cout << endl;
     // c->constructiveProcedure(s,alpha);
     RVND(s);
     return (*s);
@@ -68,11 +72,11 @@ Solution LocalSearch::GILSRVND(int Imax, int Iils, vector<double> &R)
         {
             (*s_star) = (*s_line);
 
-            cout << fixed << setprecision(2) << s_star->costValueTSP;
-            cout << " 0" << endl;
-            for (int i = 0; i < s_star->location.size() - 1; i++)
-                cout << s_star->location[i] - 1 << " ";
-            cout << endl;
+            // cout << fixed << setprecision(2) << s_star->costValueTSP;
+            // cout << " 0" << endl;
+            // for (int i = 0; i < s_star->location.size() - 1; i++)
+            //     cout << s_star->location[i] - 1 << " ";
+            // cout << endl;
         }
         // if(f(s_star) <= 37600)
         //     return (*s_star);
@@ -112,9 +116,14 @@ void LocalSearch::RVND(Solution *s)
     {
         choosenNeighborhood = randomNeighborhood();
         n->improove(s_rvnd, choosenNeighborhood);
-        if (f(s_rvnd) + __DBL_EPSILON__ < f(s))
+        if (f(s_rvnd) + 0.0001 < f(s))
         {
             (*s) = (*s_rvnd);
+            cout << fixed << setprecision(2) << s->costValueTSP;
+            cout << " 0" << endl;
+            for (int i = 0; i < s->location.size() - 1; i++)
+                cout << s->location[i] - 1 << " ";
+            cout << endl;
         }
         else
             deleteNeighborhood(choosenNeighborhood);
