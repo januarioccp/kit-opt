@@ -41,6 +41,7 @@ Solution LocalSearch::GILSRVND(int Imax, int Iils, vector<double> &R)
 
     alpha = randomValue(R);
     c->trivial(s);
+    (*s) = p->bridgePerturbation(s, 4);
     // c->constructiveProcedure(s,alpha);
     cout << fixed << setprecision(2) << s->costValueTSP;
     cout << " 0" << endl;
