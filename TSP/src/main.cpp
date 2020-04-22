@@ -93,6 +93,8 @@ int main(int argc, char** argv) {
     
     int Imax = 50;
     int Iils = (in.dimensionGet() >= 150) ? in.dimensionGet()/2 : in.dimensionGet();
+	// int Imax = 1;
+    // int Iils = 0;
     vector<double> R;
     R.push_back(0.00);
     for(int i=1; i <= 25; i++)
@@ -114,7 +116,8 @@ int main(int argc, char** argv) {
         // cout<<","<<seed<<endl;
     }
 
-	cout<<sol.costValueTSP<<" 0"<<endl;
+	cout<<fixed<<setprecision(2)<<sol.costValueTSP;
+	cout<<" 0"<<endl;
 	for(int i=0; i < sol.location.size()-1; i++)
 		cout<<sol.location[i]-1<<" ";
 	cout<<endl;

@@ -53,8 +53,10 @@ Solution LocalSearch::GILSRVND(int Imax, int Iils, vector<double> &R){
         }//end_while
         if(f(s_line) + __DBL_EPSILON__ < f(s_star)){
             (*s_star) = (*s_line);
-            //cout<<(*s_star)<<endl;
+            // cout<<(*s_star)<<endl;
         }
+        if(f(s_star) <= 37600)
+            return (*s_star);
     }
     return (*s_star);
 }
