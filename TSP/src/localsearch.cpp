@@ -131,7 +131,7 @@ void LocalSearch::RVND(Solution *s)
         {
             (*s) = (*s_rvnd);
             cout << f(s) << endl;
-            if (f(s) < 78478868)
+            if (f(s) <= 67700000)
             {
                 cout << fixed << setprecision(2) << s->costValueTSP;
                 cout << " 0" << endl;
