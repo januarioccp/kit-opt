@@ -7,6 +7,7 @@
 #include <iomanip>
 #include <set>
 #include <algorithm> 
+#include <climits>
 using namespace std;
 
 Construction::Construction( Solution* s)
