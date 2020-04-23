@@ -2100,17 +2100,17 @@ void Construction::aleatorio(Solution* s){
 , 3986, 3985, 3984, 4786, 2584, 2594, 2596, 2586, 2575, 2565, 3664, 3666, 2624, 2634, 33801, 32498, 1};
     for(unsigned i = 0; i < s->in->dimensionGet(); i++)
         s->location[i] = s->location[i]+1;
-    for(unsigned i = 1; i < s->in->dimensionGet()-1; i++){
-        double mim = INT_MAX;
-        int proximo = i+1;
-        for(unsigned j = i+1; j < s->in->dimensionGet(); j++)
-            if(mim > s->in->distanceGet(s->location[i],s->location[j])){
-                mim = s->in->distanceGet(s->location[i],s->location[j]);
-                proximo = j;
-            }
-        if(proximo != i+1)
-            swap(s->location[i+1],s->location[proximo]);
-    }
+    // for(unsigned i = 1; i < s->in->dimensionGet()-1; i++){
+    //     double mim = INT_MAX;
+    //     int proximo = i+1;
+    //     for(unsigned j = i+1; j < s->in->dimensionGet(); j++)
+    //         if(mim > s->in->distanceGet(s->location[i],s->location[j])){
+    //             mim = s->in->distanceGet(s->location[i],s->location[j]);
+    //             proximo = j;
+    //         }
+    //     if(proximo != i+1)
+    //         swap(s->location[i+1],s->location[proximo]);
+    // }
 
     s->location.push_back(s->location[0]);
     s->computeCostValueTSP();
