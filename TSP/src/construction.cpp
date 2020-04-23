@@ -46,6 +46,26 @@ void Construction::trivial(Solution* s){
     s->computeCostValueTSP();
 }
 
+void Construction::aleatorio(Solution* s){
+    s->location.resize(0);
+    for(unsigned i = 1; i <= s->in->dimensionGet(); i++)
+        s->location.push_back(i);
+    for(unsigned i = 1; i <= s->in->dimensionGet()-1; i++){
+        double mim = INT_MAX;
+        int proximo = i+1;
+        for(unsigned j = i+1; j <= s->in->dimensionGet(); j++)
+            if(mim > s->in->distanceGet(s->location[i],s->location[j])){
+                mim = s->in->distanceGet(s->location[i],s->location[j]);
+                proximo = j;
+            }
+        if(proximo != i+1)
+            swap(s->location[i+1],s->location[proximo]);
+    }
+
+    s->location.push_back(s->location[0]);
+    s->computeCostValueTSP();
+}
+
 void Construction::constructiveProcedure(Solution* s, const double alpha){
     
         int position;
@@ -53,7 +73,7 @@ void Construction::constructiveProcedure(Solution* s, const double alpha){
         // clock_t begin;
         while ( CL.size() > 0)
         {
-            // begin = clock();
+            cout<<CL.size()<<endl;
             position = rand()%(int(floor(custoInsercao.size()*alpha))+1);
             // cout<<"position = "<<(double)(clock() - begin) / CLOCKS_PER_SEC << endl;
 

@@ -40,7 +40,11 @@ Solution LocalSearch::GILSRVND(int Imax, int Iils, vector<double> &R)
     reset();
 
     alpha = randomValue(R);
-    c->trivial(s);
+    // c->trivial(s);
+    // cout<<fixed << setprecision(2)<<s->costValueTSP<<endl;
+    c->aleatorio(s);
+    // cout<<fixed << setprecision(2)<<s->costValueTSP<<endl;
+    // exit(0);
     // c->constructiveProcedure(s,alpha);
     cout << fixed << setprecision(2) << s->costValueTSP;
     cout << " 0" << endl;

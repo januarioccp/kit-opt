@@ -9,6 +9,7 @@ Construction{
         void calculaCustoInsercao(Solution* s);
         void calculaCustoInsercaoMLP(Solution* s);
         void trivial(Solution* s);
+        void aleatorio(Solution* s);
         void constructiveProcedure(Solution* s, const double alpha);
         // void constructiveProcedureMLP(Solution* s, const double alpha);
 

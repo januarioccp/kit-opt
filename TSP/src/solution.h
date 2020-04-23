@@ -7,6 +7,7 @@
 #include <iomanip>
 #include <set>
 #include <string>
+#include <algorithm>
 using namespace std;
 class Solution{
     // Create get/set functions
