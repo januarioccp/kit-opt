@@ -3,7 +3,7 @@
 #include <cstdlib>
 #include <fstream>
 #include <cmath>
-#include <vector>
+
 using namespace std;
 
 double CalcDistEuc ( double *X, double *Y, int I, int J );
@@ -20,9 +20,7 @@ void Input::dimensionSet(unsigned d){
 }
 
 double Input::distanceGet(unsigned i, unsigned j) const{
-    // cout<<i<<j<<endl;
-    return sqrt(pow(x[i] - x[j],2) + pow(y[i] - y[j],2));
-    // return distance_[i][j];
+    return distance_[i][j];
 }
 
 void Input::distanceSet(unsigned i, unsigned j, double value){
@@ -39,31 +37,6 @@ ostream & operator << (ostream &out, Input &in){
         out << endl;
     }
     return out;
-}
-
-Input:: Input(char** argv){
-    // Abertura do arquivo
-    ifstream in(argv[1], ios::in);
-
-    // Leitura dos pontos
-    in >> dimension_;    
-    x.resize(dimension_+1);
-    y.resize(dimension_+1);
-
-    // // Alocar matriz 2D
-    // distance_ = new double*[dimension_+1];
-    // for ( int i = 0; i < dimension_+1; i++ ) {
-    //     distance_[i] = new double [dimension_+1];
-    // }
-
-    for ( int i = 1; i <= dimension_; i++ ) {
-            in >> x[i] >> y[i];
-    }
-
-    // for ( int i = 1; i <= dimension_; i++ )
-    //     for ( int j = 1; j <= dimension_; j++ )
-    //         distance_[i][j] = sqrt(pow(x[i] - x[j],2) + pow(y[i] - y[j],2));
-
 }
 
 Input::Input( int argc, char** argv)

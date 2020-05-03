@@ -2123,7 +2123,6 @@ void Construction::constructiveProcedure(Solution* s, const double alpha){
         // clock_t begin;
         while ( CL.size() > 0)
         {
-            cout<<CL.size()<<endl;
             position = rand()%(int(floor(custoInsercao.size()*alpha))+1);
             // cout<<"position = "<<(double)(clock() - begin) / CLOCKS_PER_SEC << endl;
 

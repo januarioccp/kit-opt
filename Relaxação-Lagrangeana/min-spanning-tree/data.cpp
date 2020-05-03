@@ -13,11 +13,11 @@ distMatrix(NULL){
 		exit( 1 );        
 	}
 
-	if ( qtParam > 2 )    {
-		cout << "Too many parameters\n";
-		cout << " ./exeLaRP [Instance]"  << endl;
-		exit( 1 );
-	}
+	// if ( qtParam > 2 )    {
+	// 	cout << "Too many parameters\n";
+	// 	cout << " ./exeLaRP [Instance]"  << endl;
+	// 	exit( 1 );
+	// }
 
 	instaceName = instance;
 	nbOfPar = qtParam;
