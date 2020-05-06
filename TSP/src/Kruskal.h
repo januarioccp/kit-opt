@@ -6,25 +6,27 @@
 #include <vector>
 #include <queue>
 #include <utility>
+#include <limits>
 
 using namespace std;
 
 typedef pair<int, int> ii;
-typedef vector <vector<double> >vvi;
+typedef vector<vector<double> > vvi;
 typedef vector<ii> vii;
 
-class Kruskal{
+class Kruskal
+{
 public:
 	Kruskal(vvi dist);
 
 	double MST(int nodes);
 	vii getEdges();
 
-
 private:
-	priority_queue <pair<double,ii> > graph;
-	vector <int> pset;
+	priority_queue<pair<double, ii> > graph;
+	vector<int> pset;
 	vii edges;
+	vvi dist;
 
 	void initDisjoint(int n);
 	int findSet(int i);

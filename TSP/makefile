@@ -1,33 +1,54 @@
-CXX      := -g++
-CXXFLAGS := -std=c++14
-LDFLAGS  := #include CPLEX flags here!!!
-BUILD    := ./build
-OBJ_DIR  := $(BUILD)/objects
-TARGET   := tsp
-INCLUDE  := -Iinclude/
-SRC      := $(wildcard src/*.cpp)
+#detecta se o sistema é de 32 ou 64 bits
+BITS_OPTION = -m64
 
-OBJECTS  := $(SRC:%.cpp=$(OBJ_DIR)/%.o)
 
-all: build $(TARGET)
+#### define o compilador
+CPPC = g++
+#############################
 
-$(OBJ_DIR)/%.o: %.cpp
-	@mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) $(INCLUDE) -c $< -o $@ $(LDFLAGS)
+#### opcoes de compilacao e includes
+CCOPT = $(BITS_OPTION) -O3 -fPIC -fexceptions -DNDEBUG -DIL_STD -std=c++0x
+CCFLAGS = $(CCOPT) 
+#############################
 
-$(TARGET): $(OBJECTS)
-	$(CXX) $(CXXFLAGS) -o $(TARGET) $^ $(LDFLAGS)
+#### flags do linker
+CCLNFLAGS =  -lm -lpthread 
+#############################
 
-.PHONY: all build clean debug release
+#### diretorios com os source files e com os objs files
+SRCDIR = src
+OBJDIR = obj
+#############################
 
-build:
-	@mkdir -p $(OBJ_DIR)
+#### lista de todos os srcs e todos os objs
+SRCS = $(wildcard $(SRCDIR)/*.cpp)
+OBJS = $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SRCS))
+#############################
 
-debug: CXXFLAGS += -DDEBUG -g -Wall -Wextra -Werror
-debug: all
+#### regra principal, gera o executavel
+tsp: $(OBJS) 
+	@echo  "\033[31m \nLinking all objects files: \033[0m"
+	$(CPPC) $(BITS_OPTION) $(OBJS) -o $@ $(CCLNFLAGS)
+############################
 
-release: CXXFLAGS += -O3
-release: all
+#inclui os arquivos de dependencias
+-include $(OBJS:.o=.d)
 
+#regra para cada arquivo objeto: compila e gera o arquivo de dependencias do arquivo objeto
+#cada arquivo objeto depende do .c e dos headers (informacao dos header esta no arquivo de dependencias gerado pelo compiler)
+$(OBJDIR)/%.o: $(SRCDIR)/%.cpp
+	@echo  "\033[31m \nCompiling $<: \033[0m"
+	$(CPPC) $(CCFLAGS) -c $< -o $@
+	@echo  "\033[32m \ncreating $< dependency file: \033[0m"
+	$(CPPC) -std=c++0x  -MM $< > $(basename $@).d
+	@mv -f $(basename $@).d $(basename $@).d.tmp #proximas tres linhas colocam o diretorio no arquivo de dependencias (g++ nao coloca, surprisingly!)
+	@sed -e 's|.*:|$(basename $@).o:|' < $(basename $@).d.tmp > $(basename $@).d
+	@rm -f $(basename $@).d.tmp
+
+#delete objetos e arquivos de dependencia
 clean:
-	-@rm -rvf $(OBJ_DIR)/* $(TARGET)
+	@echo "\033[31mcleaning obj directory \033[0m"
+	@rm tsp -f $(OBJDIR)/*.o $(OBJDIR)/*.d
+
+
+rebuild: clean tsp

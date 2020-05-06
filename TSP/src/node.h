@@ -1,21 +1,26 @@
 #ifndef NODE_H_INCLUDED
 #define NODE_H_INCLUDED
 #include "node.h"
+#include "data.h"
 #include "input.h"
 #include <vector>
 using namespace std;
 
-class Node{
-    public:
-        Node(Input *input);
-        ~Node();
-    // private:
-        Input *in;
-        vector<pair<int , int> > forbidden ; //lista de arcos proibidos
-        vector< vector<int> > subtour; //conjunto de subtours da solucao gerada pelo algoritmo hungaro
-        double lowerBound; // lower bound produzido pelo no (ou custo total da solucao do algoritmo hungaro)
-        int chosen; //subtour escolhido dado o criterio de selecao 
-        bool bound; //variavel que diz se o no nao deve gerar filhos
+class Node
+{
+  public:
+    Node(int dimension);
+    std::vector<std::pair<int, int> > arcosProibidos;
+    std::vector<std::pair<int, int> > arestas;
+    std::vector<double> lambda;
+    std::vector<int> g;
+    std::vector<int> degree;
+    int noEscolhido;
+    double LB;
+    double currentNodeCost;
+    bool isFeasible;
+    bool pruning;
+    void calculateLB(Data* input, const double &);
 };
 
 #endif //NODE_H_INCLUDED
