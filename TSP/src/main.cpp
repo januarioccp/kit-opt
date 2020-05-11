@@ -102,8 +102,9 @@ double bestBound(double UB_plus)
 			}
 			if (it->pruning)
 			{
-				tree.erase(node);
-				continue;
+				tree.erase(it);
+				if (tree.empty())
+					break;
 			}
 		}
 
