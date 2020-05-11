@@ -51,23 +51,23 @@ int main(int argc, char **argv)
 
 	sol = ls.GILSRVND(Imax, Iils, R);
 
-	int cd = 60;
+	int cd = 60;// segundos
 
 	cout << "{" << flush;
 	printf("%.*s", int(strlen(argv[1])) - 14, argv[1] + 10);
 	cout << "," << flush;
 	clock_t beginC = clock();
-	cout << bestBound(sol.costValueTSP + 1, 60);
+	cout << bestBound(sol.costValueTSP + 1, cd);
 	clock_t endC = clock();
 	cout << ",";
 	cout << double(endC - beginC) / CLOCKS_PER_SEC << "," << flush;
 	beginC = clock();
-	cout << DFS(sol.costValueTSP + 1, 60);
+	cout << DFS(sol.costValueTSP + 1, cd);
 	endC = clock();
 	cout << ",";
 	cout << double(endC - beginC) / CLOCKS_PER_SEC << "," << flush;
 	beginC = clock();
-	cout << bestBound(sol.costValueTSP + 1, 60);
+	cout << bestBound(sol.costValueTSP + 1, cd);
 	// cout<<BFS();
 	endC = clock();
 	cout << ",";
