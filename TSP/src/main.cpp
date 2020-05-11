@@ -92,6 +92,7 @@ double bestBound(double UB_plus)
 	while (tree.empty() == false)
 	{
 		cout<<__LINE__<<endl;
+		cout<<tree.size()<<endl;
 		// Usa a estratégia do menor bound
 		double menorLB = INF;
 		for (auto it = tree.begin(); it != tree.end(); ++it)
