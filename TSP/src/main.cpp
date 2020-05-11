@@ -51,7 +51,7 @@ int main(int argc, char **argv)
 
 	sol = ls.GILSRVND(Imax, Iils, R);
 
-	int cd = 60; // segundos
+	int cd = 300; // segundos
 
 	cout << "{" << flush;
 	printf("%.*s", int(strlen(argv[1])) - 14, argv[1] + 10);
