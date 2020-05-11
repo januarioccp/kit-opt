@@ -21,7 +21,7 @@
 #include "hungarian.h"
 using namespace std;
 list<Node> arvore;
-vector<pair<int, int> > solucaoEdges;
+vector<pair<int, int>> solucaoEdges;
 Data *input;
 int N;
 double UB = INT_MAX;
@@ -51,14 +51,14 @@ int main(int argc, char **argv)
 
 	sol = ls.GILSRVND(Imax, Iils, R);
 
-	cout << "{"<<flush;
+	cout << "{" << flush;
 	printf("%.*s", int(strlen(argv[1])) - 14, argv[1] + 10);
-	cout << ","<<flush;
+	cout << "," << flush;
 	clock_t beginC = clock();
 	cout << bestBound(sol.costValueTSP + 1);
 	clock_t endC = clock();
 	cout << ",";
-	cout << double(endC - beginC) / CLOCKS_PER_SEC << ","<<flush;
+	cout << double(endC - beginC) / CLOCKS_PER_SEC << "," << flush;
 	beginC = clock();
 	cout << DFS(sol.costValueTSP + 1);
 	endC = clock();
@@ -91,12 +91,6 @@ double bestBound(double UB_plus)
 
 	while (tree.empty() == false)
 	{
-		if (node->pruning)
-		{
-			tree.erase(node);
-			continue;
-		}
-		
 		// Usa a estratégia do menor bound
 		double menorLB = INF;
 		for (auto it = tree.begin(); it != tree.end(); ++it)
@@ -105,6 +99,11 @@ double bestBound(double UB_plus)
 			{
 				menorLB = it->LB;
 				node = it;
+			}
+			if (it->pruning)
+			{
+				tree.erase(node);
+				continue;
 			}
 		}
 
@@ -150,9 +149,8 @@ double bestBound(double UB_plus)
 				tree.push_back(n);
 			}
 		}
-		
+
 		tree.erase(node);
-		
 	}
 	return UB;
 }
@@ -176,7 +174,8 @@ double DFS(double UB_plus)
 	{
 		node = tree.top();
 		// cout<<node.LB<<endl;
-		if (node.LB > UB){
+		if (node.LB > UB)
+		{
 			tree.pop();
 			continue;
 		}
@@ -196,8 +195,9 @@ double DFS(double UB_plus)
 			tree.pop();
 			continue;
 		}
-		
-		if(node.indexStar < node.star.size()){
+
+		if (node.indexStar < node.star.size())
+		{
 			Node n(input->getDimension());
 			n.arcosProibidos = node.arcosProibidos;
 			n.arcosProibidos.push_back(node.star[node.indexStar]);
@@ -206,11 +206,13 @@ double DFS(double UB_plus)
 			n.calculateLB(input, UB);
 			node.indexStar = node.indexStar + 1;
 			tree.pop();
-			if(node.indexStar < node.star.size())
+			if (node.indexStar < node.star.size())
 				tree.push(node);
 			tree.push(n);
-		}else{
-			cout<<node.LB<<endl;
+		}
+		else
+		{
+			cout << node.LB << endl;
 			tree.pop();
 		}
 	}
@@ -231,7 +233,7 @@ double BFS(double UB_plus)
 
 	auto node = tree.begin();
 
-	cout<<UB<<endl;
+	cout << UB << endl;
 	exit(0);
 	while (tree.empty() == false)
 	{
