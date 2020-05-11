@@ -100,12 +100,6 @@ double bestBound(double UB_plus)
 				menorLB = it->LB;
 				node = it;
 			}
-			if (it->pruning)
-			{
-				tree.erase(it);
-				if (tree.empty())
-					break;
-			}
 		}
 
 		// Check again if the tree is alredy empty since you were using the erase method previously
