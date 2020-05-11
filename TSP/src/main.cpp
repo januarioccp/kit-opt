@@ -119,6 +119,8 @@ double bestBound(double UB_plus)
 				solucaoEdges = node->arestas;
 				UB = node->currentNodeCost;
 			}
+			tree.erase(node);
+			continue;
 		}
 
 		if (node->pruning)
@@ -179,13 +181,15 @@ double DFS(double UB_plus)
 
 		if (node.isFeasible)
 		{
-			// cout<<node.currentNodeCost<<endl;
+			cout<<node.currentNodeCost<<endl;
 			// Se a solução é viável, guarde-a
 			if (node.currentNodeCost < UB)
 			{
 				solucaoEdges = node.arestas;
 				UB = node.currentNodeCost;
 			}
+			tree.pop();
+			continue;
 		}
 		
 		if(node.indexStar < node.star.size()){
