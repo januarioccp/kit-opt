@@ -181,7 +181,6 @@ double DFS(double UB_plus)
 
 		if (node.isFeasible)
 		{
-			cout<<node.currentNodeCost<<endl;
 			// Se a solução é viável, guarde-a
 			if (node.currentNodeCost < UB)
 			{
