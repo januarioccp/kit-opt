@@ -49,7 +49,9 @@ int main(int argc, char **argv)
 	for (int i = 1; i <= 25; i++)
 		R.push_back(R[i - 1] + 0.01);
 
+	cout<<"before"<<endl;
 	sol = ls.GILSRVND(Imax, Iils, R);
+	cout<<"after"<<endl;
 
 	cout << "{"<<flush;
 	printf("%.*s", int(strlen(argv[1])) - 14, argv[1] + 10);
