@@ -49,9 +49,7 @@ int main(int argc, char **argv)
 	for (int i = 1; i <= 25; i++)
 		R.push_back(R[i - 1] + 0.01);
 
-	cout<<"before"<<endl;
 	sol = ls.GILSRVND(Imax, Iils, R);
-	cout<<"after"<<endl;
 
 	cout << "{"<<flush;
 	printf("%.*s", int(strlen(argv[1])) - 14, argv[1] + 10);
@@ -93,6 +91,7 @@ double bestBound(double UB_plus)
 
 	while (tree.empty() == false)
 	{
+		cout<<__LINE__<<endl;
 		// Usa a estratégia do menor bound
 		double menorLB = INF;
 		for (auto it = tree.begin(); it != tree.end(); ++it)
@@ -109,14 +108,14 @@ double bestBound(double UB_plus)
 				node = it;
 			}
 		}
-
+cout<<__LINE__<<endl;
 		// Check again if the tree is alredy empty since you were using the erase method previously
 		if (tree.empty())
 			break;
 
 		if (node->isFeasible)
 		{
-			// Qualquer vertice com LB maior que o vertice de menor lower bound sera removido
+			// Qualquer solução com LB maior que a solução de menor lower bound sera removido
 			for (auto it = tree.begin(); it != tree.end(); it++)
 				if (it->LB > node->currentNodeCost)
 					it->pruning = true;
@@ -128,7 +127,7 @@ double bestBound(double UB_plus)
 				UB = node->currentNodeCost;
 			}
 		}
-
+cout<<__LINE__<<endl;
 		if (node->pruning)
 		{
 			tree.erase(node);
@@ -150,7 +149,9 @@ double bestBound(double UB_plus)
 				tree.push_back(n);
 			}
 		}
+		cout<<__LINE__<<endl;
 		tree.erase(node);
+		cout<<__LINE__<<endl;
 	}
 	return UB;
 }
