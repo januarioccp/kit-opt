@@ -51,9 +51,9 @@ int main(int argc, char **argv)
 
 	sol = ls.GILSRVND(Imax, Iils, R);
 
-	cout << "{";
+	cout << "{"<<flush;
 	printf("%.*s", int(strlen(argv[1])) - 14, argv[1] + 10);
-	cout << ",";
+	cout << ","<<flush;
 	clock_t beginC = clock();
 	cout << bestBound(sol.costValueTSP + 1);
 	clock_t endC = clock();
@@ -95,7 +95,13 @@ double bestBound(double UB_plus)
 		double menorLB = INF;
 		for (auto it = tree.begin(); it != tree.end(); ++it)
 		{
-			if (menorLB > it->LB)
+			// Prune as soon as possible
+			if (it->LB > UB){
+				tree.erase(it);
+				if(tree.empty())
+					break;
+			}
+			else if (menorLB > it->LB)
 			{
 				menorLB = it->LB;
 				node = it;
