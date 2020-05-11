@@ -51,7 +51,7 @@ int main(int argc, char **argv)
 
 	sol = ls.GILSRVND(Imax, Iils, R);
 
-	int cd = 60;// segundos
+	int cd = 60; // segundos
 
 	cout << "{" << flush;
 	printf("%.*s", int(strlen(argv[1])) - 14, argv[1] + 10);
@@ -67,8 +67,7 @@ int main(int argc, char **argv)
 	cout << ",";
 	cout << double(endC - beginC) / CLOCKS_PER_SEC << "," << flush;
 	beginC = clock();
-	cout << bestBound(sol.costValueTSP + 1, cd);
-	// cout<<BFS();
+	cout << BFS(sol.costValueTSP + 1, cd);
 	endC = clock();
 	cout << ",";
 	cout << double(endC - beginC) / CLOCKS_PER_SEC;
@@ -174,11 +173,10 @@ double DFS(double UB_plus, int cd)
 	Node node(input->getDimension());
 
 	time_t start = time(0);
-	int timeLeft = 60;
+	int timeLeft = cd;
 	while ((timeLeft > 0) && tree.empty() == false)
 	{
 		node = tree.top();
-		// cout<<node.LB<<endl;
 		if (node.LB > UB)
 		{
 			tree.pop();
@@ -217,11 +215,10 @@ double DFS(double UB_plus, int cd)
 		}
 		else
 			tree.pop();
-		
-			time_t end       = time(0);
-    time_t timeTaken = end-start;        // Total time taken so Far.
-    timeLeft         = cd - timeTaken;   // Time left is thus.
-	
+
+		time_t end = time(0);
+		time_t timeTaken = end - start; // Total time taken so Far.
+		timeLeft = cd - timeTaken;		// Time left is thus.
 	}
 	return UB;
 }
@@ -234,77 +231,51 @@ double BFS(double UB_plus, int cd)
 
 	raiz.calculateLB(input, UB);
 
-	list<Node> tree;
+	queue<Node> tree;
 
-	tree.push_back(raiz);
+	tree.push(raiz);
 
-	auto node = tree.begin();
+	Node node(input->getDimension());
 
 	time_t start = time(0);
-	int timeLeft = 60;
+	int timeLeft = cd;
 	while ((timeLeft > 0) && tree.empty() == false)
 	{
-		// Usa a estratégia do menor bound
-		double menorLB = INF;
-		for (auto it = tree.begin(); it != tree.end(); ++it)
+		node = tree.front();
+		tree.pop();
+		if (node.LB > UB)
+			continue;
+
+		if (node.isFeasible)
 		{
-			// Prune as soon as possible
-			if (it->LB > UB)
-				tree.erase(it);
-			else if (menorLB > it->LB)
-			{
-				menorLB = it->LB;
-				node = it;
-			}
-		}
-
-		// Check again if the tree is alredy empty since you were using the erase method previously
-		if (tree.empty())
-			break;
-
-		if (node->isFeasible)
-		{
-			// cout << "UB=" << node->currentNodeCost << endl;
-
-			// Qualquer vertice com LB maior que o vertice de menor lower bound sera removido
-			for (auto it = tree.begin(); it != tree.end(); it++)
-				if (it->LB > node->currentNodeCost)
-					it->pruning = true;
-
 			// Se a solução viável, guarde-a
-			if (node->currentNodeCost < UB)
+			if (node.currentNodeCost < UB)
 			{
-				solucaoEdges = node->arestas;
-				UB = node->currentNodeCost;
+				solucaoEdges = node.arestas;
+				UB = node.currentNodeCost;
 			}
-		}
-
-		if (node->pruning)
-		{
-			tree.erase(node);
 			continue;
 		}
 
 		//Escolha o vértice de maior grau
-		int noEscolhido = max_element(node->degree.begin() + 0, node->degree.end()) - node->degree.begin();
+		int noEscolhido = max_element(node.degree.begin() + 0, node.degree.end()) - node.degree.begin();
 
-		for (auto &aresta : node->arestas)
+		for (auto &aresta : node.arestas)
 		{
 			if (aresta.first == noEscolhido || aresta.second == noEscolhido)
 			{
 				Node n(input->getDimension());
-				n.arcosProibidos = node->arcosProibidos;
+				n.arcosProibidos = node.arcosProibidos;
 				n.arcosProibidos.push_back(aresta);
-				n.lambda = node->lambda;
+				n.lambda = node.lambda;
 				n.calculateLB(input, UB);
-				tree.push_back(n);
+				tree.push(n);
 			}
 		}
-		tree.erase(node);
-			time_t end       = time(0);
-    time_t timeTaken = end-start;        // Total time taken so Far.
-    timeLeft         = cd - timeTaken;   // Time left is thus.
-	
+		
+		time_t end = time(0);
+		time_t timeTaken = end - start; // Total time taken so Far.
+		timeLeft = cd - timeTaken;		// Time left is thus.
 	}
 	return UB;
 }
