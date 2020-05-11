@@ -109,9 +109,9 @@ double bestBound(double UB_plus)
 		if (node->isFeasible)
 		{
 			// Qualquer solução com LB maior que a solução de menor lower bound sera removido
-			for (auto it = tree.begin(); it != tree.end(); it++)
+			for (auto it = tree.end(); it != tree.begin(); it--)
 				if (it->LB > node->currentNodeCost)
-					it->pruning = true;
+					tree.erase(it);
 
 			// Se a solução viável, guarde-a
 			if (node->currentNodeCost < UB)
