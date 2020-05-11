@@ -26,9 +26,9 @@ Data *input;
 int N;
 double UB = INT_MAX;
 
-double BFS(double UB_plus);
-double DFS(double UB_plus);
-double bestBound(double UB_plus);
+double BFS(double UB_plus, int cd);
+double DFS(double UB_plus, int cd);
+double bestBound(double UB_plus, int cd);
 
 int main(int argc, char **argv)
 {
@@ -51,21 +51,23 @@ int main(int argc, char **argv)
 
 	sol = ls.GILSRVND(Imax, Iils, R);
 
+	int cd = 60;
+
 	cout << "{" << flush;
 	printf("%.*s", int(strlen(argv[1])) - 14, argv[1] + 10);
 	cout << "," << flush;
 	clock_t beginC = clock();
-	cout << bestBound(sol.costValueTSP + 1);
+	cout << bestBound(sol.costValueTSP + 1, 60);
 	clock_t endC = clock();
 	cout << ",";
 	cout << double(endC - beginC) / CLOCKS_PER_SEC << "," << flush;
 	beginC = clock();
-	cout << DFS(sol.costValueTSP + 1);
+	cout << DFS(sol.costValueTSP + 1, 60);
 	endC = clock();
 	cout << ",";
 	cout << double(endC - beginC) / CLOCKS_PER_SEC << "," << flush;
 	beginC = clock();
-	cout << bestBound(sol.costValueTSP + 1);
+	cout << bestBound(sol.costValueTSP + 1, 60);
 	// cout<<BFS();
 	endC = clock();
 	cout << ",";
@@ -75,7 +77,7 @@ int main(int argc, char **argv)
 	return 0;
 }
 
-double bestBound(double UB_plus)
+double bestBound(double UB_plus, int cd)
 {
 	UB = UB_plus;
 
@@ -89,7 +91,9 @@ double bestBound(double UB_plus)
 
 	auto node = tree.begin();
 
-	while (tree.empty() == false)
+	time_t start = time(0);
+	int timeLeft = cd;
+	while ((timeLeft > 0) && tree.empty() == false)
 	{
 		// Usa a estratégia do menor bound
 		double menorLB = INF;
@@ -146,11 +150,15 @@ double bestBound(double UB_plus)
 		}
 
 		tree.erase(node);
+
+		time_t end = time(0);
+		time_t timeTaken = end - start; // Total time taken so Far.
+		timeLeft = cd - timeTaken;		// Time left is thus.
 	}
 	return UB;
 }
 
-double DFS(double UB_plus)
+double DFS(double UB_plus, int cd)
 {
 	UB = UB_plus;
 
@@ -165,7 +173,9 @@ double DFS(double UB_plus)
 
 	Node node(input->getDimension());
 
-	while (tree.empty() == false)
+	time_t start = time(0);
+	int timeLeft = 60;
+	while ((timeLeft > 0) && tree.empty() == false)
 	{
 		node = tree.top();
 		// cout<<node.LB<<endl;
@@ -206,15 +216,17 @@ double DFS(double UB_plus)
 			tree.push(n);
 		}
 		else
-		{
-			cout << node.LB << endl;
 			tree.pop();
-		}
+		
+			time_t end       = time(0);
+    time_t timeTaken = end-start;        // Total time taken so Far.
+    timeLeft         = cd - timeTaken;   // Time left is thus.
+	
 	}
 	return UB;
 }
 
-double BFS(double UB_plus)
+double BFS(double UB_plus, int cd)
 {
 	UB = UB_plus;
 
@@ -228,9 +240,9 @@ double BFS(double UB_plus)
 
 	auto node = tree.begin();
 
-	cout << UB << endl;
-	exit(0);
-	while (tree.empty() == false)
+	time_t start = time(0);
+	int timeLeft = 60;
+	while ((timeLeft > 0) && tree.empty() == false)
 	{
 		// Usa a estratégia do menor bound
 		double menorLB = INF;
@@ -289,6 +301,10 @@ double BFS(double UB_plus)
 			}
 		}
 		tree.erase(node);
+			time_t end       = time(0);
+    time_t timeTaken = end-start;        // Total time taken so Far.
+    timeLeft         = cd - timeTaken;   // Time left is thus.
+	
 	}
 	return UB;
 }
