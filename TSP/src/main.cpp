@@ -91,27 +91,17 @@ double bestBound(double UB_plus)
 
 	while (tree.empty() == false)
 	{
-		cout<<__LINE__<<endl;
-		cout<<tree.size()<<endl;
 		// Usa a estratégia do menor bound
 		double menorLB = INF;
 		for (auto it = tree.begin(); it != tree.end(); ++it)
 		{
-			cout<<__LINE__<<",";
-			// Prune as soon as possible
-			if (it->LB > UB){
-				tree.erase(it);
-				cout<<tree.size()<<" ";
-				if(tree.empty())
-					break;
-			}
-			else if (menorLB > it->LB)
+			if (menorLB > it->LB)
 			{
 				menorLB = it->LB;
 				node = it;
 			}
 		}
-cout<<__LINE__<<endl;
+
 		// Check again if the tree is alredy empty since you were using the erase method previously
 		if (tree.empty())
 			break;
@@ -130,7 +120,7 @@ cout<<__LINE__<<endl;
 				UB = node->currentNodeCost;
 			}
 		}
-cout<<__LINE__<<endl;
+
 		if (node->pruning)
 		{
 			tree.erase(node);
@@ -152,9 +142,9 @@ cout<<__LINE__<<endl;
 				tree.push_back(n);
 			}
 		}
-		cout<<__LINE__<<endl;
+		
 		tree.erase(node);
-		cout<<__LINE__<<endl;
+		
 	}
 	return UB;
 }
