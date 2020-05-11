@@ -91,6 +91,12 @@ double bestBound(double UB_plus)
 
 	while (tree.empty() == false)
 	{
+		if (node->pruning)
+		{
+			tree.erase(node);
+			continue;
+		}
+		
 		// Usa a estratégia do menor bound
 		double menorLB = INF;
 		for (auto it = tree.begin(); it != tree.end(); ++it)
