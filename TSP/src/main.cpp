@@ -97,6 +97,7 @@ double bestBound(double UB_plus)
 		double menorLB = INF;
 		for (auto it = tree.begin(); it != tree.end(); ++it)
 		{
+			cout<<__LINE__<<",";
 			// Prune as soon as possible
 			if (it->LB > UB){
 				tree.erase(it);
