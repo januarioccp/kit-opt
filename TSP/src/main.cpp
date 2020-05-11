@@ -95,10 +95,7 @@ double bestBound(double UB_plus)
 		double menorLB = INF;
 		for (auto it = tree.begin(); it != tree.end(); ++it)
 		{
-			// Prune as soon as possible
-			if (it->LB > UB)
-				tree.erase(it);
-			else if (menorLB > it->LB)
+			if (menorLB > it->LB)
 			{
 				menorLB = it->LB;
 				node = it;
