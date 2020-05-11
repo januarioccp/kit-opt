@@ -100,6 +100,12 @@ double bestBound(double UB_plus)
 				menorLB = it->LB;
 				node = it;
 			}
+			if (it->pruning)
+			{
+				tree.erase(it);
+				if (tree.empty())
+					break;
+			}
 		}
 
 		// Check again if the tree is alredy empty since you were using the erase method previously
@@ -109,14 +115,9 @@ double bestBound(double UB_plus)
 		if (node->isFeasible)
 		{
 			// Qualquer solução com LB maior que a solução de menor lower bound sera removido
-			for (auto it = tree.end(); it != tree.begin();){
-				if (it->LB > node->currentNodeCost){
-					auto itb = it;
-					it--;
-					tree.erase(itb);
-				}else
-					it--;
-			}
+			for (auto it = tree.begin(); it != tree.end(); it++)
+				if (it->LB > node->currentNodeCost)
+					it->pruning = true;
 
 			// Se a solução viável, guarde-a
 			if (node->currentNodeCost < UB)
