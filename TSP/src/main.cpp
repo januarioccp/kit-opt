@@ -100,6 +100,7 @@ double bestBound(double UB_plus)
 			// Prune as soon as possible
 			if (it->LB > UB){
 				tree.erase(it);
+				cout<<tree.size()<<" ";
 				if(tree.empty())
 					break;
 			}
