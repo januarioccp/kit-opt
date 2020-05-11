@@ -5,21 +5,23 @@
 #include "input.h"
 #include <vector>
 using namespace std;
-
 class Node
 {
   public:
     Node(int dimension);
-    std::vector<std::pair<int, int> > arcosProibidos;
-    std::vector<std::pair<int, int> > arestas;
-    std::vector<double> lambda;
-    std::vector<int> g;
-    std::vector<int> degree;
+    vector<pair<int, int> > arcosProibidos;
+    vector<pair<int, int> > star;
+    vector<pair<int, int> > arestas;
+    vector<double> lambda;
+    vector<int> g;
+    vector<int> degree;
     int noEscolhido;
+    int indexStar;
     double LB;
     double currentNodeCost;
     bool isFeasible;
     bool pruning;
+    bool DFS;
     void calculateLB(Data* input, const double &);
 };
 
