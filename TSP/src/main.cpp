@@ -53,7 +53,6 @@ int main(int argc, char **argv)
 
 	int cd = 300; // segundos
 
-	cout << "{" << flush;
 	printf("%.*s", int(strlen(argv[1])) - 14, argv[1] + 10);
 	cout << "," << flush;
 	clock_t beginC = clock();
@@ -70,8 +69,7 @@ int main(int argc, char **argv)
 	cout << BFS(sol.costValueTSP + 1, cd);
 	endC = clock();
 	cout << ",";
-	cout << double(endC - beginC) / CLOCKS_PER_SEC;
-	cout << "}" << endl;
+	cout << double(endC - beginC) / CLOCKS_PER_SEC << endl;
 
 	return 0;
 }
