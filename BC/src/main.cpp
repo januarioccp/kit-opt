@@ -46,20 +46,21 @@ protected:
   {
     try
     {
-      if (where == GRB_CB_MIPNODE)
-      // if (false)
+       if (where == GRB_CB_MIPNODE)
+      //  (false)
       {
         if(GRB_CB_MIPNODE_STATUS == GRB_OPTIMAL)
           cout<<"Relaxation if Optimal"<<endl;
 
         double Cutmin;
         double **x = new double *[n];
-        vector<bool> seen(n);
-        fill(seen.begin(), seen.end(), false);
+        vector<bool> seen(n, false);
 
         for (int i = 0; i < n; i++)
           x[i] = getSolution(vars[i], n);
 
+
+        srand(2);
         int v0 = rand()%n;
         vector<int> v = maxback(n, x, Cutmin, v0);
         if (Cutmin < 2)
@@ -74,11 +75,13 @@ protected:
 
           if(v.size() > 0 && y.size() > 0){
             GRBLinExpr expr = 0;
+
             for (int i = 0; i < v.size(); i++)
               for (int j = 0; j < y.size(); j++)
-                expr += vars[v[i]][y[j]];
-            addCut(expr >= 2);
-            // cout<<"cut"<<endl;
+                  expr += vars[v[i]][y[j]];
+                // cout<<expr<<endl;
+            addCut(expr,GRB_GREATER_EQUAL,2);
+            //  cout<<"cut"<<endl;
           }
         }
           for (int i = 0; i < n; i++)
@@ -284,10 +287,10 @@ vector<int> maxback(int n,
   b[v] = -numeric_limits<double>::infinity();
 
   double Cutval;
-  Cutmin = 0;
+  Cutmin = 0.0;
   for (int i = 0; i < n; i++)
   {
-    if (!seen[v]){
+    if (!seen[v] && v!=i){
       b[i] = x[v][i];
       Cutmin += b[i];
     }
@@ -310,12 +313,11 @@ vector<int> maxback(int n,
 
     S.push_back(v);
     seen[v] = true;
-
     Cutval = Cutval + 2 - 2 * b[v];
 
     for (int t = 0; t < n; t++)
     {
-      if (!seen[t])
+      if (!seen[t] && v != t)
         b[t] = b[t] + x[v][t];
     }
     if (Cutval < Cutmin)
@@ -324,15 +326,6 @@ vector<int> maxback(int n,
       Smin = S;
     }
   }
-
-  // cout << "Smin.size() = " << Smin.size() << endl;
-  // for (int i = 0; i < Smin.size(); i++)
-  // {
-  //   cout << setw(3) << Smin[i];
-  // }
-  // cout << endl;
-  // cout << "Cutmin = " << fixed<<Cutmin << endl
-  //      << endl;
 
   return Smin;
 }
