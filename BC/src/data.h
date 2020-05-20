@@ -32,8 +32,7 @@ private:
 	int dimension;
 
 	double **distMatrix;
-	double *xCoord;
-	double *yCoord;
+	double *xCoord, *yCoord;
 
 	//Computing Distances
 	static double CalcDistEuc ( double *, double *, int , int );

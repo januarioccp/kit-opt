@@ -22,6 +22,7 @@ string itos(int i)
   return s.str();
 }
 
+void findsubtour(int n, double **sol, int *tourlenP, int *tour);
 void findsubtour2(int n, double **sol, vector<pair<int, int> > &p, int *tour);
 vector<int> maxback(int n, double **sol, double& Cutmin, int v0);
 
@@ -46,7 +47,11 @@ protected:
     try
     {
       if (where == GRB_CB_MIPNODE)
+      // if (false)
       {
+        if(GRB_CB_MIPNODE_STATUS == GRB_OPTIMAL)
+          cout<<"Relaxation if Optimal"<<endl;
+
         double Cutmin;
         double **x = new double *[n];
         vector<bool> seen(n);
@@ -73,6 +78,7 @@ protected:
               for (int j = 0; j < y.size(); j++)
                 expr += vars[v[i]][y[j]];
             addCut(expr >= 2);
+            // cout<<"cut"<<endl;
           }
         }
           for (int i = 0; i < n; i++)
@@ -131,6 +137,68 @@ protected:
     }
   }
 };
+
+// Given an integer-feasible solution 'sol', find the smallest
+// sub-tour.  Result is returned in 'tour', and length is
+// returned in 'tourlenP'.
+void findsubtour(int n,
+                 double **sol,
+                 int *tourlenP,
+                 int *tour)
+{
+  bool *seen = new bool[n];
+  int bestind, bestlen;
+  int i, node, len, start;
+
+  for (i = 0; i < n; i++)
+    seen[i] = false;
+
+  start = 0;
+  bestlen = n + 1;
+  bestind = -1;
+  node = 0;
+  while (start < n)
+  {
+    for (node = 0; node < n; node++)
+      if (!seen[node])
+        break;
+
+    if (node == n)
+      break;
+
+    for (len = 0; len < n; len++)
+    {
+      tour[start + len] = node;
+      seen[node] = true;
+      for (i = 0; i < n; i++)
+      {
+        if (sol[node][i] > 0.5 && !seen[i])
+        {
+          node = i;
+          break;
+        }
+      }
+      if (i == n)
+      {
+        len++;
+        if (len < bestlen)
+        {
+
+          bestlen = len;
+          bestind = start;
+        }
+        start += len;
+        break;
+      }
+    }
+  }
+
+  for (i = 0; i < bestlen; i++)
+    tour[i] = tour[bestind + i];
+  *tourlenP = bestlen;
+
+  delete[] seen;
+}
 
 // Given an integer-feasible solution 'sol', find the smallest
 // sub-tour.
@@ -199,8 +267,10 @@ void findsubtour2(int n,
   delete[] seen;
 }
 
-// Given an integer-feasible solution 'sol', find the smallest sub-tour.
-vector<int> maxback(int n, double **x, double &Cutmin, int v0)
+// Given an integer-feasible solution 'sol', find the smallest
+// sub-tour.
+vector<int> maxback(int n,
+                    double **x, double &Cutmin, int v0)
 {
   vector<int> S;
   vector<int> Smin;
@@ -244,15 +314,25 @@ vector<int> maxback(int n, double **x, double &Cutmin, int v0)
     Cutval = Cutval + 2 - 2 * b[v];
 
     for (int t = 0; t < n; t++)
+    {
       if (!seen[t])
         b[t] = b[t] + x[v][t];
-    
+    }
     if (Cutval < Cutmin)
     {
       Cutmin = Cutval;
       Smin = S;
     }
   }
+
+  // cout << "Smin.size() = " << Smin.size() << endl;
+  // for (int i = 0; i < Smin.size(); i++)
+  // {
+  //   cout << setw(3) << Smin[i];
+  // }
+  // cout << endl;
+  // cout << "Cutmin = " << fixed<<Cutmin << endl
+  //      << endl;
 
   return Smin;
 }
@@ -342,10 +422,15 @@ int main(int arg1,
     // model.set(GRB_DoubleParam_Heuristics, false);
 
     // Disable all kinds of cuts, including gomory
-    // model.set(GRB_IntParam_Cuts, false);
+    // model.set(GRB_IntParam_Cuts, 0);
 
     // Disable all kinds of presolve
     // model.set(GRB_IntParam_Presolve, false);
+
+    // When adding your own cuts, you must set parameter PreCrush to value 1. 
+    // This setting shuts off a few presolve reductions that sometimes prevent 
+    // cuts on the original model from being applied to the presolved model.
+    model.set(GRB_IntParam_PreCrush, 1);
 
     // Set the model to minimization
     model.set(GRB_IntAttr_ModelSense, GRB_MINIMIZE);
