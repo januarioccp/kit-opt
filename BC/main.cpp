@@ -4,13 +4,13 @@
 */
 
 // You might need to change it in order to make it work in your machine
-#include <ilcplex/ilocplex.h>
+#include "gurobi_c++.h"
 #include <cassert>
 #include <cstdlib>
 #include <cmath>
 #include <sstream>
 #include <algorithm>
-#include "data.h"
+#include "./src/data.h"
 using namespace std;
 
 string itos(int i)
@@ -28,305 +28,332 @@ vector<int> maxback(int n, double **sol, double& Cutmin, int v0);
 // find the smallest subtour, and add a subtour elimination constraint
 // if the tour doesn't visit every node.
 
-// class subtourelim : public GRBCallback
-// {
-// public:
-//   GRBVar **vars;
-//   int n;
-//   subtourelim(GRBVar **xvars, int xn)
-//   {
-//     vars = xvars;
-//     n = xn;
-//   }
+class subtourelim : public GRBCallback
+{
+public:
+  GRBVar **vars;
+  int n;
+  subtourelim(GRBVar **xvars, int xn)
+  {
+    vars = xvars;
+    n = xn;
+  }
 
-// protected:
-//   void callback()
-//   {
-//     try
-//     {
-//        if (where == GRB_CB_MIPNODE)
-//       //  (false)
-//       {
-//         if(GRB_CB_MIPNODE_STATUS == GRB_OPTIMAL)
-//           cout<<"Relaxation if Optimal"<<endl;
+protected:
+  void callback()
+  {
+    try
+    {
+       if (where == GRB_CB_MIPNODE)
+      //  (false)
+      {
+        if(GRB_CB_MIPNODE_STATUS == GRB_OPTIMAL)
+          cout<<"Relaxation if Optimal"<<endl;
 
-//         double Cutmin;
-//         double **x = new double *[n];
-//         vector<bool> seen(n, false);
+        double **x = new double *[n];
 
-//         for (int i = 0; i < n; i++)
-//           x[i] = getSolution(vars[i], n);
+        for (int i = 0; i < n; i++)
+          x[i] = getSolution(vars[i], n);
 
+        double Cutmin;
+        srand(time(0));
+        int v0 = rand()%n;
+        vector<int> v = maxback(n, x, Cutmin, v0);
+        if (Cutmin < 1.9)
+        {
+          vector<bool> seen(n, false);
+          for (int i = 0; i < v.size(); i++)
+            seen[v[i]] = true;
 
-//         srand(2);
-//         int v0 = rand()%n;
-//         vector<int> v = maxback(n, x, Cutmin, v0);
-//         if (Cutmin < 2)
-//         {
-//           for (int i = 0; i < v.size(); i++)
-//             seen[v[i]] = true;
+          vector<int> y;
+          for (int i = 0; i < n; i++)
+            if (!seen[i])
+              y.push_back(i);
 
-//           vector<int> y;
-//           for (int i = 0; i < n; i++)
-//             if (!seen[i])
-//               y.push_back(i);
+          if(v.size() > 0 && y.size() > 0){
+            GRBLinExpr expr = 0;
 
-//           if(v.size() > 0 && y.size() > 0){
-//             GRBLinExpr expr = 0;
-
-//             for (int i = 0; i < v.size(); i++)
-//               for (int j = 0; j < y.size(); j++)
-//                   expr += vars[v[i]][y[j]];
-//                 // cout<<expr<<endl;
-//             addCut(expr,GRB_GREATER_EQUAL,2);
-//             //  cout<<"cut"<<endl;
-//           }
-//         }
-//           for (int i = 0; i < n; i++)
-//             delete[] x[i];
-//           delete[] x;
+            for (int i = 0; i < v.size(); i++)
+              for (int j = 0; j < y.size(); j++)
+                  expr += vars[v[i]][y[j]] + vars[y[j]][v[i]];
+                // cout<<expr<<endl;
+            addCut(expr,GRB_GREATER_EQUAL,2);
+            //  cout<<"cut"<<endl;
+          }
+        }
+          for (int i = 0; i < n; i++)
+            delete[] x[i];
+          delete[] x;
         
-//       }
-//       if (where == GRB_CB_MIPSOL)
-//       {
-//         // Found an integer feasible solution - does it visit every node?
-//         double **x = new double *[n];
-//         int *tour2 = new int[n];
-//         vector<pair<int, int> > p;
-//         int i, j;
-//         for (i = 0; i < n; i++)
-//           x[i] = getSolution(vars[i], n);
+      }
+      if (where == GRB_CB_MIPSOL)
+      {
+        // Found an integer feasible solution - does it visit every node?
+        double **x = new double *[n];
+        // int *tour2 = new int[n];
+        // vector<pair<int, int> > p;
+        
+        for (int i = 0; i < n; i++)
+          x[i] = getSolution(vars[i], n);
 
-//         findsubtour2(n, x, p, tour2);
+        double Cutmin;
+        srand(time(0));
+        int v0 = rand()%n;
+        vector<int> v = maxback(n, x, Cutmin, v0);
+        if (Cutmin < 2)
+        {
+          vector<bool> seen(n, false);
+          for (int i = 0; i < v.size(); i++)
+            seen[v[i]] = true;
 
-//         if (p.size() > 1)
-//         {
-//           for (i = 0; i < p.size(); i++)
-//           {
+          vector<int> y;
+          for (int i = 0; i < n; i++)
+            if (!seen[i])
+              y.push_back(i);
 
-//             GRBLinExpr expr1 = 0;
-//             for (int a = p[i].first; a < p[i].first + p[i].second; a++)
-//               for (int b = a + 1; b < p[i].first + p[i].second; b++)
-//                 expr1 += vars[tour2[a]][tour2[b]];
-//             addLazy(expr1 <= p[i].second - 1);
+          if(v.size() > 0 && y.size() > 0){
+            GRBLinExpr expr = 0;
 
-//             GRBLinExpr expr2 = 0;
-//             for (j = 0; j < p.size(); j++)
-//               if (i != j)
-//                 for (int a = p[i].first; a < p[i].first + p[i].second; a++)
-//                   for (int b = p[j].first; b < p[j].first + p[j].second; b++)
-//                     expr2 += vars[tour2[a]][tour2[b]];
+            for (int i = 0; i < v.size(); i++)
+              for (int j = 0; j < y.size(); j++)
+                  expr += vars[v[i]][y[j]];// + vars[y[j]][v[i]];
+                // cout<<expr<<endl;
+            addLazy(expr,GRB_GREATER_EQUAL,2);
+            //  cout<<"cut"<<endl;
+          }
+        }
 
-//             addLazy(expr2 >= 2);
-//           }
-//         }
+        // findsubtour2(n, x, p, tour2);
 
-//         for (i = 0; i < n; i++)
-//           delete[] x[i];
-//         delete[] x;
-//         delete[] tour2;
-//       }
-//     }
-//     catch (GRBException e)
-//     {
-//       cout << "Error number: " << e.getErrorCode() << endl;
-//       cout << e.getMessage() << endl;
-//     }
-//     catch (...)
-//     {
-//       cout << "Error during callback" << endl;
-//     }
-//   }
-// };
+        // if (p.size() > 1)
+        // {
+        //   for (i = 0; i < p.size(); i++)
+        //   {
 
-// // Given an integer-feasible solution 'sol', find the smallest
-// // sub-tour.  Result is returned in 'tour', and length is
-// // returned in 'tourlenP'.
-// void findsubtour(int n,
-//                  double **sol,
-//                  int *tourlenP,
-//                  int *tour)
-// {
-//   bool *seen = new bool[n];
-//   int bestind, bestlen;
-//   int i, node, len, start;
+        //     GRBLinExpr expr1 = 0;
+        //     for (int a = p[i].first; a < p[i].first + p[i].second; a++)
+        //       for (int b = a + 1; b < p[i].first + p[i].second; b++)
+        //         expr1 += vars[tour2[a]][tour2[b]];
+        //     addLazy(expr1 <= p[i].second - 1);
 
-//   for (i = 0; i < n; i++)
-//     seen[i] = false;
+        //     GRBLinExpr expr2 = 0;
+        //     for (j = 0; j < p.size(); j++)
+        //       if (i != j)
+        //         for (int a = p[i].first; a < p[i].first + p[i].second; a++)
+        //           for (int b = p[j].first; b < p[j].first + p[j].second; b++)
+        //             expr2 += vars[tour2[a]][tour2[b]];
 
-//   start = 0;
-//   bestlen = n + 1;
-//   bestind = -1;
-//   node = 0;
-//   while (start < n)
-//   {
-//     for (node = 0; node < n; node++)
-//       if (!seen[node])
-//         break;
+        //     addLazy(expr2 >= 2);
+        //   }
+        // }
 
-//     if (node == n)
-//       break;
+        // delete[] tour2;
+        for (int i = 0; i < n; i++)
+          delete[] x[i];
+        delete[] x;
+        
+      }
+    }
+    catch (GRBException e)
+    {
+      cout << "Error number: " << e.getErrorCode() << endl;
+      cout << e.getMessage() << endl;
+    }
+    catch (...)
+    {
+      cout << "Error during callback" << endl;
+    }
+  }
+};
 
-//     for (len = 0; len < n; len++)
-//     {
-//       tour[start + len] = node;
-//       seen[node] = true;
-//       for (i = 0; i < n; i++)
-//       {
-//         if (sol[node][i] > 0.5 && !seen[i])
-//         {
-//           node = i;
-//           break;
-//         }
-//       }
-//       if (i == n)
-//       {
-//         len++;
-//         if (len < bestlen)
-//         {
+// Given an integer-feasible solution 'sol', find the smallest
+// sub-tour.  Result is returned in 'tour', and length is
+// returned in 'tourlenP'.
+void findsubtour(int n,
+                 double **sol,
+                 int *tourlenP,
+                 int *tour)
+{
+  bool *seen = new bool[n];
+  int bestind, bestlen;
+  int i, node, len, start;
 
-//           bestlen = len;
-//           bestind = start;
-//         }
-//         start += len;
-//         break;
-//       }
-//     }
-//   }
+  for (i = 0; i < n; i++)
+    seen[i] = false;
 
-//   for (i = 0; i < bestlen; i++)
-//     tour[i] = tour[bestind + i];
-//   *tourlenP = bestlen;
+  start = 0;
+  bestlen = n + 1;
+  bestind = -1;
+  node = 0;
+  while (start < n)
+  {
+    for (node = 0; node < n; node++)
+      if (!seen[node])
+        break;
 
-//   delete[] seen;
-// }
+    if (node == n)
+      break;
 
-// // Given an integer-feasible solution 'sol', find the smallest
-// // sub-tour.
-// void findsubtour2(int n,
-//                   double **sol,
-//                   vector<pair<int, int> > &p,
-//                   int *tour)
-// {
-//   bool *seen = new bool[n];
-//   int i, node, len, start;
+    for (len = 0; len < n; len++)
+    {
+      tour[start + len] = node;
+      seen[node] = true;
+      for (i = 0; i < n; i++)
+      {
+        if (sol[node][i] > 0.5 && !seen[i])
+        {
+          node = i;
+          break;
+        }
+      }
+      if (i == n)
+      {
+        len++;
+        if (len < bestlen)
+        {
 
-//   for (i = 0; i < n; i++)
-//     seen[i] = false;
+          bestlen = len;
+          bestind = start;
+        }
+        start += len;
+        break;
+      }
+    }
+  }
 
-//   start = 0;
-//   node = 0;
+  for (i = 0; i < bestlen; i++)
+    tour[i] = tour[bestind + i];
+  *tourlenP = bestlen;
 
-//   // Start from position 0 in the tour
-//   while (start < n)
-//   {
-//     // Find a node that has not been seen
-//     for (node = 0; node < n; node++)
-//       if (!seen[node])
-//         break;
+  delete[] seen;
+}
 
-//     // Did you see every node? Time to break
-//     if (node == n)
-//       break;
+// Given an integer-feasible solution 'sol', find the smallest
+// sub-tour.
+void findsubtour2(int n,
+                  double **sol,
+                  vector<pair<int, int> > &p,
+                  int *tour)
+{
+  bool *seen = new bool[n];
+  int i, node, len, start;
 
-//     // Start with lenght 0 and build a subtour
-//     for (len = 0; len < n; len++)
-//     {
-//       // insert the unseen node in the tour
-//       tour[start + len] = node;
+  for (i = 0; i < n; i++)
+    seen[i] = false;
 
-//       //Be honest, you saw that node
-//       seen[node] = true;
+  start = 0;
+  node = 0;
 
-//       // Check nodes neighbors
-//       for (i = 0; i < n; i++)
-//       {
-//         // Is it connected to someone?
-//         // First time you see it? ...
-//         if (sol[node][i] > 0.5 && !seen[i])
-//         {
-//           // ... better catch that guy
-//           node = i;
-//           break;
-//         }
-//       }
+  // Start from position 0 in the tour
+  while (start < n)
+  {
+    // Find a node that has not been seen
+    for (node = 0; node < n; node++)
+      if (!seen[node])
+        break;
 
-//       // Oh man, you could not find a neighbhor? It seens that you closed the loop
-//       if (i == n)
-//       {
-//         // In this case, increase the size of the lenght
-//         len++;
-//         pair<int, int> pos(start, len);
-//         p.push_back(pos);
-//         //Start a new subtour
-//         start += len;
-//         break;
-//       }
-//     }
-//   }
+    // Did you see every node? Time to break
+    if (node == n)
+      break;
 
-//   delete[] seen;
-// }
+    // Start with lenght 0 and build a subtour
+    for (len = 0; len < n; len++)
+    {
+      // insert the unseen node in the tour
+      tour[start + len] = node;
 
-// // Given an integer-feasible solution 'sol', find the smallest
-// // sub-tour.
-// vector<int> maxback(int n,
-//                     double **x, double &Cutmin, int v0)
-// {
-//   vector<int> S;
-//   vector<int> Smin;
-//   vector<bool> seen(n);
-//   vector<double> b(n);
-//   fill(seen.begin(), seen.end(), false);
+      //Be honest, you saw that node
+      seen[node] = true;
 
-//   int v = v0;
-//   S.push_back(v);
-//   seen[v] = true;
-//   b[v] = -numeric_limits<double>::infinity();
+      // Check nodes neighbors
+      for (i = 0; i < n; i++)
+      {
+        // Is it connected to someone?
+        // First time you see it? ...
+        if (sol[node][i] > 0.5 && !seen[i])
+        {
+          // ... better catch that guy
+          node = i;
+          break;
+        }
+      }
 
-//   double Cutval;
-//   Cutmin = 0.0;
-//   for (int i = 0; i < n; i++)
-//   {
-//     if (!seen[v] && v!=i){
-//       b[i] = x[v][i];
-//       Cutmin += b[i];
-//     }
-//   }
+      // Oh man, you could not find a neighbhor? It seens that you closed the loop
+      if (i == n)
+      {
+        // In this case, increase the size of the lenght
+        len++;
+        pair<int, int> pos(start, len);
+        p.push_back(pos);
+        //Start a new subtour
+        start += len;
+        break;
+      }
+    }
+  }
 
-//   Smin = S;
-//   Cutval = Cutmin;
+  delete[] seen;
+}
 
-//   while (S.size() < n)
-//   {
-//     // Choose v not in S of maximum max-back value b(v)
-//     double maxb = -numeric_limits<double>::infinity();
-//     for (int i = 0; i < n; i++)
-//       if (!seen[i])
-//         if (maxb < b[i])
-//         {
-//           maxb = b[i];
-//           v = i;
-//         }
+// Given an integer-feasible solution 'sol', find the smallest
+// sub-tour.
+vector<int> maxback(int n,
+                    double **x, double &Cutmin, int v0)
+{
+  vector<int> S;
+  vector<int> Smin;
+  vector<bool> seen(n);
+  vector<double> b(n);
+  fill(seen.begin(), seen.end(), false);
 
-//     S.push_back(v);
-//     seen[v] = true;
-//     Cutval = Cutval + 2 - 2 * b[v];
+  int v = v0;
+  S.push_back(v);
+  seen[v] = true;
+  b[v] = -numeric_limits<double>::infinity();
 
-//     for (int t = 0; t < n; t++)
-//     {
-//       if (!seen[t] && v != t)
-//         b[t] = b[t] + x[v][t];
-//     }
-//     if (Cutval < Cutmin)
-//     {
-//       Cutmin = Cutval;
-//       Smin = S;
-//     }
-//   }
+  double Cutval;
+  Cutmin = 0.0;
+  for (int i = 0; i < n; i++)
+  {
+    if (!seen[i] && v!=i){
+      b[i] = x[v][i];
+      Cutmin += b[i];
+    }
+  }
 
-//   return Smin;
-// }
+  Smin = S;
+  Cutval = Cutmin;
+
+  while (S.size() < n)
+  {
+    // Choose v not in S of maximum max-back value b(v)
+    double maxb = -numeric_limits<double>::infinity();
+    for (int i = 0; i < n; i++)
+      if (!seen[i])
+        if (maxb < b[i])
+        {
+          maxb = b[i];
+          v = i;
+        }
+
+    S.push_back(v);
+    seen[v] = true;
+    Cutval = Cutval + 2 - 2 * b[v];
+
+    for (int t = 0; t < n; t++)
+    {
+      if (!seen[t] && v != t)
+        b[t] = b[t] + x[v][t];
+    }
+    if (Cutval < Cutmin)
+    {
+      Cutmin = Cutval;
+      Smin = S;
+    }
+  }
+
+  return Smin;
+}
 
 int main(int arg1,
          char *arg2[])
@@ -352,8 +379,7 @@ int main(int arg1,
   }
 
   //GRBEnv *env = NULL;
-  IloEnv env;
-
+   GRBEnv *env = NULL;
   GRBVar **vars = NULL;
 
   vars = new GRBVar *[n];
