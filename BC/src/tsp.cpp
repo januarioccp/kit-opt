@@ -112,19 +112,22 @@ IloInt checkTour(IloNumArray2 sol, IloBoolArray seen, IloNum tol)
 
 ILOUSERCUTCALLBACK2(MaxBack, Edges, x, IloNum, tol)
 {
-   NodeInfo *data = dynamic_cast<NodeInfo *>(getNodeData());
-     if (!data)
-    {
-        if (NodeInfo::rootData == NULL)
-        {
-            NodeInfo::initRootData();
-        }
-        data = NodeInfo::rootData;
-    }
+   // NodeInfo *data = dynamic_cast<NodeInfo *>(getNodeData());
+   //   if (!data)
+   //  {
+   //      if (NodeInfo::rootData == NULL)
+   //      {
+   //          NodeInfo::initRootData();
+   //      }
+   //      data = NodeInfo::rootData;
+   //  }
 
-   if (data->getIterations() >= MAX_ITER)
+   // data->addIteration();
+   // cout<<data->getIterations()<<endl;
+
+   if (getCurrentNodeDepth() >= 7 && getNiterations() >= 100)
       return;
-
+   
    IloEnv env = getEnv();
    IloInt n = x.getSize();
 
@@ -477,10 +480,12 @@ int main(int argc, char **argv)
       for (IloInt i = 0; i < n; i++)
       {
          IloExpr expr(env);
-         for (IloInt j = 0; j < i; j++)
-            expr += x[i][j];
-         for (IloInt j = i + 1; j < n; j++)
-            expr += x[j][i];
+         for (IloInt j = 0; j < n; j++){
+            if(i>j)
+               expr += x[i][j];
+            if(j>i)
+               expr += x[j][i];
+         }
          IloConstraint c(expr == 2);
          c.setName("Degree");
          tsp.add(c);
